@@ -1,0 +1,104 @@
+tag: topological sort
+tag: backtracking
+
+include: ../../usaco.def
+page: milkorder_gold, basic_frame
+    module: cpp
+
+    &call open_In
+        $global N, M: int
+        $call scan_int, N, M
+        $global std::vector<int> * order_list
+        order_list = new std::vector<int>[M]
+        $for i=0:M
+            $call scan_Int, m
+            $for j=0:m
+                $call scan_Int, t
+                order_list[i].push_back(t-1)
+                
+    #---------------------------------------- 
+    k = find_k()
+    $dump k
+    $my int L[N]
+    $call topo_sort
+
+    #---------------------------------------- 
+    &call open_Out
+        $for i=0:N-1
+            $print "%d -", L[i]
+        $print "%d", L[N-1]
+
+fncode: find_k
+    i1 = 1
+    i2 = M
+    $while i1<=i2
+        i3 = (i1+i2)/2
+        $if check_cycle(i3)
+            i2 = i3-1
+        $else
+            i1 = i3+1
+    return i2
+#---------------------------------------- 
+subcode: _autoload
+    $include <set>, <unordered_set>
+
+subcode: init_graph
+    $my int dep_counts[N]
+    $for i=0:N
+        dep_counts[i] = 0
+    $my std::unordered_set<int> followers[N]
+
+    n_edges=0
+    $for i=0:k
+        $for j=0:order_list[i].size()-1
+            i1 = order_list[i][j]
+            i2 = order_list[i][j+1]
+            dep_counts[i2]++
+            followers[i1].insert(i2)
+            n_edges++
+
+fncode: check_cycle(k)
+    $call @init_graph
+    $my std::vector<int> stack
+    $for i=0:N
+        $if dep_counts[i]==0
+            stack.push_back(i)
+
+    $while stack.size()>0
+        i = stack.back()
+        stack.pop_back()
+
+        $foreach j in followers[i]
+            dep_counts[j]--
+            $if dep_counts[j]==0
+                stack.push_back(j)
+            n_edges--
+
+    $if n_edges>0
+        return 1
+    $else
+        return 0
+
+#---------------------------------------- 
+subcode: topo_sort
+    $call @init_graph
+    $my std::set<int> stack
+    $for i=0:N
+        $if dep_counts[i]==0
+            stack.insert(i)
+
+    $my int * p = L
+    $while stack.size()>0
+        $my auto it = stack.begin()
+        i=*it
+        stack.erase(it)
+
+        *p = i+1
+        p++
+
+        $foreach j in followers[i]
+            dep_counts[j]--
+            $if dep_counts[j]==0
+                stack.insert(j)
+            n_edges--
+

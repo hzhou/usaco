@@ -1,0 +1,37 @@
+include: ../../usaco.def
+page: reststops_silver, basic_frame
+    module: cpp
+    namespace: std
+
+    &call open_In
+        $my L, N, r_F, r_B: int
+        $call scan_int, L, N, r_F, r_B
+
+        $struct(stop) i, int x, int c
+        $my struct stop stops[N]
+        $for i=0:N
+            $call scan_int, stops[i].x, stops[i].c
+            stops[i].i = i
+
+    &call std_sort, stops, N, struct stop
+        return a.c > b.c
+
+    #---------------------------------------- 
+    #- Find best stops and rest maximally
+
+    $my int x=0, int i=0
+    $my unsigned long long total=0 
+    $my int j=0 # which stop
+    $while j<N
+        #- every meter gains (r_F-r_B) seconds
+        # important! cast to long long
+        total += (long long)(stops[j].x-x)*(r_F-r_B) * stops[j].c
+        x = stops[j].x
+        i = stops[j].i
+        $while j<N && stops[j].i<=i
+            j++
+
+    $dump total
+    &call open_Out
+        fprintf(Out, "%llu\n",  total)
+

@@ -1,0 +1,171 @@
+include: ../../usaco.def
+page: cowland_gold, basic_frame
+    module: cpp
+
+    &call open_In
+        $call scan_Int, N, Q
+        $my int e_list[N]
+        $for i=0:N
+            $call scan_int, e_list[i]
+        $my int A[N-1], int B[N-1]
+        $for i=0:N-1
+            $call scan_int, A[i], B[i]
+            A[i]--
+            B[i]--
+
+        $my int type_list[Q], int i_list[Q], int v_list[Q]
+        $for i=0:Q
+            $call scan_int, type_list[i], i_list[i], v_list[i]
+            $if type_list[i]==1
+                i_list[i]--
+            $else
+                i_list[i]--
+                v_list[i]--
+    # ---- build adj_list to linear access of edges
+    $my $(T_vn) adj_list[N]
+    $for i=0:N-1
+        adj_list[A[i]].push_back(B[i])
+        adj_list[B[i]].push_back(A[i])
+
+    # ---- init pointer_list/level_list for tree 
+    $my int pointer_list[N]
+    $for i=0:N
+        pointer_list[i] = i
+    $my int level_list[N]
+    $for i=0:N
+        level_list[i] = -1
+
+    # ---- backtracking to build the tree
+    $call @init_cache
+    $my $(T_vn) stack
+    $call @push, 0
+    level_list[0] = 0
+
+    $while stack.size()>0
+        i = stack.back()
+        stack.pop_back()
+
+        $foreach j in adj_list[i]
+            $if !cache[j]
+                pointer_list[j] = i
+                level_list[j] = level_list[i]+1
+                $call @push, j
+
+    subcode: init_cache
+        $my int cache[N]
+        $for i=0:N
+            cache[i] = 0
+
+    subcode: push(i)
+        stack.push_back($(i))
+        cache[$(i)] = 1
+
+    # ---- each query ------
+    $call @init_cache_ans
+    $my $(T_vn) ans_list
+    $for i=0:Q
+        $if type_list[i] == 1
+            $call @invalidate_cache_ans, i_list[i], e_list[i_list[i]], v_list[i]
+            e_list[i_list[i]] = v_list[i]
+        $else
+            $call get_ans, i_list[i], v_list[i]
+            ans_list.push_back(tn_ans)
+            # $dump i, tn_ans
+
+    &call open_Out
+        $foreach i in ans_list
+            $print $i
+
+    # -----------------------
+    subcode: get_ans(i, j)
+        tn_i = $(i)
+        tn_j = $(j)
+        n_i = level_list[tn_i]
+        n_j = level_list[tn_j]
+        tn_ans=0
+        $(if:0)
+            $if n_i > n_j
+                $call get_direct_ans, tn_i, n_i-n_j
+            $elif n_i<n_j
+                $call get_direct_ans, tn_j, n_j-n_i
+        $(else)
+            $if n_i > n_j
+                $call get_cache_ans, tn_i, n_i-n_j
+            $elif n_i<n_j
+                $call get_cache_ans, tn_j, n_j-n_i
+        # -------------
+        $while 1
+            $if tn_i==tn_j
+                tn_ans ^= e_list[tn_i]
+                break
+            $else
+                tn_ans ^= e_list[tn_i]
+                tn_ans ^= e_list[tn_j]
+                tn_i = pointer_list[tn_i]
+                tn_j = pointer_list[tn_j]
+
+    subcode: get_direct_ans(j, n)
+        tn_ans = 0
+        $for 0:$(n)
+            tn_ans ^= e_list[$(j)]
+            $(j) = pointer_list[$(j)]
+    # ---------------------
+    subcode: init_cache_ans
+        # potentially, mutliple long chains
+        $my $(T_vn2) chains[10]
+        $my int map_chain[N]
+            $for i=0:N
+                map_chain[i] = -1
+        $call sort_levels
+        i = P[0]
+        $(set:i_chain=0)
+        $(set:L=chains[$(i_chain)])
+        tn_ans = 0
+        $while pointer_list[i]!=i
+            tn_ans ^= e_list[i]
+            $(L).push_back({i,tn_ans})
+            map_chain[i] = $(L).size()-1
+            i = pointer_list[i]
+
+        subcode: sort_levels
+            $my int P[N]
+            $for i=0:N
+                P[i]=i
+            &call std_sort, P, N, int
+                return level_list[a]>level_list[b]
+    subcode: invalidate_cache_ans(j, v0, v1)
+        $if map_chain[$(j)]>=0
+            $(set:i_chain=0)
+            $(set:L=chains[$(i_chain)])
+            j_tmp = map_chain[$(j)]
+            $my int v_tmp = $(v0) ^ $(v1)
+            $for map_chain[$(j)]:$(L).size()
+                $(set:it=$(L)[$(i)])
+                $(it).second ^= v_tmp
+    subcode: dump_cache
+        $(set:i_chain=0)
+        $(set:L=chains[$(i_chain)])
+        $for 0:$(L).size()
+            $print "(%d %d), ", $(L)[$(i)].first, $(L)[$(i)].second
+        $print
+    # -------
+    subcode: get_cache_ans(j, n)
+        n=$(n)
+        tn_ans = 0
+        $while n>0
+            $if map_chain[$(j)]<0
+                tn_ans ^= e_list[$(j)]
+                $(j) = pointer_list[$(j)]
+                n--
+                continue
+            $else
+                j_tmp = map_chain[$(j)]
+                $(set:i_chain=0)
+                $(set:L=chains[$(i_chain)])
+                $if j_tmp>0
+                    tn_ans ^= $(L)[j_tmp-1].second
+                $(set:it=$(L)[j_tmp+n-1])
+                $(j) = $(it).first
+                tn_ans ^= $(it).second
+                $(j) = pointer_list[$(j)]
+                break

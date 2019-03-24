@@ -1,0 +1,94 @@
+include: ../../usaco.def
+page: sort_platinum, basic_frame
+    module: cpp
+    CC: g++ -g -std=c++11
+
+    &call open_In
+        $my int N
+        $call scan_int, N
+        $global int * A
+        A= new int[N]
+        $for i=0:N
+            $call scan_int, A[i]
+
+    $global long long count=0
+
+    $(if:0)
+        $call try_0
+    $(else)
+        $call try_1
+
+    $dump count
+    &call open_Out
+        $print "%lld", count
+
+# Naive
+fncode: sort_pass(i1, i2)
+    $for i=i1:i2-1
+        $if A[i] > A[i+1]
+            $call swap, A[i], A[i+1]
+
+fncode: quickish_sort(i1, i2): void
+    $if i2-i1==1
+        return
+    $dump(quickish_sort) i1, i2, count
+    $while 1
+        count += i2-i1
+        sort_pass(i1, i2)
+        b_flag=0
+        &call check_partition
+            b_flag++
+            quickish_sort($(i1), $(i2))
+        $if b_flag
+            break
+
+    subcode: check_partition
+        n = i2-i1
+        $my int *P
+        P = new int[n]
+        $for i=0:n
+            P[i]=i
+        &call std_sort, P, n, int
+            return A[i1+a] < A[i1+b]
+        j_1 = 0
+        j_max = 0
+        $for j=0:n
+            $if j_max<P[j]
+                j_max=P[j]
+            $if j_max==j && (j_max-j_1+1)<n
+                $(set:i1=j_1)
+                $(set:i2=j_max+1)
+                BLOCK
+                j_1=j_max+1
+                j_max = 0
+        delete[] P
+
+subcode: try_0
+    quickish_sort(0, N)
+
+#---------------------------------------- 
+include: ../../perm.def
+subcode: try_1
+    $my int P[N]
+    $for i=0:N
+        P[i]=i
+    &call std_sort, P, N, int
+        $if A[a]==A[b]
+            return a<b
+        $else
+            return A[a]<A[b]
+
+    $my int Q[N]
+    i_max=0
+    $for i=0:N
+        $call update_max, i_max, P[i]
+        Q[i] = i_max-i
+
+    $for i=0:N
+        n = 0
+        $call update_max, n, Q[i]
+        $if i>0
+            $call update_max, n, Q[i-1]
+        $if n==0 && N>1
+            n++
+        count+=n

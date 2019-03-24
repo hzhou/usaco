@@ -1,0 +1,51 @@
+include: ../../usaco.def
+page: reduce_bronze, basic_frame
+    module: cpp
+
+    &call open_In
+        $my int N
+        $call scan_int, N
+    
+        $my int X[N], int Y[N]
+        $for i=0:N
+            $call scan_int, X[i], Y[i]
+
+    $(for:x1,x2,y1,y2 and X,X,Y,Y)
+        $my int $1 = $2[0]
+        $my int $1_prev = $2[1]
+        $my int $1_idx = 0
+    $for i=1:N
+        $(for:x1,x2,y1,y2 and X,X,Y,Y and >,<,>,<)
+            $if $1 $3 $2[i]
+                $1_prev = $1
+                $1 =  $2[i]
+                $1_idx = i
+            $else
+                $if $1 == $2[i]
+                    $1_idx = -1
+                $elif $1_prev $3 $2[i]
+                    $1_prev = $2[i]
+
+    $my int min_area = (x2-x1)*(y2-y1)
+    $dump x1,x2,y1,y2
+    $dump x1_idx, x2_idx, y1_idx, y2_idx
+    $dump x1_prev, x2_prev, y1_prev, y2_prev
+
+    $dump min_area
+    $(for:a in x1,x2,y1,y2)
+        $if $(a)_idx>=0
+            $(for:x1,x2,y1,y2)
+                $my int t_$1 = $1
+                $if $1_idx==$(a)_idx
+                    t_$1 = $1_prev
+            $dump t_x2-t_x1, t_y2-t_y1
+            $if min_area > (t_x2-t_x1)*(t_y2-t_y1)
+                min_area = (t_x2-t_x1)*(t_y2-t_y1)
+                $dump min_area
+
+    &call open_Out
+        $print $min_area
+
+
+
+

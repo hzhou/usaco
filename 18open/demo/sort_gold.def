@@ -1,0 +1,131 @@
+include: ../../usaco.def
+page: sort_gold, basic_frame
+    module: cpp
+
+    &call open_In
+        $my int N
+        $call scan_int, N
+        $global int * A
+        A= new int[N]
+        $for i=0:N
+            $call scan_int, A[i]
+
+    $dump N
+
+    $call try_2
+
+    $dump count
+    &call open_Out
+        $print $count
+
+# Naive
+subcode: try_0
+    count=0
+    $while 1
+        count++
+        $for i=0 to N-2
+            $if A[i+1] < A[i]
+                $call swap A[i], A[i+1]
+        $for i=N-2 downto 0
+            $if A[i+1] < A[i]
+                $call swap A[i], A[i+1]
+
+        b_sorted = 1
+        $for i=0 to N-2
+            $if A[i+1] < A[i]
+                b_sorted = 0
+        $if b_sorted
+            break
+
+# Smart Naive
+subcode: try_1
+    i_iter = 0
+    i1=0
+    i2=N-1
+    $while 1
+        i_iter++
+        i3 = -1
+        $for i=i1 to i2-1
+            $if A[i+1] < A[i]
+                $call swap A[i], A[i+1]
+                i3 = i
+        $if i3==-1
+            $if i_iter==1
+                count=1
+            $else
+                count=i_iter-1
+            break
+        $else
+            i2=i3
+
+        i3 = -1
+        $for i=i2-1 downto i1
+            $if A[i+1] < A[i]
+                $call swap A[i], A[i+1]
+                i3 = i
+        $if i3==-1
+            count = i_iter
+            break
+        $else
+            i1 = i3+1
+
+# counting crossings
+subcode: try_2
+    $my int P[N]
+    $for i=0:N
+        P[i]=i
+
+    &call std_sort, P, N, int
+        return A[a]<A[b]
+
+    $my int C[N]
+    $for i=0:N
+        C[i] = 0
+    n_max = 0
+
+    # $call try_2_1
+    $call try_2_2
+
+    count = n_max
+    $if count==0
+        count=1
+
+    subcode: try_2_1
+        $for i=0:N
+            $for j=i:P[i]
+                C[j]++
+
+        $for i=0:N-1
+            $if n_max<C[i]
+                n_max=C[i]
+
+    subcode: try_2_2
+        $for i=0:N
+            $if P[i]>i
+                $call add, i, 1
+                $call add, P[i], -1
+        $call dump_array, P, N
+        $call dump_array, C, N
+        $for i=0:N
+            sum = 0
+            $call get_sum, i
+            $if n_max < sum
+                n_max = sum
+
+        subcode: add(i, v)
+            j = $(i)
+            $while j<N
+                C[j]+=$(v)
+                $if j==0
+                    j++
+                $else
+                    j+=(j&-j)
+
+        subcode: get_sum(i)
+            j = $(i)
+            $if j==0
+                sum = C[0]
+            $else
+                $while j>0
+                    sum += C[j]
+                    j-=(j&-j)

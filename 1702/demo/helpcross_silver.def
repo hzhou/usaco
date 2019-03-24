@@ -1,0 +1,53 @@
+include: ../../usaco.def
+
+page: helpcross_silver, basic_frame
+    module: cpp
+
+    $my C, N: int
+    &call open_In
+        $call scan_int, C, N
+        $dump C, N
+
+        $my int C_list[C]
+        $for i=0:C
+            $call scan_int, C_list[i]
+        $my int A[N], int B[N]
+        $for i=0:N
+            $call scan_int, A[i], B[i]
+
+    &call std_sort, C_list, C, int
+        return a<b
+
+    $my int P[N]
+    $for i=0:N
+        P[i]=i
+    &call std_sort, P, N, int
+        return B[a]<B[b]
+
+    n = 0
+    j = 0
+    $(set:A=A[P[$1]])
+    $(set:B=B[P[$1]])
+    $my int t_max = C_list[C-1] + 1
+    $dump t_max
+    $for i=0:C
+        $(set:c=C_list[i])
+        $while j<N && $(B:j)<$(c)
+            j++
+        $if j==N
+            break
+        # ---------------------------
+        $for k=j:N
+            $if $(A:k)<=$(c)
+                n++
+                # $dump(got) n, k, $(c), $(A:k), $(B:k)
+                $(A:k) = t_max
+                break
+
+
+    $dump n
+    &call open_Out
+        $print $n
+    
+
+

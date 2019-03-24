@@ -1,0 +1,55 @@
+include: ../usaco.def
+
+page: shuffle, basic_frame
+    module: cpp
+
+    $local int N
+    &call open_In
+        fscanf(In, "%d", &N)
+        $my int P[N]
+        $for i=0:N
+            fscanf(In, "%d", &P[i])
+            P[i]--
+    $dump N, P[3]
+
+    $my int visited[N]
+    $for i=0:N
+        visited[i]=0
+
+    $my int count = 0
+    $my int seq=1
+    $while 1
+        $call @find_j
+        $my int start=seq
+        $while 1
+            $if visited[j]
+                $if visited[j]<start
+                    # previous
+                    break
+                $else
+                    count+=seq-visited[j]
+                    break
+
+            # $print visit [$seq]  $j - ${P[j]}
+            visited[j]=seq
+            $call @update_j_min
+            j = P[j]
+            seq++
+        # $dump count
+    &call open_Out
+        $print $count
+
+    subcode: update_j_min
+        $if j==j_min
+            $while j_min<N && visited[j_min]
+                j_min++
+
+    subcode: find_j
+        $local j_min=0
+        $if j_min<N
+            j = j_min
+        $else
+            break
+        $dump j
+
+

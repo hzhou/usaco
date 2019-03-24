@@ -1,0 +1,54 @@
+include: ../../usaco.def
+
+page: hayfeast_gold, basic_frame
+    module: cpp
+    namespace: std
+
+    &call open_In
+        $my int N, long long M
+        fscanf(In, "%d %lld", &N, &M)
+        # $dump N, M
+        $my int F[N], int S[N]
+        $for i=0:N
+            $call scan_int, F[i], S[i]
+
+    $my i_0=0, i_1=0
+    $my long long sum = 0
+    $include <map>
+    $my map<int, int > maxes
+    $(set:max=maxes.rbegin()->first)
+
+    $while sum<M && i_1<N
+        $call inc_i_1
+
+    # garanteed sum>=M and i_1<=N
+    $my int g_min = $(max)
+
+    $while i_1<N
+        $while sum>=M
+            $call inc_i_0
+        $while sum<M
+            $call inc_i_1
+        $if g_min > $(max)
+            g_min = $(max)
+    &call open_Out
+        $print $g_min
+
+    # ----------------
+    subcode: inc_i_1
+        sum += F[i_1]
+        $if maxes.count(S[i_1])
+            maxes[S[i_1]]++
+        $else
+            maxes[S[i_1]]=1
+        i_1++
+
+    subcode: inc_i_0
+        sum -= F[i_0]
+        $(set:s=S[i_0])
+        $if maxes.count($(s))
+            $if maxes[$(s)]==1
+                maxes.erase($(s))
+            $else
+                maxes[$(s)]--
+        i_0++

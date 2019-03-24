@@ -1,0 +1,15 @@
+subcode: _autoload
+    $include <cstdio>
+    $include <algorithm>
+    using namespace std;
+
+subcode: open_In
+    FILE* In = fopen("$(subst:_pagename:_(bronze|silver|gold|platinum):).in", "r");
+    BLOCK
+    fclose(In)
+
+subcode: open_Out
+    FILE* Out = fopen("$(subst:_pagename:_(bronze|silver|gold|platinum):).out", "w");
+    $(set:print_to=Out)
+    BLOCK
+    fclose(Out)

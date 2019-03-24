@@ -1,0 +1,80 @@
+include: ../../usaco.def
+page: cowpatibility_gold, basic_frame
+    module: cpp
+
+    &call open_In
+        $call scan_Int, N
+        $my int L[N][5]
+        $for i=0:N
+            $call scan_int, $(join:L[i][*]:,:0-4)
+            std::sort(L[i], L[i]+5)
+
+    $my long long count=0
+    $(if:0)
+        $call try1
+    $(elif:0)
+        $call try2
+    $(elif:1)
+        $call try3
+
+    $dump count
+    &call open_Out
+        $print $count
+
+#---------------------------------------- 
+subcode: try1
+    $for i=0:N
+        $my std::set<int> S
+        $for k=0:5
+            S.insert(L[i][k])
+        $for j=i+1:N
+            $for k=0:5
+                $if S.count(L[j][k])
+                    goto compatible
+            count++
+            compatible: ;
+
+subcode: try2
+    $my std::map<int, std::vector<int> > A
+    $for i=0:N
+        $include <unordered_set>
+        $my std::unordered_set<int> S
+        $for k=0:5
+            $(set:k=L[i][k])
+            $if A.count($(k))
+                $foreach j in  A[$(k)]
+                    S.insert(j)
+                A[$(k)].push_back(i)
+            $else
+                A[$(k)] = {i}
+        count += i - S.size()
+
+subcode: try3
+    $struct(S5) int n, int v[5]
+    $function operator_Lt (const S5 &a, const S5 &b): bool
+        $for i=0:5
+            $if a.v[i]==b.v[i]
+                continue
+            return a.v[i]<b.v[i]
+        return false
+
+    $function get_S5(i, int* L)
+        $my S5 ret = {0, {0, 0, 0, 0, 0} }
+        $for j=0:5
+            $if (i>>j)&1
+                ret.v[ret.n++] = L[j]
+        return ret
+
+    $local std::map<S5, int> M
+    $for i=0:N
+        $for j=1:32
+            M[get_S5(j, L[i])]++
+    
+    count = (long long)N*(N-1)/2
+    $foreach &p in M
+        $my const int *v = &p.first.v[0]
+        $if p.first.n % 2 == 1
+            count -= (long long)p.second * (p.second-1) / 2
+        $else
+            count += (long long)p.second * (p.second-1) / 2
+

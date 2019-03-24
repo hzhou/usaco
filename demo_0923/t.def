@@ -1,0 +1,149 @@
+page: t.cpp, frame
+    module: general
+
+    // swap, max, min, abs
+    puts("----\ntest swap max min:");
+    $call test_int
+    // array
+    puts("----\ntest array:");
+    $call test_array
+    // char array
+    puts("----\ntest char array (string):");
+    # $call test_char_array
+    // vector
+    puts("----\ntest vector:");
+    $call test_vector
+    // struct
+    puts("----\ntest struct:");
+    $call test_struct
+    // map
+    puts("----\ntest map:");
+    $call test_map
+
+subcode: test_int
+    int a = 1;
+    int b = 2;
+    $dump a, b
+
+    # swap, max, min
+    std::swap(a, b);
+    $dump a, b
+
+    int c;
+    c = std::max(a, b);
+    $dump c
+    c = std::min(a, b);
+    $dump c
+
+subcode: test_array
+    # array
+    int A[10] = {3, 2, 1, 4, 5, 6, 9, 8, 7, 0};
+    $call dump_A, A, 10
+    std::sort(A, A+10, [](int a, int b){
+        return a < b;
+    } );
+    $call dump_A, A, 10
+    std::sort(A, A+10, [](int a, int b){
+        return a > b;
+    } );
+    $call dump_A, A, 10
+
+subcode: test_char_array
+    # char array
+    char s[20];
+    FILE* In = fopen("t.cpp", "r");
+    fscanf(In, "%s", s);
+    printf("s=%s, s[1]=%c\n", s, s[1]);
+    fclose(In);
+
+subcode: test_vector
+    std::vector<int> V;
+    $(for:3, 2, 1, 4, 5, 6)
+        V.push_back($1);
+    for(auto i: V){
+        $dump i
+    }
+
+    std::sort(V.begin(), V.end());
+    $call dump_A, V, 6
+
+    printf("%d\n", V[3]);
+    A[3] = 100;
+    printf("%d\n", V[3]);
+
+    V.resize(10, -1);
+    V[9]=10;
+    $dump V.size(), V[4], V[6], V[9]
+
+subcode: test_struct
+    $(block:_global)
+        struct item { 
+            int a;
+            int b;
+        };
+
+    item A2[10];
+    $for i, 0, 10
+        A2[i] = item{i, i*2};
+
+    $for i, 0, 10
+        $dump A2[i].a, A2[i].b
+
+    &call sort, A2, A2+10, item
+        return a.a>b.a;
+    
+    puts("--------------------------");
+    $for i, 0, 10
+        $dump A2[i].a, A2[i].b
+
+subcode: test_map
+    $(block:_global)
+        #include <map>
+    std::map<int,int, std::greater<int> > M;
+    $(for:3, 2, 1, 4, 5, 7, 6)
+        M[$1] = 1;
+
+    $foreach it, M
+        printf("%d\n", it.first);
+
+#---------------------------------------- 
+subcode: frame
+    #include <cstdio>
+    #include <algorithm>
+
+    DUMP_STUB _global
+
+    int main(){
+        $call main
+        return 0;
+    }
+#---------------------------------------- 
+subcode: _autoload
+    $plugin dump, &for, &foreach
+
+subcode: dump(@plist)
+    $(for:p in $(plist))
+        $(set-1:fmt.= $(p)=%d)
+    printf("$(fmt)\n", $(plist));
+
+subcode: dump_A(A, N)
+    printf("$(A)[%d] :", $(N));
+    for(int  i=0; i<$(N); i++){
+        printf("%d ", $(A)[i]);
+    }
+    puts("");
+
+subcode: sort(begin, end, type)
+    std::sort($(begin), $(end), []($(type) a, $(type) b){
+        BLOCK
+    } );
+
+subcode: for(i, i_0, i_n)
+    for(int $(i) = $(i_0); $(i)<$(i_n); $(i)++){
+        BLOCK
+    }
+
+subcode: foreach(i, V)
+    for(auto $(i): $(V)){
+        BLOCK
+    }

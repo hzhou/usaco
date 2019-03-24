@@ -1,0 +1,136 @@
+include: ../../usaco.def
+page: countcross_silver, basic_frame
+    module: cpp
+
+    $include <assert.h>
+    &call open_In
+        $global N, K, R: int
+        $call scan_int, N, K, R
+        $dump N, K, R
+
+        $global int *grid
+        grid = new int[N*N]
+        $for i=0:N*N
+            grid[i] = 0
+        $(mset:U=1,R=2,D=4,L=8)
+        $for i=0:N
+            grid[i] |= $(U)
+            grid[(N-1)*N+i] |= $(D)
+            grid[i*N] |= $(L)
+            grid[i*N+N-1] |= $(R)
+        $for i=0:R
+            $my a,b,c,d:int
+            $call scan_int, a, b, c, d
+            k = (a-1)*N+(b-1)
+            $if a==c
+                $if b+1==d
+                    grid[k] |= $(R)
+                    grid[k+1] |= $(L)
+                $elif b-1==d
+                    grid[k] |= $(L)
+                    grid[k-1] |= $(R)
+            $elif b==d
+                $if a+1==c
+                    grid[k] |= $(D)
+                    grid[k+N] |= $(U)
+                $elif a-1==c
+                    grid[k] |= $(U)
+                    grid[k-N] |= $(D)
+
+        $for i=0:K
+            $my a, b: int
+            $call scan_int, a, b
+            k = (a-1)*N+(b-1)
+            grid[k] |= 0x10
+        # $call dump_grid
+
+    $include <vector>
+    $global std::vector<int> region_list # num of cows
+
+    $call @find_region_single
+    n_regions = region_list.size()
+    $dump n_regions
+    # $call dump_regions
+    $call @calc_num_pairs
+    $dump n
+    &call open_Out
+        $print $n
+
+#---------------------------------------- 
+subcode: find_region_single
+    i_min = 0
+    $while i_min<N*N
+        find_region(i_min)
+        $while i_min<N*N && grid[i_min]<0
+            i_min++
+
+fncode: find_region(int idx)
+    i_reg = region_list.size()
+
+    $local std::vector<int> stack
+    stack.push_back(idx)
+
+    $my int count = 0
+    $while stack.size()>0
+        i = stack.back()
+        stack.pop_back()
+
+        $if grid[i]<0
+            continue
+        $my m = grid[i]
+        grid[i] = -1
+
+        $if m & 0x10
+            count ++ 
+
+        $(mset:U=1,R=2,D=4,L=8)
+        $if (m & $(U)) == 0
+            stack.push_back(i-N)
+        $if (m & $(D)) == 0
+            stack.push_back(i+N)
+        $if (m & $(L)) == 0
+            stack.push_back(i-1)
+        $if (m & $(R)) == 0
+            stack.push_back(i+1)
+
+    region_list.push_back(count)
+
+#---------------------------------------- 
+subcode: calc_num_pairs
+    n = 0
+    $if n_regions>1
+        $for i=0:n_regions
+            $for j=i+1:n_regions
+                n += region_list[i]*region_list[j]
+
+#---- debug ------------------------------------ 
+subcode: dump_grid_a
+    $for i=0:N
+        $for j=0:N
+            $print "%02x -", grid[i*N+j]
+        $print
+
+subcode: dump_grid
+    $(mset:U=1,R=2,D=4,L=8)
+    $for i=0:N
+        $for j=0:N
+            $if grid[i*N+j] & $(U)
+                $print " --"
+            $else
+                $print "  -"
+        $print
+        $for j=0:N
+            $if grid[i*N+j] & $(L)
+                $print "|-"
+            $else
+                $print " -"
+            $if grid[i*N+j] & 0x10
+                $print "*-"
+            $else
+                $print " -"
+        $print
+
+subcode: dump_regions
+    $foreach n in region_list
+        $print "$n -"
+    $print

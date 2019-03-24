@@ -1,0 +1,34 @@
+include: ../../usaco.def
+
+page: cowqueue_bronze, basic_frame
+    module: cpp
+    namespace: std
+
+    &call open_In
+        $my int N
+        $call scan_int, N
+
+        $struct(item) int arrival, int duration
+        $my item L[N]
+        $for i=0:N
+            $call scan_int, L[i].arrival, L[i].duration
+        &call std_sort, L, N, item
+            return a.arrival<b.arrival
+
+    $my int t=0, int t2
+    t2 = L[0].arrival+L[0].duration
+    t=t2
+    $for i=1:N
+        $if L[i].arrival<t2
+            t2+=L[i].duration
+        $else
+            t2 =L[i].arrival+L[i].duration
+
+    $dump t2
+    &call open_Out
+        $print $t2
+
+
+
+
+

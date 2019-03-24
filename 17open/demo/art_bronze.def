@@ -1,0 +1,72 @@
+include: ../../usaco.def
+page: art_bronze, basic_frame
+    module: cpp
+    # debug: 1
+
+    &call open_In
+        $my N: int
+        $call scan_int, N
+        $dump N
+
+        $my int grid[N*N]
+        $for i=0:N
+            $my char s[12]
+            fscanf(In, "%s", s)
+            $(if:debug)
+                $print $s
+            $for j=0:N
+                grid[i*N+j] = s[j]-'0'
+
+    $(for:HAS,X1,X2,Y1,Y2)
+        $my int $1[10]={0}
+    $for i=0:N
+        $for j=0:N
+            $my int color = grid[i*N+j]
+            HAS[color]++
+            $if HAS[color]==1
+                X1[color]=j
+                X2[color]=j
+                Y1[color]=i
+                Y2[color]=i
+            $else
+                $if X1[color]>j
+                    X1[color]=j
+                $if X2[color]<j
+                    X2[color]=j
+                $if Y1[color]>i
+                    Y1[color]=i
+                $if Y2[color]<i
+                    Y2[color]=i
+    $for i=1:10
+        X2[i]++
+        Y2[i]++
+    $my count = 0
+    $for i=1:10
+        $if HAS[i]==0
+            continue
+        $for j=1:10
+            $if i==j || HAS[j]==0
+                continue
+            $my x1,x2,y1,y2:int
+            x1=std::max(X1[i],X1[j])
+            x2=std::min(X2[i],X2[j])
+            y1=std::max(Y1[i],Y1[j])
+            y2=std::min(Y2[i],Y2[j])
+            # $dump i, j, x1, x2, y1, y2
+            $for ii=y1:y2
+                $for jj=x1:x2
+                    $if grid[ii*N+jj]==i
+                        goto next_i
+
+        $(if:debug)
+            $dump i 
+        count++
+        next_i:
+            continue
+
+    $dump count
+
+    &call open_Out
+        $print $count
+
+

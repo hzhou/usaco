@@ -1,0 +1,9 @@
+page: gen_test
+    module: perl
+
+    my $N=10000
+    &call open_W, sort.in
+        $print $N
+        $for i=0:$N
+            my $t = int(rand($N))
+            $print $t

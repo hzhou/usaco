@@ -1,0 +1,189 @@
+tag: dynamic_programming
+include: ../../usaco.def
+
+macros:
+    MOD: 1000000007
+    # DEBUG: 1
+
+subcode: mod_add(var, val)
+    $(var) = ($(var)+$(val)) % 1000000007
+    $call debug_mod, mod_add
+subcode: mod_mul(var, val)
+    $(var) = (int)(((long long)$(var)*$(val)) % 1000000007)
+    $call debug_mod, mod_mul
+
+subcode: debug_mod(type)
+    $(if:DEBUG)
+        $if $(var)<0
+            $dump($(type)) $(var), $(val)
+            exit(1)
+
+fncode: modpow(int t, int n)
+    $if n==1
+        return t
+    n_half = n/2
+    n_tmp = modpow(t, n_half)
+    $call mod_mul, n_tmp, n_tmp
+    $if n-n_half*2==1
+        $call mod_mul, n_tmp, t
+    return n_tmp
+
+#---------------------------------------- 
+page: poetry_gold, basic_frame
+    module: cpp
+    &call open_In
+        $call scan_Int, N,M,K
+        $my int s_list[N], int c_list[N]
+        $for i=0:N
+            $call scan_int, s_list[i], c_list[i]
+            c_list[i]-=1
+        $my char line_rhymes[M+1]
+        $for i=0:M
+            fscanf(In, "%s", line_rhymes+i)
+
+    $my int r_counts[26]
+    $for i=0:26
+        r_counts[i]=0
+    $for i=0:M
+        r_counts[line_rhymes[i]-'A']++
+
+    $my n_count = 0
+    $call @try_1
+    &call open_Out
+        $print $n_count
+
+subcode: try_1
+    $call map_count, map_syllables, s_list, N
+    $call map_count, map_line_rhymes, line_rhymes, M
+    # $call dump_map, map_syllables
+    # $call dump_map, map_line_rhymes
+    $(if:0)
+        # simpler code, see if time out
+        $(set:NC=N)
+        $(set:NM=M)
+    $(else)
+        # does time out, so shrink classes
+        $call remap_classes
+        $(set:NC=n_c)
+        $call get_max_m
+        $(set:NM=n_m)
+    # ---------------
+    $call get_pn_all
+    # $call dump_array, pn_all, K
+    # ----------------------
+    $call get_pn_classes
+    # $call dump_array, pn_classes, N
+    $call check_map_line_rhymes
+    $my pn_count_all[$(NM)]
+    $if set_counts.size()<10
+        $print "only %d counts: do get_count_all_direct ...", set_counts.size()
+        $call get_count_all_direct
+    $else
+        $call get_count_all
+    # $call dump_array, pn_count_all, M
+    # ---------------
+    n_count = 1
+    $foreach t in map_line_rhymes
+        count = t.second
+        $call mod_mul, n_count, pn_count_all[count-1]
+    $dump n_count
+    
+# -------------------------
+subcode: get_pn_all
+    # ---- count ways of make k-syllable line ----
+    #        based on map_syllables
+    # ---------------
+    $my pn_all[K]
+    $for i=0:K
+        pn_all[i]=0
+    pn_all[0]=1
+
+    $for k=1:K
+        n_sub_count = 0
+        $foreach t in map_syllables
+            n = t.first
+            count = t.second
+            $if k-n >= 0 && pn_all[k-n]>0
+                $call mod_mul, count, pn_all[k-n]
+                $call mod_add, n_sub_count, count
+        pn_all[k]=n_sub_count
+
+# -------------------------
+subcode: remap_classes
+    $my $(T_umap) map_class_ids
+    $my int n_c=0
+    $for j=0:N
+        $if map_class_ids.count(c_list[j])==0
+            map_class_ids[c_list[j]] = n_c
+            n_c++
+        c_list[j]=map_class_ids[c_list[j]]
+
+subcode: get_pn_classes
+    # ---- count ways of make K-syllable line rhymes in class i
+    $my pn_classes[$(NC)]
+    $for i=0:$(NC)
+        pn_classes[i]=0
+
+    $for j=0:N
+        $if K-s_list[j]>=0
+            $call mod_add, pn_classes[c_list[j]], pn_all[K-s_list[j]]
+
+# -------------------------
+subcode: get_max_m
+    $my int n_m=0
+    $foreach t in map_line_rhymes
+        $call update_max, n_m, t.second
+
+subcode: get_count_all
+    $dump $(NC), $(NM)
+    # ---- calc ways of m lines rhymes in class i
+    #      for M, 0 means 1, ...
+    $my pn_class_all
+    pn_class_all=new int[$(NC)*$(NM)]
+    $if 1
+        $for j=0:$(NC)
+            pn_class_all[j]=pn_classes[j]
+    k = $(NC)
+    $for i=1:$(NM)
+        $for j=0:$(NC)
+            pn_class_all[k] = pn_class_all[k-$(NC)]
+            $call mod_mul, pn_class_all[k], pn_classes[j]
+            k++
+
+    # now sum(Ci^i)
+    $for i=0:$(NM)
+        pn_count_all[i] = 0
+    k=0
+    $for i=0:$(NM)
+        $for j=0:$(NC)
+            $call mod_add, pn_count_all[i], pn_class_all[k]
+            k++
+
+subcode: check_map_line_rhymes
+    $my $(T_uset) set_counts
+    $foreach t in map_line_rhymes
+        set_counts.insert(t.second)
+
+subcode: get_count_all_direct
+    $for i=0:$(NM)
+        pn_count_all[i] = 0
+    $foreach i in set_counts
+        i_m = i-1
+        $for j=0:$(NC)
+            $call mod_add, pn_count_all[i_m], modpow(pn_classes[j], i)
+
+#---------------------------------------- 
+subcode: map_count(M, s, N)
+    $my $(T_umap) $(M)
+    $for i=0:$(N)
+        $if $(M).count($(s)[i])==0
+            $(M)[$(s)[i]]=1
+        $else
+            $(M)[$(s)[i]]++
+
+#---------------------------------------- 
+subcode: dump_map(name)
+    $print $(name):
+    $foreach t in $(name)
+        $print "%d: %d", t.first, t.second
+

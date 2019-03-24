@@ -1,0 +1,46 @@
+include: ../../usaco.def
+page: mowing_bronze, basic_frame
+    module: cpp
+
+    &call open_In
+        $my int N
+        $call scan_int, N
+
+        $my char D[N], int S[N]
+        $for i=0:N
+            $my char s[2]
+            fscanf(In, "%s %d", s, &S[i])
+            D[i] = s[0]
+
+    $my std::unordered_map<int, int> M
+    R = 100 * 20
+    k = 0
+    t = 0
+    M[0] = 0
+
+    $my int x = -1
+    $for i=0:N
+        $call get_d
+        $for j=0:S[i]
+            k += d
+            t++
+            $if M.count(k)
+                $if x == -1 || x > t - M[k]
+                    x = t - M[k]
+            M[k] = t
+
+    &call open_Out
+        $print $x
+
+    subcode: get_d
+        $my int d
+        $case D[i] == 'N'
+            d = -R
+        $case D[i] == 'E'
+            d = 1
+        $case D[i] == 'S'
+            d = R
+        $case D[i] == 'W'
+            d = -1
+        $else
+            $call die, "Bad input"

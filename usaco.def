@@ -1,0 +1,71 @@
+subcode: _autoload
+    $include <cstdio>
+    $include <algorithm>
+    # $plugin dump_array, scan_int
+    $register_prefix(ll) long long
+
+subcode: training_frame
+    $(block:frame_init)
+        $: /*
+        $: ID: usaco107
+        $: LANG: C++
+        $:: PROG: $(_pagename)
+        $: TASK: test
+        $: */
+
+    $call @global
+    $function main
+        $call main
+
+subcode: open_In
+    FILE* In = fopen("$(subst:_pagename:_(bronze|silver|gold|platinum):).in", "r");
+    $if !In
+        $call die, "Can't open In\n"
+    BLOCK
+    fclose(In)
+
+subcode: open_Out
+    FILE* Out = fopen("$(subst:_pagename:_(bronze|silver|gold|platinum):).out", "w");
+    $(set:print_to=Out)
+    BLOCK
+    fclose(Out)
+
+#----------------------------------------------- 
+subcode: dump_array(L, N)
+    $print "$(L)[%d]: -", $(N)
+    $for _i=0:$(N)
+        $print "%d -", $(L)[_i]
+    $print
+
+subcode: scan_int(@plist)
+    $(unset:fmt, vars)
+    $(for:p in $(plist))
+        $(if:_decl)
+            $my int $(p)
+        $(set-1:fmt.= %d)
+        $(set-1:vars.=,&$(p))
+    fscanf(In, "$(fmt)" $(vars));
+
+subcode: scan_int_array(n, @plist)
+    $for i=0:$(n)
+        $call scan_int, $(join:*[i]:,:$(plist))
+
+subcode: scan_Int(@plist)
+    $(set:_decl=1)
+    $call scan_int, $(plist)
+
+subcode: scan_Int_array(n, @plist)
+    $(for:p in $(plist))
+        $my int $(p)[$(n)]
+    $call scan_int_array, $(n), $(plist)
+
+#---------------------------------------- 
+macros:
+    T_vn:  std::vector<int>
+    T_vn2: std::vector<std::pair<int,int> >
+
+    T_map: std::map<int,int>
+    T_set: std::set<int>
+    T_umap: std::unordered_map<int,int>
+    T_uset: std::unordered_set<int>
+

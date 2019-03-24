@@ -1,0 +1,90 @@
+include: ../../usaco.def
+page: taming_gold, basic_frame
+    module: cpp
+
+    &call open_In
+        $call scan_Int, N
+        $call scan_Int_array, N, logs
+    $call dump_array, logs, N
+
+    #---------------------------------------- 
+    $struct(entry) n_err, n_breakout, n_val
+    $my std::vector<struct entry> *plist = new std::vector<struct entry>
+    plist->push_back((struct entry){0, 1, 0})
+
+    $(if:0)
+        $call try_1
+    $(else)
+        $call try_2
+
+    $call @get_stat
+
+    #---------------------------------------- 
+    &call open_Out
+        $for i=0:N
+            $print ${M[i]}
+
+    #-------------
+    subcode: get_stat
+        $my int M[N]
+        $for i=0:N
+            M[i]=N
+
+        $foreach p in (*plist)
+            $if p.n_val>0
+                i = p.n_breakout-1
+                $if M[i]>p.n_err
+                    M[i]=p.n_err
+
+#---------------------------------------- 
+subcode: try_2
+    $call iter_err_breakout_value
+    # ------------------
+    subcode: init_M
+        $my std::unordered_map<int, int> M
+
+    subcode: add_M_to_plist
+        $for auto it=M.begin(); it!=M.end(); it++
+            n_breakout = it->first / (N+1)
+            n_val      = it->first % (N+1)
+            n_err      = it->second
+            plist->push_back( (struct entry){n_err, n_breakout, n_val})
+
+    subcode: push(e,b,v)
+        k = ($(b))*(N+1)+$(v)
+        $if M.count(k)==0
+            M[k] = $(e)
+        $else
+            $if M[k] > $(e)
+                M[k] = $(e)
+
+#-------------
+subcode: try_1
+    $call iter_err_breakout_value
+    # -----------------------------
+    subcode: init_M
+        $my std::vector<struct entry> M
+
+    subcode: add_M_to_plist
+        $foreach entry in M
+            plist->push_back(entry)
+
+    subcode: push(e, b, v)
+        M.push_back((struct entry){$(e), $(b), $(v)})
+
+#---------------------------------------- 
+subcode: iter_err_breakout_value
+    $for i=0:N
+        $call @init_M
+        $foreach p in (*plist)
+            # $print "$i: %d %d %d", p.n_err, p.n_breakout, p.n_val
+            $if logs[i]!=p.n_val
+                $call push, p.n_err+1, p.n_breakout, p.n_val+1
+                $call push, p.n_err+1, p.n_breakout+1, 0
+            $else
+                $call push, p.n_err, p.n_breakout, p.n_val+1
+                $call push, p.n_err, p.n_breakout+1, 0
+
+        plist->clear()
+        $call @add_M_to_plist
+

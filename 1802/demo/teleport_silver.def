@@ -1,0 +1,49 @@
+include: ../../usaco.def
+# Mathematical analysys
+page: teleport_silver, basic_frame
+    module: cpp
+    namespace: std
+
+    $global int N
+    &call open_In
+        $call scan_int, N
+        $my int A[N], int B[N]
+        $for i=0:N
+            $call scan_int, A[i], B[i]
+            $(if:0)
+                $if A[i]>B[i]
+                    std::swap(A[i], B[i])
+    #---------------------------------------- 
+    # NOTE: only A-> x -> y -> B is allowed
+    # total l = SUM min ( |A-B|, |A|+|B-y| ) -> SUM /\
+    $call get_sum
+    $my map<int, int> slope # changes
+    $for i=0:N
+        $my int l = abs(A[i]-B[i])
+        $if abs(A[i])>=l
+            NOOP
+        $else
+            $my int d = l-abs(A[i])
+            slope[B[i]-d] += 1
+            slope[B[i]]   -= 2
+            slope[B[i]+d] += 1
+
+    $my long long min_sum=sum
+    $my int a=0
+    $my int x
+    $foreach it in slope
+        $if a!=0
+            sum -= (long long)a*(it.first-x)
+            $if min_sum>sum
+                min_sum = sum
+        x = it.first
+        a += it.second
+
+    $dump min_sum
+    &call open_Out
+        fprintf(Out, "%lld\n", min_sum)
+
+subcode: get_sum
+    $my long long sum=0
+    $for i=0:N
+        sum += abs(B[i]-A[i])

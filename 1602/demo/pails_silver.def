@@ -1,0 +1,72 @@
+include: ../../usaco.def
+
+page: pails_silver, basic_frame
+    module: cpp
+
+    &call open_In
+        $local X, Y, K, M: int
+        $call scan_int, X, Y, K, M
+        # $dump X, Y, K, M
+
+    $struct(T) int x, int y, int k
+    $local std::vector<T> stack
+
+    $call @init_cache
+
+    min = M
+    $push 0, 0, 0
+    $while stack.size()>0
+        $my x, y, k: int
+        x = stack.back().x
+        y = stack.back().y
+        k = stack.back().k
+        stack.pop_back()
+
+        $call check_min
+        # $dump x, y, k, x+y, d, min
+        $call operate
+
+    $dump min
+    &call open_Out
+        $print $min
+
+    # ---------------
+    subcode: init_cache
+        $local std::unordered_map<int, int> cache
+        $plugin push
+
+    subcode: push(x, y, k)
+        $(set:key=($(x))*1000+$(y))
+        $if cache.count($(key)) == 0
+            stack.push_back( T{ $(x), $(y), $(k)} )
+            cache[$(key)] = 1
+
+    # ---------------
+    subcode: check_min
+        $my int d = abs(M-x-y)
+        $if min > d
+            min = d
+
+    subcode: operate
+        $if k<K
+            $if x<X
+                $push X, y, k+1
+            $if y<Y
+                $push x, Y, k+1
+
+            $if x>0
+                $push 0, y, k+1
+            $if y>0
+                $push x, 0, k+1
+
+            $if x>0 && y<Y
+                $if x+y < Y
+                    $push 0, x+y, k+1
+                $else
+                    $push x+y-Y, Y, k+1
+
+            $if y>0 && x<X
+                $if x+y < X
+                    $push x+y, 0, k+1
+                $else
+                    $push X, x+y-X, k+1

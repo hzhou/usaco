@@ -1,0 +1,61 @@
+include: ../../usaco.def
+page: outofplace_bronze, basic_frame
+    module: cpp
+    namespace: std
+
+    $local int N
+    &call open_In
+        $call scan_int, N
+        $my int L[N]
+        $for i=0:N
+            $call scan_int, L[i]
+    n = get_swaps(L, N)
+    $dump n
+    &call open_Out
+        $print $n
+
+fncode: get_swaps(int* L, int N)
+    $call dump_array, L, N
+    n_le=0
+    $for i=1:N
+        $if L[i-1]<=L[i]
+            n_le++
+    $dump n_le
+
+    $my i_bad, bool too_left, n_eq=0
+    $if n_le== N-2
+        $call find_i_bad, <, >
+        $call find_swaps, <, >
+    $else
+        $call find_i_bad, >, <
+        $call find_swaps, >, <
+    return -1
+    subcode: find_i_bad(l, g)
+        $for i=1:N
+            $if L[i-1] $(g) L[i]
+                $if i==1
+                    i_bad=0
+                    too_left=true
+                $elif L[i-2] $(l) L[i]
+                    i_bad=i-1
+                    too_left=true
+                $else
+                    i_bad=i
+                    too_left=false
+
+        $dump i_bad, too_left
+
+    subcode: find_swaps(l, g)
+        $if too_left
+            $for i=i_bad+1:N
+                $if L[i_bad] $(l)= L[i]
+                    return i-i_bad-1-n_eq
+                $elif L[i-1]==L[i]
+                    n_eq++
+        $else
+            $for i=i_bad-1 downto 0
+                $if L[i_bad] $(g)= L[i]
+                    return i_bad-i-1-n_eq
+                $elif L[i+1]==L[i]
+                    n_eq++
+

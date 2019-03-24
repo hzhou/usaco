@@ -1,0 +1,91 @@
+include: ../../usaco.def
+
+page: perimeter_silver, basic_frame
+    module: cpp
+
+    $global int N, char* grid
+    &call open_In
+        $call scan_int, N
+        grid = new char[N*N+1]
+        $for i=0:N
+            fscanf(In, "%s", grid+i*N)
+
+    # ----------------------------
+    $my $(T_vn2) region_list
+    $call init_cache
+
+    i_next = 0
+    $while 1
+        $while i_next<N*N && cache[i_next]==0
+            i_next++
+        $if i_next>=N*N
+            break
+
+        $call find_region
+        # $dump area, perimeter
+
+    $my int max_area=0
+    $my int min_perimeter
+    $foreach it in region_list
+        $if max_area < it.first
+            max_area = it.first
+            min_perimeter = it.second
+        $elif max_area == it.first
+            $if min_perimeter > it.second
+                min_perimeter = it.second
+
+    # ----------------------------
+    &call open_Out
+        $print "%d %d", max_area, min_perimeter
+
+
+subcode: init_cache
+    $my int cache[N*N]
+    $for i=0:N*N
+        $if grid[i]=='#'
+            cache[i] = 1
+        $else
+            cache[i] = 0
+
+subcode: find_region
+    $my int area = 0
+    $my int perimeter= 0
+
+    $my $(T_vn) stack
+    stack.push_back(i_next)
+    cache[i_next]=0
+
+    $while stack.size()>0
+        k = stack.back()
+        stack.pop_back()
+
+        area++
+
+        $call get_adj
+        perimeter += 4-n
+        $for i=0:n
+            j = P[i]
+            $if grid[j] == '.'
+                perimeter++
+            $elif cache[j]
+                cache[j]=0
+                stack.push_back(j)
+    region_list.push_back( {area, perimeter} )
+
+    subcode: get_adj
+        i = k / N
+        j = k % N
+
+        $my int P[4]
+        $my n = 0
+
+        $if i>0
+            P[n++] = k-N
+        $if i+1<N
+            P[n++] = k+N
+        $if j>0
+            P[n++] = k-1
+        $if j+1<N
+            P[n++] = k+1
+
+

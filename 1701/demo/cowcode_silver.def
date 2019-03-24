@@ -1,0 +1,30 @@
+include: ../../usaco.def
+page: cowcode_silver, basic_frame
+    module: cpp
+
+    &call open_In
+        $my char S[32], long long N
+        fscanf(In, "%s %lld", S, &N)
+    $include <cstring>
+    $my int len = strlen(S)
+    $dump S, N, len
+
+    $my n, j: long long 
+    n = len
+    $while n<N
+        n*=2
+    # now n>=N
+    j = N-1
+
+    $while n>len
+        # $dump n, j
+        n /= 2
+        # track new j position
+        $if j>=n
+            j -= n
+            j --
+            $if j<0
+                j=n-1
+    # $dump j, n, S[j]
+    &call open_Out
+        $print "%c", S[j]

@@ -1,0 +1,38 @@
+include: ../../usaco.def
+page: cownomics_bronze, basic_frame
+    module: cpp
+
+    &call open_In
+        $my N, M: int
+        $call scan_int, N, M
+        $dump N, M
+
+        $my char spotty[N][M+1]
+        $my char plain[N][M+1]
+        $for i=0:N
+            fscanf(In, "%s", spotty[i])
+        $for i=0:N
+            fscanf(In, "%s", plain[i])
+
+    $my count = 0
+    $for j=0:M
+        $my char ACTG[4]={0,0,0,0}
+        $for i=0:N
+            ACTG[ACTG_idx(spotty[i][j])]++
+
+        $my flag=true
+        $for i=0:N
+            $if ACTG[ACTG_idx(plain[i][j])]
+                flag=false
+                break
+        $if flag
+            count++
+
+    $dump count
+    &call open_Out
+        $print $count
+
+fncode: ACTG_idx(char ch)
+    $(for:A,C,T,G and 0,1,2,3)
+        $if ch=='$1'
+            return $2

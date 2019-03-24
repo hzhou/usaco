@@ -1,0 +1,67 @@
+include: ../../usaco.def
+
+page: lasers_gold, basic_frame
+    module: cpp
+    &call open_In
+        $call scan_Int, N, xL, yL, xB, yB
+        $my int X[N], int Y[N]
+        $for i=0:N
+            $call scan_int, X[i], Y[i]
+
+    $my std::multimap<int,int> Mx
+    $my std::multimap<int,int> My
+    $for i=0:N
+        Mx.insert(std::pair<int,int>(X[i], i))
+        My.insert(std::pair<int,int>(Y[i], i))
+
+    $(set:B=1000000000)
+    $call @init_cache
+    $my $(T_vn) Q
+    $call push, Q, yL   # Horizontal @ y
+    $call push, Q, xL+$(B)   # Vertical   @ x
+
+    count = 0
+    $while Q.size()>0
+        $my $(T_vn) Q2
+        $foreach n in Q
+            $if count<3
+                $dump count, n
+            $if n<$(B)
+                $if n==yB
+                    goto done
+                &call each_My, n
+                    $call push, Q2, $(x)+$(B)
+            $else
+                $if n==xB+$(B)
+                    goto done
+                &call each_Mx, n-$(B)
+                    $call push, Q2, $(y)
+        count++
+        Q=Q2
+    count = -1
+    done:
+        $dump count
+    &call open_Out
+        $print $count
+
+    subcode: init_cache
+        $my $(T_uset) cache
+
+    subcode: push(Q, x)
+        $if cache.count($(x))==0
+            $(Q).push_back($(x))
+            cache.insert($(x))
+
+    subcode: each_Mx(x)
+        $my auto r = Mx.equal_range($(x))
+        $for auto it=r.first; it!=r.second; ++it
+            $(set:i=it->second)
+            $(set:y=Y[$(i)])
+            BLOCK
+
+    subcode: each_My(y)
+        $my auto r = My.equal_range($(y))
+        $for auto it=r.first; it!=r.second; ++it
+            $(set:i=it->second)
+            $(set:x=X[$(i)])
+            BLOCK

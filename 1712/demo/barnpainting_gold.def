@@ -1,0 +1,72 @@
+include: ../../usaco.def
+
+page: barnpainting_gold, basic_frame
+    module: cpp
+    namespace: std
+
+    &call open_In
+        $local N, K: int
+        $call scan_int, N, K
+        # $dump N, K
+
+        $include <vector>
+        $struct node
+            int flag
+            int c[3]
+            vector<int> L
+
+        $my node nodes[N]
+        $for i=0:N
+            nodes[i].flag=0
+        $for _i=0:N-1
+            $my i, j
+            $call scan_int, i, j
+            i--
+            j--
+            # $dump i, j
+            nodes[i].L.push_back(j)
+            nodes[j].L.push_back(i)
+        $for _i=0:K
+            $my i, j
+            $call scan_int, i, j
+            i--
+            j--
+            # $dump(K) i, j
+            $for c=0:3
+                $if c!=j
+                    nodes[i].flag |= (1<<c)
+                    nodes[i].c[c] = 0
+
+    # $call debug_nodes
+    # ----------
+    n = 0
+    $for c=0:3
+        n += get_cnt(nodes, 0, -1, c)
+    n %= (1000000007)
+    &call open_Out
+        $print $n
+
+    subcode: debug_nodes
+        $for i=0:N
+            printf( "[%lu] - 0x%x\n", nodes[i].L.size(), nodes[i].flag)
+
+
+fncode: get_cnt(node* nodes, i, int parent, int color): int
+    # $print get_cnt - $i - $color ...
+    $if nodes[i].flag & (1<<color)
+        return nodes[i].c[color]
+    n = 1
+    $foreach j in nodes[i].L
+        $if j!=parent
+            $my int n2 = 0
+            $for _i=0:3
+                $if _i!=color
+                    n2+=get_cnt(nodes, j, i, _i)
+            n=((long long)n*n2) % (1000000007)
+    nodes[i].flag |= (1<<color)
+    nodes[i].c[color] = n
+    # $dump(get_cnt) i, color, n
+    return n
+            
+
+

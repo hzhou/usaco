@@ -1,0 +1,23 @@
+include: ../../usaco.def
+page: lostcow_bronze, basic_frame
+    module: cpp
+
+    &call open_In
+        $my x, y: int
+        $call scan_int, x, y
+        $dump x, y
+
+    n = 0
+    step = 1
+    dist = 0
+    $while (x < y && x+step<y) || (x>y && x+step>y)
+        dist += abs(step)*2
+        n++
+        step*=-2
+    dist += abs(x-y)
+
+    $dump dist
+
+    &call open_Out
+        $print $dist
+

@@ -1,0 +1,96 @@
+include: ../../usaco.def
+page: dining_gold, basic_frame
+    module: cpp
+    namespace: std
+
+    &call open_In
+        # $global N,M,K:int
+        $call scan_Int, N,M,K
+        $dump N, M, K
+
+        $struct(edge) int a, int b, int t
+        $my struct edge edge_list[M]
+        $for i=0:M
+            $call scan_Int, a,b,t
+            edge_list[i]={a-1,b-1,t}
+
+        $struct(hay) int i, int bonus
+        $my struct hay hay_list[K]
+        $for i=0:K
+            $call scan_Int, a, t
+            hay_list[i]={a-1,t}
+
+    $call @cache_Edges
+    $call find_dist, dist
+
+    $my has_neg=false
+    edge2_list[N-1].clear()
+    $for i=0:K
+        $(set:i=hay_list[i].i)
+        $if dist[$(i)]-hay_list[i].bonus<0
+            has_neg=true
+            break
+        edge2_list[N-1].push_back((struct edge2){$(i), dist[$(i)]-hay_list[i].bonus})
+
+    $if has_neg
+        &call open_Out
+            $for i=0:N-1
+                $print 1
+    $else
+        $call find_dist, dist2
+        &call open_Out
+            $for i=0:N-1
+                $print "%d", dist2[i]<=dist[i]
+
+    subcode: cache_Edges
+        $struct(edge2) int b, int t
+        $my std::vector<struct edge2> edge2_list[N]
+        $for i=0:M
+            $(set:E=edge_list[i].$1)
+            edge2_list[$(E:a)].push_back((struct edge2){$(E:b), $(E:t)})
+            edge2_list[$(E:b)].push_back((struct edge2){$(E:a), $(E:t)})
+
+#---------------------------------------- 
+subcode: find_dist(dist)
+    $my int $(dist)[N]
+    $for i=0:N
+        $(dist)[i] = 1000000000
+    $(dist)[N-1]=0
+
+    $(set:set=1)
+    $call @init_stack
+    $call @push, N-1
+    $while !stack.empty()
+        # $call @stack_sort
+        $call @pop, i
+        $foreach e in edge2_list[i]
+            $(set:b=e.b)
+            $(set:t=e.t)
+            $if $(dist)[$(b)]>$(dist)[i]+$(t) && $(b)<N-1
+                $(dist)[$(b)]=$(dist)[i]+$(t)
+                $call @push, $(b)
+
+    subcode: init_stack
+        $(if:set)
+            $local set<pair<int, int> > stack
+        $(else)
+            $local std::vector<int> stack
+
+    subcode: push(i)
+        $(if:set)
+            stack.insert(make_pair($(dist)[$(i)], $(i)))
+        $(else)
+            stack.push_back($(i))
+
+    subcode: pop(i)
+        $(if:set)
+            $(i) = stack.begin()->second
+            stack.erase(stack.begin())
+        $(else)
+            $(i) = stack.back()
+            stack.pop_back()
+
+    subcode: stack_sort
+        &call stl_sort, stack, int
+            return $(dist)[a]>$(dist)[b]
+

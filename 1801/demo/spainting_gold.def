@@ -1,0 +1,48 @@
+include: ../../usaco.def
+page: spainting_gold, basic_frame
+    module: cpp
+    MOD: ($1 + 1000000007) % 1000000007
+
+    &call open_In
+        $call scan_Int, N, M, K
+
+    $(if:0)
+        $call try_1
+    $(else)
+        $call try_2
+
+    $my long long n = 1
+    $for i=0:N
+        n = $(MOD:n*M)
+
+    n = $(MOD:n-dp)
+    $dump n
+    &call open_Out
+        $print $n
+
+subcode: try_1
+    $my long long dp[1000001]
+    dp[0]=1
+    $for i=1:K
+        dp[i]=$(MOD:dp[i-1]*M)
+    $for i=K:N+1
+        # dp[i]: ways of i blocks no K contiguous colors
+        $my long long n = 0
+        $for j=1:K
+            n=$(MOD:n+dp[i-j])
+        dp[i] = $(MOD:n*(M-1))
+    $my long long dp = dp[N]
+
+
+subcode: try_2
+    $my long long S[1000001]
+    $my long long dp = 1
+    S[0] = 1
+    $for i=1:K
+        dp = $(MOD:dp*M)
+        S[i] = $(MOD:S[i-1]+dp)
+    $for i=K to N
+        S[i] = $(MOD:S[i-1]*M - S[i-K]*(M-1))
+
+    dp = S[N] - S[N-1]
+

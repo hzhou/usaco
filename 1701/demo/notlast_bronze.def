@@ -1,0 +1,53 @@
+include: ../../usaco.def
+page: notlast_bronze, basic_frame
+    module: cpp
+
+    &call open_In
+        $local int N
+        $call scan_int, N
+        $dump N
+
+        $global int milk[7]
+        $for i=0:7
+            milk[i]=0
+        $for i=0:N
+            $my char name[10]
+            $my n
+            fscanf(In, "%s %d", name, &n)
+            $my int i_cow = get_cow_id(name)
+            milk[i_cow]+=n
+            # $dump i_cow, n, milk[i_cow]
+
+    $local int P[7]
+    $for i=0:7
+        P[i] = i
+    &call std_sort, P, 7, int 
+        return milk[a]<milk[b]
+
+    &call open_Out
+        $if milk[P[6]] == milk[P[0]]
+            $print Tie
+        $else
+            $for i=1:7
+                $if milk[P[i]] > milk[P[i-1]]
+                    $if i==6 || milk[P[i]]<milk[P[i+1]]
+                        $print "%s", cows[P[i]]
+                    $else
+                        $print Tie
+                    break
+
+fncode: get_cow_id(char* name): int
+    $local std::string s = name
+
+    $global int last_id=0
+    $include <unordered_map>
+    $global std::unordered_map<std::string, int> M
+    $global char cows[7][10]
+    $if M.count(s)
+        return M[s]
+    $else
+        M[s]=last_id
+        strcpy(cows[last_id], name)
+        last_id++
+        return M[s]
+

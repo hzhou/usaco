@@ -1,0 +1,50 @@
+include: ../../usaco.def
+page: convention2_silver, basic_frame
+    module: cpp
+
+    $my int N
+    &call open_In
+        $call scan_int, N
+        $dump N
+
+        $struct(T) int i, int a, int t
+        $my T cows[N]
+        $for i=0:N
+            $call scan_int, cows[i].a, cows[i].t
+            cows[i].i = i
+
+    &call std_sort, cows, N, T
+        return a.a<b.a
+
+    $my int max = 0
+    $my int t = cows[0].a+cows[0].t
+    i = 1
+    $while i<N
+        $while cows[i].t == 0
+            i++
+
+        $my int min_i = N
+        $my int min_j = 0
+        $for j=i:N
+            $if cows[j].a>t
+                break
+            $if cows[j].t == 0
+                continue
+            $if min_i > cows[j].i
+                min_i = cows[j].i
+                min_j = j
+
+        # $dump i, t, min_j
+        $if min_j==0
+            t = cows[i].a + cows[i].t
+            cows[i].t=0
+        $else
+            $if max < t-cows[min_j].a
+                max = t-cows[min_j].a
+            t += cows[min_j].t
+            cows[min_j].t = 0
+
+    $dump max
+
+    &call open_Out
+        $print $max

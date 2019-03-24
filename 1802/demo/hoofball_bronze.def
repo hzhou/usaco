@@ -1,0 +1,59 @@
+include: ../../usaco.def
+page: hoofball_bronze, basic_frame
+    module: cpp
+    namespace: std
+
+    &call open_In
+        $my int N
+        $call scan_int, N
+        $my int X[N]
+        $for i=0:N
+            $call scan_int, X[i]
+
+    &call std_sort, X, N, int
+        return a<b
+
+    $call dump_array, X, N
+    $my int D[N]
+    D[0]=0
+    $for i=1:N
+        D[i] = X[i]-X[i-1]
+    $call dump_array, D, N
+
+    # Rather tricky, think it through
+    $my cnt = 0, j=0
+    j = 1
+    $while j<N
+        $dump j, X[j-1], D[j], cnt
+        $if j==N-1
+            cnt++
+            break
+        $elif D[j]>D[j+1]
+            $if j>1 && D[j]>=D[j-1]
+                cnt++
+                j++
+            $else
+                cnt ++
+                $while j<N-1 && D[j] > D[j+1]
+                    j++
+                $if j==N-2
+                    cnt++
+                    break
+                $else
+                    j+=2 # D[j+1] is broken
+        $else # D[j]<=D[j+1]
+            cnt ++ 
+            $while j<N-1 && D[j] <= D[j+1]
+                j++
+            j+=1
+
+    &call open_Out
+        $print $cnt
+
+subcode: dump_array(L, N)
+    $print "$(L)[%d]: -", $(N)
+    $for _i=0:$(N)
+        $print "%3d -", $(L)[_i]
+    $print
+
+

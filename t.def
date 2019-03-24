@@ -1,0 +1,34 @@
+include: usaco.def
+include: perm.def
+
+page: t, basic_frame
+    module: cpp
+
+    $call test_perm
+
+subcode: test_perm
+    $(set:N=10)
+    $(if:0)
+        $my int L[$(N)]
+        $for i=0:$(N)
+            L[i] = rand()
+    $(else)
+        # example from Knuth 5.1.1
+        $(set:N=9)
+        $my int L[$(N)]={5, 9, 1, 8, 2, 6, 4, 7, 3}
+    $call dump_array, L, $(N)
+    $call get_P_array, L, $(N)
+    $call dump_array, P, $(N)
+
+    $call get_I_array, P, $(N)
+    $call dump_array, I, $(N)
+
+subcode: test_fenwick
+    &call fenwick, 10
+        $call init_C
+        $call add, 3, 1
+        $call add, 7, 1
+        $for i=0:$(N)
+            $call get_sum, i
+            $dump i, sum
+

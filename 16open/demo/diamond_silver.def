@@ -1,0 +1,53 @@
+include: ../../usaco.def
+page: diamond_silver, basic_frame
+    module: cpp
+
+    &call open_In
+        $global N, K:int
+        $call scan_int, N, K
+
+        $my int L[N]
+        $for i=0:N
+            $call scan_int, L[i]
+
+    &call std_sort, L, N, int
+        return a<b
+
+    $my int cache[N]
+    $for i=0:N
+        i_next = binary_search(L, i)
+        cache[i] = i_next
+
+    $my int maxes[N]
+    $my int max = 1
+    $for i=N-1 downto 0
+        $if max < cache[i]-i
+            max = cache[i]-i
+        maxes[i] = max
+
+    max = 1
+    $for i=0:N
+        i_next = binary_search(L, i)
+        $my count = i_next-i + maxes[i_next]
+        $if max < count
+            max = count
+
+    &call open_Out
+        $print $max
+
+fncode: binary_search(int * L, i)
+    $my int t = L[i]
+    i1 = i
+    i2 = N-1
+
+    $if L[N-1]-t<=K
+        return N
+
+    $while i1<=i2
+        i3 = (i1+i2)/2
+        $if L[i3]-t<=K
+            i1 = i3+1
+        $else
+            i2 = i3-1
+    return i1
+

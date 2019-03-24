@@ -1,0 +1,35 @@
+include: ../../usaco.def
+page: sort_silver, basic_frame
+    module: cpp
+
+    &call open_In
+        $my int N
+        $call scan_int, N
+        $global int * A
+        A= new int[N]
+        $for i=0:N
+            $call scan_int, A[i]
+
+    $dump N
+
+    $my int B[N]
+    $for i=0:N
+        B[i]=i
+
+    &call std_sort, B, N, int
+        return A[a]<A[b]
+
+    # $call dump_array, B, N
+
+    $my n_max=1
+    $for i=0:N
+        $if B[i]>i
+            j = i
+            $while A[B[j]]==A[B[j+1]]
+                j++
+            $if n_max < B[i]-j+1
+                n_max = B[i]-j+1
+
+    $dump n_max
+    &call open_Out
+        $print $n_max

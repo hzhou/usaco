@@ -1,0 +1,38 @@
+include: ../../usaco.def
+page: lifeguards_bronze, basic_frame
+    module: cpp
+    namespace: std
+
+    $local int N
+    &call open_In
+        $call scan_int, N
+        $struct(item) int t1, int t2
+        $my item L[N]
+        $for i=0:N
+            $call scan_int, L[i].t1, L[i].t2
+
+        &call sort, L, N, item
+            return a.t1<b.t1
+
+    $my int g_max=0
+    $for _i=0:N
+        $my int l = 0, int t = L[0].t1
+        $for i=0:N
+            $if i!=_i
+                $my int t1 = L[i].t1
+                $if t1 < t
+                    t1 = t
+
+                $if L[i].t2>t
+                    t = L[i].t2
+                    l += t-t1
+        $if g_max<l
+            g_max=l
+    &call open_Out
+        $print $g_max
+
+
+
+
+
+

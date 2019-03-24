@@ -1,0 +1,41 @@
+include: ../../usaco.def
+page: teamwork_gold, basic_frame
+    module: cpp
+
+    &call open_In
+        $call scan_Int, N, K
+        $dump N, K
+
+        $my int Skills[N]
+        $for i=0:N
+            $call scan_int, Skills[i]
+
+    $my int sum[N]
+    sum[0]=Skills[0]
+
+    $my int maxes[K+1]
+    maxes[1]=Skills[0]
+    $for i=1:N
+        $for j=K downto 1
+            maxes[j]=maxes[j-1]
+        maxes[1]=Skills[i]
+        $for j=2:K+1
+            $if maxes[j]<Skills[i]
+                maxes[j]=Skills[i]
+
+        $my int max = 0
+        $for j=1:K+1
+            $my int t
+            $if i-j<-1
+                break
+            $elif i-j==-1
+                t = maxes[j]*j
+            $else
+                t = sum[i-j]+maxes[j]*j
+            $if max<t
+                max=t
+        sum[i] = max
+        # $dump i, sum[i]
+
+    &call open_Out
+        $print "%d", sum[N-1]

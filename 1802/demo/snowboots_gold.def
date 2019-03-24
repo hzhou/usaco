@@ -1,0 +1,88 @@
+include: ../../usaco.def
+page: snowboots_gold, basic_frame
+    module: cpp
+
+    &call open_In
+        $my N, B: int
+        $call scan_int, N, B
+
+        $my int D[N]
+        $for i=0:N
+            $call scan_int, D[i]
+
+        $my int s[B], int d[B]
+        $for i=0:B
+            $call scan_int, s[i], d[i]
+    # ------------------------------ 
+    $my int Ans[B]
+    $(if:1)
+        $call try_1
+    $(else)
+        $call try_2
+
+    # ------------------------------- 
+    &call open_Out
+        $for j=0:B
+            $print ${Ans[j]}
+
+#---------------------------------------- 
+# Boots fails at either s too small OR d too small
+# INVERSE: A barrier blocks if both S AND D are big enough
+
+subcode: try_2
+    $call P_sort, P_N, N, D
+    $call P_sort, P_B, B, s
+
+    # double link list
+    $my int L[N], int R[N]
+    $for i=0:N
+        L[i]=i-1
+        R[i]=i+1
+
+    # maximum link distance
+    $my int max_d = 1
+
+    # At each boot threshold, remove links that are too deep
+    i = 0
+    $for j=0:B
+        $(set:j=P_B[j])
+        $(set:i=P_N[i])
+        $while D[$(i)] > s[$(j)]; i++
+            # remove link $(i)
+            R[L[$(i)]] = R[$(i)]
+            L[R[$(i)]] = L[$(i)]
+            n_dist = R[$(i)] - L[$(i)]
+            $if max_d < n_dist
+                max_d = n_dist
+        $if d[$(j)] < max_d
+            Ans[$(j)] = 0
+        $else
+            Ans[$(j)] = 1
+
+    # Permutation sort
+    subcode: P_sort(P, N, val)
+        $my int $(P)[$(N)]
+        $for i=0:$(N)
+            $(P)[i]=i
+        &call std_sort, $(P), $(N), int
+            return $(val)[b] < $(val)[a]
+
+#---------------------------------------- 
+# One pair at a time, O(N2)
+subcode: try_1
+    $for j=0:B
+        i= 0
+        $while 1
+            # One step at a time
+            $for k = d[j] downto 1
+                $if i+k>=N-1
+                    Ans[j] = 1
+                    goto done_with_j
+                $if D[i+k]<=s[j]
+                    i = i+k
+                    goto done_with_this_step
+            failed:
+            Ans[j]=0
+            goto done_with_j
+            done_with_this_step: ;
+        done_with_j: ;            

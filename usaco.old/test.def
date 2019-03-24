@@ -1,0 +1,62 @@
+page: test
+    module: perl
+    arg: 1712_jasmine/measurement_silver.java
+    arg: 1712_demo
+    # arg: 1712_alex/measurement.py
+
+    my @files
+    my $dir=$ARGV[0]
+
+    $if -f $dir and $dir=~/(.*)\/(\w+)\.(cpp|java|py)/
+        @files = $dir
+        $dir = $1
+    $elif -d $dir
+        @files=glob("$dir/*.*")
+    $else
+        die "Usage: $0 [dir]\n"
+
+    $foreach $a in @files
+        $if $a=~/(\w+)\.(cpp|java|py)/ -> $name, $ext
+            $print $name ...
+            $if -d "t"
+                system "rm -rf t"
+            mkdir "t"
+            chdir "t"
+            $if $name!~/(bronze|silver|gold|platinum)/
+                system "unzip -qq ../$name\_bronze_*.zip"
+            $else
+                system "unzip -qq ../$name\_*.zip"
+            # system "ls"
+            $name=~s/_(bronze|silver|gold|platinum)$//
+            $call @do_test
+            chdir ".."
+
+    subcode: do_test
+        $case $ext eq "cpp"
+            system "g++ -std=c++0x -O2 -o a ../$a -lm"
+            $if -f "a"
+                &call each_test
+                    system "./a >/dev/null"
+        $case $ext eq "java"
+            system "cp ../$a $name.java"
+            system "javac  $name.java"
+            $if -f "$name.class"
+                &call each_test
+                    system "java $name >/dev/null"
+        $case $ext eq "py"
+            &call each_test
+                system "python ../$a >/dev/null"
+
+        subcode: each_test
+            $use Time::HiRes qw(time)
+            $for $i=1:100
+                $if -f "$i.in"
+                    system "cp $i.in $name.in"
+                    my $start = time()
+                    $print "    test $i ...-"
+                    BLOCK
+                    my $end = time()
+                    $print "%.2f seconds", $end-$start
+                    system "diff $name.out $i.out "
+                $else
+                    last

@@ -1,0 +1,38 @@
+include: ../../usaco.def
+include: ../../perm.def
+page: circlecross_gold, basic_frame
+    module: cpp
+
+    &call open_In
+        $call scan_Int, N
+        $my int point_list[N*2]
+        $for i=0:N*2
+            $call scan_int, point_list[i]
+            point_list[i] --
+
+    count = 0
+    $my $(T_umap) M
+
+    &call fenwick, N*2
+        $call init_C
+
+        $for i=0:N*2
+            $(set:cow=point_list[i])
+            $if M.count($(cow)) == 0
+                $call get_sum, i
+                M[$(cow)] = i
+                $call add, i, 1
+            $else
+                $block
+                    $call get_sum, i
+                    count += sum
+                $block
+                    $call get_sum, M[$(cow)]
+                    count -= sum
+                $call add, M[$(cow)], -1
+                M.erase($(cow))
+
+    $dump count
+    &call open_Out
+        $print $count
+

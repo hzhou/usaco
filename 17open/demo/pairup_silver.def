@@ -1,0 +1,36 @@
+include: ../../usaco.def
+page: pairup_silver, basic_frame
+    module: cpp
+
+    &call open_In
+        $my int N
+        $call scan_int, N
+
+        $struct(Cows) int count, int milk
+        $my struct Cows A[N]
+        $for i=0:N
+            $call scan_int, A[i].count, A[i].milk
+
+    &call std_sort, A, N, Cows
+        return a.milk < b.milk
+
+    $my int Max = 0
+    i1=0
+    i2=N-1
+    $while i1<=i2
+        $my int t = A[i1].milk+A[i2].milk
+        $if Max<t
+            Max=t
+        $if A[i1].count==A[i2].count
+            i1++
+            i2--
+        $elif A[i1].count>A[i2].count
+            A[i1].count-=A[i2].count
+            i2--
+        $elif A[i2].count>A[i1].count
+            A[i2].count-=A[i1].count
+            i1++
+
+    &call open_Out
+        $print $Max
+

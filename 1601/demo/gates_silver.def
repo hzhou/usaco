@@ -1,0 +1,52 @@
+include: ../../usaco.def
+page: gates_silver, basic_frame
+    module: cpp
+
+    $my int N
+    &call open_In
+        $call scan_int, N
+
+        $my char str[N+1]
+        fscanf(In, "%s", str)
+
+    R = 1000*2
+    $my std::unordered_map<int, int> Point
+
+    n_region=0
+    k = 0
+    # Point[0]=0
+    $for i=0:N
+        $call @get_k_dir
+        $if Point.count(k)
+            # $dump i, str[i], dir, Point[k]
+            $if (Point[k]&dir)==0
+                n_region++
+
+        Point[k_prev] |= dir2
+        Point[k] |= dir
+
+    n_gate = n_region 
+    $dump n_gate
+    &call open_Out
+        $print $n_gate
+
+    subcode: get_k_dir
+        k_prev = k
+        $local int dir, int dir2
+        $if str[i]=='N'
+            k+=R
+            dir = 1
+            dir2 = 4
+        $elif str[i]=='E'
+            k++
+            dir = 2
+            dir2 = 8
+        $elif str[i]=='S'
+            k-=R
+            dir = 4
+            dir2 = 1
+        $elif str[i]=='W'
+            k--
+            dir = 8
+            dir2 = 2
+

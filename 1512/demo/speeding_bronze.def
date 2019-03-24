@@ -1,0 +1,45 @@
+include: ../../usaco.def
+page: speeding_bronze, basic_frame
+    module: cpp
+
+    &call open_In
+        $local N, M: int
+        $call scan_int, N, M
+        $dump N, M
+
+        $my int seg_l[N]
+        $my int seg_v[N]
+        $for i=0:N
+            $call scan_int, seg_l[i], seg_v[i]
+
+        $my int car_l[M]
+        $my int car_v[M]
+        $for i=0:M
+            $call scan_int, car_l[i], car_v[i]
+
+    i_seg=0
+    i_car=0
+    $my int x_seg = 0
+    $my int x_car = 0
+
+    $my int max_over = 0
+    $while i_car<M
+        $if max_over < car_v[i_car] - seg_v[i_seg]
+            max_over = car_v[i_car] - seg_v[i_seg]
+
+        $if x_car + car_l[i_car] == x_seg + seg_l[i_seg]
+            $map inc_, car, seg
+        $elif x_car + car_l[i_car] < x_seg + seg_l[i_seg]
+            $map inc_, car
+        $else
+            $map inc_, seg
+
+    subcode: inc_(car)
+        x_$(car)+=$(car)_l[i_$(car)]
+        i_$(car)++
+
+    $dump max_over
+    &call open_Out
+        $print $max_over
+
+

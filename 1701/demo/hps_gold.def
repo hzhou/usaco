@@ -1,0 +1,81 @@
+include: ../../usaco.def
+page: hps_gold, basic_frame
+    module: cpp
+
+    &call open_In
+        $call scan_Int, N, K
+        $my char FJ[N+1]
+        $for i=0:N
+            fscanf(In, "%s", FJ+i)
+            $if FJ[i]=='H'
+                FJ[i]=0
+            $elif FJ[i]=='P'
+                FJ[i]=1
+            $else
+                FJ[i]=2
+
+    $call try_2
+
+subcode: try_2
+    $global int C_NKs[21][100001][3]
+    $for i=1:N+1
+        $for k=0:K+1
+            $for state=0:3
+                $(set:win=(FJ[i-1]==state?1:0))
+                $if k==0
+                    C_NKs[k][i][state] = C_NKs[k][i-1][state]+$(win)
+                $else
+                    $call max3, C_NKs[k][i-1][state], C_NKs[k-1][i-1][(state+1)%3], C_NKs[k-1][i-1][(state+2)%3]
+                    C_NKs[k][i][state] = n + $(win)
+
+    $call max3, C_NKs[K][N][0], C_NKs[K][N][1], C_NKs[K][N][2]
+    &call open_Out
+        $print $n
+
+    subcode: max3(a, b, c)
+        n = $(a)
+        $if n<$(b)
+            n=$(b)
+        $if n<$(c)
+            n=$(c)
+subcode: try_1
+    # ----------------
+    $my int cnts[3][N+1]
+    $for j=0:3
+        cnts[j][0]=0
+    cnts[FJ[0]][0]++
+    $for i=1:N+1
+        $for j=0:3
+            cnts[j][i]=cnts[j][i-1]
+        cnts[FJ[i-1]][i]++
+    # ----------------
+    # $my int C_NK[K+1][N+1]
+    $global int C_NK[21][100001]
+
+    C_NK[0][0] = 0
+    $for j=1:N+1
+        $call get_max_n, 0, j
+        C_NK[0][j] = n
+
+    $for k=1:K+1
+        C_NK[k][0] = 0
+        $for j=1:N+1 # j stones, k switches
+            n_tmp = C_NK[k-1][j] # j stones, k-1 switches
+            $for i=0:j
+                $call get_max_n, i, j
+                $if n_tmp < C_NK[k-1][i] + n
+                    n_tmp = C_NK[k-1][i] + n
+            C_NK[k][j] = n_tmp
+
+    $dump C_NK[K][N]
+    &call open_Out
+        $print "%d", C_NK[K][N]
+
+    # ------------------
+    subcode: get_max_n(i, j)
+        $(set:C=cnts[$1][$(j)]-cnts[$1][$(i)])
+        n = $(C:0)
+        $if n < $(C:1)
+            n = $(C:1)
+        $elif n < $(C:2)
+            n = $(C:2)

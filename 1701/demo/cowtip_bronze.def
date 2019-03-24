@@ -1,0 +1,32 @@
+include: ../../usaco.def
+page: cowtip_bronze, basic_frame
+    module: cpp
+
+    &call open_In
+        $my int N
+        $call scan_int, N
+        $dump N
+
+        $my int grid[N*N]
+        $for i=0:N
+            $my char s[12]
+            fscanf(In, "%s", s)
+            $for j=0:N
+                grid[i*N+j]=s[j]-'0'
+
+    n = 0
+    $for i=N-1 downto 0
+        $for j=N-1 downto 0
+            $if grid[i*N+j]
+                n++
+                $call flip
+
+    &call open_Out
+        $print $n
+
+    subcode: flip
+        $for i2=0 to i
+            $for j2=0 to j
+                k = i2*N+j2
+                grid[k] = 1 - grid[k]
+

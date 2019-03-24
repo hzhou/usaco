@@ -1,0 +1,59 @@
+include: ../../usaco.def
+# same as bronze
+page: lifeguards_silver, basic_frame
+    module: cpp
+    namespace: std
+
+    $local int N
+    &call open_In
+        $call scan_int, N
+        $struct(item) int t1, int t2
+        $my item L[N]
+        $for i=0:N
+            $call scan_int, L[i].t1, L[i].t2
+
+        &call std_sort, L, N, item
+            return a.t1<b.t1
+
+    # ---- get total coverage time in l ------
+    $my int l = 0, int t = L[0].t1
+    $for i=0:N
+        $my int t1 = L[i].t1
+        $if t1 < t
+            t1 = t
+
+        $if L[i].t2>t
+            t = L[i].t2
+            l += t-t1
+
+    # ---- find minimum time loss
+    $my int g_min=1000000000
+    t = 0
+    $for i=0:N
+        $if L[i].t1<t
+            L[i].t1 = t
+        $my int l2
+        $if i+1<N && L[i+1].t1<L[i].t2
+            l2 = L[i+1].t1 - L[i].t1
+        $else
+            l2 = L[i].t2 - L[i].t1
+
+        $if l2<=0
+            g_min = 0
+            break
+
+        $if g_min > l2
+            g_min = l2
+
+        t = L[i].t2
+
+    l-=g_min
+    $dump l
+    &call open_Out
+        $print $l
+
+
+
+
+
+

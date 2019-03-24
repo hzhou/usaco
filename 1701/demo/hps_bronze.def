@@ -1,0 +1,28 @@
+include: ../../usaco.def
+page: hps_bronze, basic_frame
+    module: cpp
+
+    $local int N
+    &call open_In
+        $call scan_int, N
+        $dump N
+
+        n_A=0 # 1 2 3
+        n_B=0 # 3 2 1
+
+        $for i=0:N
+            $my int a, int b
+            $call scan_int, a, b
+            $dump i, a, b
+
+            $if a == b+1 || a == b+1-3
+                n_B++
+            $elif a+1 == b || a+1-3==b
+                n_A++
+
+    &call open_Out
+        $if n_A>n_B
+            $print $n_A
+        $else
+            $print $n_B
+

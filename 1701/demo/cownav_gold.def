@@ -1,0 +1,105 @@
+include: ../../usaco.def
+page: cownav_gold, basic_frame
+    module: cpp
+
+    $global int N
+    $global char* grid
+    &call open_In
+        $call scan_int, N
+        grid = new char[N*N]
+        $for i=0:N
+            $my char tmp[N+1]
+            fscanf(In, "%s", tmp)
+            $for j=0:N
+                grid[(N-i-1)*N+j] = tmp[j]
+    $call @backtrack
+    $dump n_ans
+    &call open_Out
+        $print $n_ans
+
+subcode: backtrack
+    $my int N2 = N*N-1
+    $(set:N2=N2)
+
+    # state, d1, k1, k2 -> count*4*400*400
+    # dir: up,right,down,left -> 0, 1, 2, 3
+    $my n_ans=0
+
+    $call @init_cache
+    $call push, 0, 0, 0,0
+
+    $while stack.size()>0
+        $call @pop
+        # $dump n_count, d1, d2, k1, k2
+        n_count++
+
+        $call @left
+        $call @right
+        $call @forward
+
+    subcode: forward
+        $my t_k1,t_k2:int
+        t_k1 = k1
+        t_k2 = k2
+        # forward
+        $if t_k1 < $(N2)
+            k = get_forward(d1, k1)
+            $if grid[k]=='E'
+                t_k1 = k
+        $if t_k2 < $(N2)
+            k = get_forward(d2, k2)
+            $if grid[k]=='E'
+                t_k2 = k
+        $if t_k1==$(N2) && t_k2==$(N2)
+            n_ans = n_count
+            break
+        $call push, n_count, d1, t_k1,t_k2
+
+    subcode: left
+        # left
+        t_d1 = (d1-1+4) % 4
+        $call push, n_count, t_d1, k1,k2
+
+    subcode: right
+        # right
+        t_d1 = (d1+1) % 4
+        $call push, n_count, t_d1, k1,k2
+
+    # -----------------------
+    subcode: init_cache
+        $my std::deque<int> stack
+        $my $(T_uset) cache
+
+    subcode: push(count, d1, k1, k2)
+        tn_key =  $(d1)*160000+$(k1)*400+$(k2)
+        tn_val = $(count)*4*160000+tn_key
+        $if cache.count(tn_key)==0
+            cache.insert(tn_key)
+            stack.push_back(tn_val)
+
+    subcode: pop
+        n = stack.front()
+        stack.pop_front()
+
+        n_count = n/(4*160000)
+
+        $my d1,d2,k1,k2:int
+        d1 = n / 160000 % 4
+        d2 = (d1+1) % 4
+        k1 = n / 400 % 400
+        k2 = n % 400
+
+
+fncode: get_forward(int d, int k)
+    i=k/N
+    j=k%N
+    $if d==0 && i<N-1
+        k+=N
+    $elif d==1 && j<N-1
+        k++
+    $elif d==2 && i>0
+        k-=N
+    $elif d==3 && j>0
+        k--
+    return k
+        

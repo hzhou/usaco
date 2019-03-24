@@ -1,0 +1,50 @@
+include: ../../usaco.def
+page: mootube_silver, basic_frame
+    module: cpp
+    namespace: std
+
+    $global int N, int Q
+    &call open_In
+        $call scan_int, N, Q
+        $my int A[N-1], int B[N-1], int R[N-1]
+        $for i=0:N-1
+            $call scan_int, A[i], B[i], R[i]
+            A[i]--
+            B[i]--
+        $my int V[Q], int K[Q]
+        $for i=0:Q
+            $call scan_int, K[i], V[i]
+            V[i]--
+    # $dump N, Q
+
+    $struct(rel) int i, int r
+    $my vector<rel> Adj[N]
+    $for i=0:N-1
+        # $dump i, A[i], B[i], R[i]
+        Adj[A[i]].push_back({B[i], R[i]})
+        Adj[B[i]].push_back({A[i], R[i]})
+
+    $my int Ans[Q]
+    $for i_q=0:Q
+        i=V[i_q]
+        k=K[i_q]
+
+        $my vector<int> cache
+        cache.resize(N, 0)
+        Ans[i] = get_adj(Adj, i, k, cache) -1
+
+    &call open_Out
+        $for i_q=0:Q
+            $print "%d", Ans[i_q]
+
+fncode: get_adj(vector<rel>* Adj, i, int K, vector<int>& cache)
+    # $dump(____adj) i, K
+    cache[i]=1
+    $my cnt=1
+    $for j=0:Adj[i].size()
+        k = Adj[i][j].i
+        $if cache[k]==0 && Adj[i][j].r>=K
+            cnt += get_adj(Adj, k, K, cache)
+    # $dump(get_adj) i, K, cnt
+    return cnt
+

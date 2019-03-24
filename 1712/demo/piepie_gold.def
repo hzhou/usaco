@@ -1,0 +1,104 @@
+include: ../../usaco.def
+
+page: piepie_gold, basic_frame
+    module: cpp
+    namespace: std
+    
+    $global int N, int D
+    &call open_In
+        $call scan_int, N, D
+        # $dump N, D
+        $struct(item) int val, int val2, int idx
+        $my A= new item[N]
+        $my B= new item[N]
+        $for i=0:N
+            A[i].idx=i
+            $call scan_int, A[i].val, A[i].val2
+        $for i=0:N
+            B[i].idx=i
+            $call scan_int, B[i].val2, B[i].val
+        # $dump A[3], B[3]
+    #---------------------------------------- 
+    &call std_sort, A, N, item
+        return a.val2<b.val2
+    &call std_sort, B, N, item
+        return a.val2<b.val2
+    # $print "%d %d %d", A[1].idx, A[1].val, A[1].val2
+
+    $my R=new int[N*2]
+    $for i=0:N*2
+        R[i]=-1
+    #---------------------------------------- 
+    $include <vector>
+    $my vector<int>* pool = new vector<int>
+    $my vector<int>* temp = new vector<int>
+    $for i=0:N
+        $if A[i].val2 == 0
+            j = A[i].idx
+            R[j]=1
+            pool->push_back(i)
+        $else
+            break
+    #----
+    $for i=0:N
+        $if B[i].val2 == 0
+            j = B[i].idx
+            pool->push_back(i+N)
+            R[j+N]=1
+        $else
+            break
+    #---------------------------------------- 
+    $while pool->size()>0
+        # $call debug_pool
+        $foreach j in *pool
+            $if j<N
+                $call fill_pool_A
+            $else
+                $call fill_pool_B
+
+        swap(pool, temp)
+        temp->clear()
+
+    &call open_Out
+        $for i=0:N
+            $print "%d", R[i]
+
+    subcode: debug_pool
+        n = pool->size()
+        $print [$n]: -
+        $foreach j in *pool
+            $print $j -
+        $print
+        
+    subcode: fill_pool_A
+        $my int val = A[j].val
+        i = bin_search(B, val)
+        $while i>=0 && val-B[i].val2<=D; i--
+            $if R[B[i].idx+N]==-1
+                temp->push_back(i+N)
+                R[B[i].idx+N]=R[A[j].idx]+1
+
+    subcode: fill_pool_B
+        $my int val = B[j-N].val
+        i = bin_search(A, val)
+        $while i>=0 && val-A[i].val2<=D; i--
+            $if R[A[i].idx]==-1
+                temp->push_back(i)
+                R[A[i].idx]=R[B[j-N].idx+N]+1
+
+fncode: bin_search(item* A, int val)
+    i_0=0
+    i_n=N-1
+    $if A[i_0].val2>val
+        return -1
+    $if A[i_n].val2<=val
+        return i_n
+
+    $while i_n>i_0+1
+        i=(i_n+i_0)/2
+        $if A[i].val2 > val
+            i_n = i
+        $else
+            i_0 = i
+    return i_0
+

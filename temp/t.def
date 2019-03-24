@@ -1,0 +1,6 @@
+page: t, basic_frame
+    module: cpp
+
+    $global int A[10]={-1}
+    $for i=0:10
+        $print "%d ", A[i]

@@ -1,0 +1,27 @@
+include: ../../usaco.def
+page: billboard_bronze, basic_frame
+    module: cpp
+    namespace: std
+
+    $my Ax1, Ay1, Ax2, Ay2:int
+    $my Bx1, By1, Bx2, By2:int
+    $my Cx1, Cy1, Cx2, Cy2:int
+    &call open_In,
+        $call scan_int, Ax1, Ay1, Ax2, Ay2
+        $call scan_int, Bx1, By1, Bx2, By2
+
+    $my int area = (Ax2-Ax1)*(Ay2-Ay1)
+    $if Bx1<=Ax1 && Bx2>=Ax2 && (By1<=Ay1 || By2>=Ay2)
+        Cy1 = max(Ay1, By1)
+        Cy2 = min(Ay2, By2)
+        area -= max(0, Cy2-Cy1) * (Ax2-Ax1)
+    $elif By1<=Ay1 && By2>=Ay2 && (Bx1<=Ax1 || Bx2>=Ax2)
+        Cx1 = max(Ax1, Bx1)
+        Cx2 = min(Ax2, Bx2)
+        area -= max(0, Cx2-Cx1) * (Ay2-Ay1)
+
+    &call open_Out
+        $print $area
+
+
+        

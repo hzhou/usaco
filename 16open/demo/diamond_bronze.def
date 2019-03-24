@@ -1,0 +1,24 @@
+include: ../../usaco.def
+page: diamond_bronze, basic_frame
+    module: cpp
+
+    &call open_In
+        $local N, K:int
+        $call scan_int, N, K
+
+        $my int L[N]
+        $for i=0:N
+            $call scan_int, L[i]
+
+    &call std_sort, L, N, int
+        return a<b
+
+    $my int max = 1
+    $for i=0:N
+        $for j=i+1:N
+            $if L[j] - L[i] <= K
+                $if max < j-i+1
+                    max = j-i+1
+
+    &call open_Out
+        $print $max

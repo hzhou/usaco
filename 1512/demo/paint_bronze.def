@@ -1,0 +1,22 @@
+include: ../../usaco.def
+page: paint_bronze, basic_frame
+    module: cpp
+
+    &call open_In
+        $my a, b, c, d: int
+        $call scan_int, a, b, c, d
+        $dump a, b, c, d
+
+    n = (b-a)+(d-c)
+    $my x, y, overlap: int
+    x = std::max(a, c)
+    y = std::min(b, d)
+    overlap = std::max(0, y-x)
+
+    n-=overlap
+    $dump n
+
+    &call open_Out
+        $print $n
+    
+

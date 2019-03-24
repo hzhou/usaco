@@ -1,0 +1,45 @@
+include: ../usaco.def
+
+page: measurement_bronze, basic_frame
+    module: cpp
+
+    &call open_In
+        $my int N
+        fscanf(In, "%d", &N)
+        # $dump N
+
+        int B[100], E[100], M[100];
+        $for i=0:100
+            B[i]=E[i]=M[i]=0;
+
+        $for i=0:N
+            $my int day, char name[10], int change
+            fscanf(In, "%d %s %d", &day, name, &change)
+            # $dump day, name, change
+            $(for:B, E, M)
+                $if name[0]=='$1'
+                    $1[day]=change
+
+    $my int count = 0
+
+    $my is_B=true, is_E=true, is_M=true
+    B[0]=E[0]=M[0]=7
+    $for i=1:100
+        $(for:B,E,M)
+            $1[i] = $1[i-1] + $1[i]
+        $my n_max
+        n_max = max(max(B[i], E[i]), M[i])
+        $my is_B_tmp, is_E_tmp, is_M_tmp, need_change=false
+        $(for:B,E,M)
+            is_$1_tmp = ($1[i]==n_max)
+            $if (is_$1 && !is_$1_tmp) || (!is_$1 && is_$1_tmp)
+                is_$1 = is_$1_tmp
+                need_change = true
+        $if need_change
+            count++
+
+    # $dump count
+    &call open_Out
+        $print $count
+
+

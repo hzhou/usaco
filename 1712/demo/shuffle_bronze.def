@@ -1,0 +1,35 @@
+include: ../usaco.def
+
+page: shuffle_bronze, basic_frame
+    module: cpp
+
+    $local int N
+    &call open_In
+        fscanf(In, "%d", &N)
+        $my int P[N]
+        $for i=0:N
+            fscanf(In, "%d", &P[i])
+            P[i]--
+        $my int id_list[N]
+        $for i=0:N
+            fscanf(In, "%d", &id_list[i])
+    $dump N, P[3], id_list[3]
+
+    $my int A[N], int B[N]
+    $for i=0:N
+        A[i]=i
+
+    $for j=0:3
+        $call @shuffle
+
+    # $dump count
+    &call open_Out
+        $for i=0:N
+            $print ${id_list[A[i]]}
+
+    subcode: shuffle
+        $for i=0:N
+            B[i] = A[P[i]]
+        $for i=0:N
+            A[i]=B[i]
+

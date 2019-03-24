@@ -1,0 +1,49 @@
+include: ../../usaco.def
+page: tttt_bronze, basic_frame
+    module: cpp
+
+    $my char M[9]
+    $global int S[26], int D[26*26]
+    &call open_In
+        $my char s[10]
+        fscanf(In, "%s %s %s", s, s+3, s+6)
+        $dump s
+    stat3(s[0], s[1], s[2])
+    stat3(s[3], s[4], s[5])
+    stat3(s[6], s[7], s[8])
+    stat3(s[0], s[3], s[6])
+    stat3(s[1], s[4], s[7])
+    stat3(s[2], s[5], s[8])
+    stat3(s[0], s[4], s[8])
+    stat3(s[2], s[4], s[6])
+
+    $my n_S=0, n_D=0
+    $for i=0:26
+        $if S[i]
+            n_S++
+    $for i=0:26
+        $for j=i+1:26
+            $if D[i*26+j]
+                n_D++
+    $dump n_S, n_D
+    &call open_Out
+        $print $n_S
+        $print $n_D
+
+fncode: stat3(a,b,c:char)
+    $dump(stat3) a, b, c
+    a-='A'
+    b-='A'
+    c-='A'
+    $if a==b && b==c
+        S[a]++
+    $elif a==b 
+        D[a*26+c]++
+        D[c*26+a]++
+    $elif a==c 
+        D[a*26+b]++
+        D[b*26+a]++
+    $elif b==c 
+        D[a*26+b]++
+        D[b*26+a]++
+

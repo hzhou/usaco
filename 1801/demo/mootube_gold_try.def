@@ -1,0 +1,107 @@
+include: ../../usaco.def
+page: mootube_gold, basic_frame
+    module: cpp
+    namespace: std
+    # CC: g++ -g
+
+    &call open_In
+        $call scan_Int, N, Q
+        $my int A[N-1], int B[N-1], int R[N-1]
+        $for i=0:N-1
+            $call scan_int, A[i], B[i], R[i]
+            A[i]--
+            B[i]--
+        $my int V[Q], int K[Q]
+        $for i=0:Q
+            $call scan_int, K[i], V[i]
+            V[i]--
+    # --------------------------------------- 
+    $struct(rel) int i, int r
+    $my vector<rel> Adj[N]
+    $for i=0:N-1
+        Adj[A[i]].push_back((rel){B[i], R[i]})
+        Adj[B[i]].push_back((rel){A[i], R[i]})
+
+    # ---- NEW --------------------------- 
+    $my int P[Q]
+    $for i=0:Q
+        P[i]=i
+    &call std_sort, P, Q, int
+        return K[a] < K[b]
+    # --------------------------------------- 
+    $my int Ans[Q]
+    # $for i_q=0:Q
+    $for i_q2=0:Q
+        i_q = P[i_q2]
+
+        $call init_$(cache)
+        $my vector<int> stack
+        stack.push_back(V[i_q])
+        $call add_$(cache), V[i_q]
+        $while stack.size()>0
+            i = stack.back()
+            stack.pop_back()
+            &call each_adj, i, K[i_q]
+                &call if_$(cache), $(i)
+                    stack.push_back($(i))
+                    $call add_$(cache), $(i)
+        Ans[i_q] = $($(cache)_size) -1
+    # --------------------------------------- 
+    &call open_Out
+        $for i_q=0:Q
+            $print "%d", Ans[i_q]
+
+#---------------------------------------- 
+subcode: each_adj_old(i, K)
+    $for i2=0:Adj[$(i)].size()
+        $(set:r=Adj[$(i)][i2].r)
+        $(set:i=Adj[$(i)][i2].i)
+        $if $(r)>=$(K)
+            BLOCK
+
+subcode: each_adj(i, K)
+    $(set:A=Adj[$(i)])
+    i2 = 0
+    $while i2<$(A).size()
+        $(set:r=$(A)[i2].r)
+        $(set:i=$(A)[i2].i)
+        $if $(r)>=$(K)
+            BLOCK
+        $elif i2==$(A).size()-1
+            $(A).pop_back()
+            break
+        $else
+            $(A)[i2] = $(A).back()
+            $(A).pop_back()
+            continue
+        i2++
+
+#---------------------------------------- 
+macros:
+    cache: cache_vector
+    cache: cache_set
+
+    cache_vector_size: n
+    cache_set_size: cache.size()
+
+# ----------------------
+subcode: init_cache_vector
+    n = 0
+    $my vector<int> cache
+    cache.resize(N, 0)
+subcode: add_cache_vector(i)
+    cache[$(i)]=1
+    n++
+subcode: if_cache_vector(i)
+    $if cache[$(i)]==0
+        BLOCK
+# ----------------------
+subcode: init_cache_set
+    $include <unordered_set>
+    $my unordered_set<int> cache
+subcode: add_cache_set(i)
+    cache.insert($(i))
+subcode: if_cache_set(i)
+    $if cache.count($(i))
+        BLOCK
+

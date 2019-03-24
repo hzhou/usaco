@@ -1,0 +1,30 @@
+include: ../../usaco.def
+
+page: cbarn_bronze, basic_frame
+    module: cpp
+
+    &call open_In
+        $local N: int
+        $call scan_int, N
+        
+        $my int R[N]
+        $for i=0:N
+            $call scan_int, R[i]
+
+    total =  0
+    sum = R[0]
+    $for i=1:N
+        total+=R[i]*i
+        sum += R[i]
+
+    # $dump sum, total
+    min = total
+    $for i=1:N
+        total -= sum
+        total += R[i-1]*N
+        $dump i, min, total
+        $if min > total
+            min = total
+
+    &call open_Out
+        $print $min

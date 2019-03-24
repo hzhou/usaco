@@ -1,0 +1,41 @@
+tag: binary_search
+
+include: ../../usaco.def
+page: haybales_silver, basic_frame
+    module: cpp
+    namespace: std
+
+    $my N,Q: int
+    &call open_In
+        $call scan_int, N, Q
+        $my int cows[N]
+        $for i=0:N
+            $call scan_int, cows[i]
+        
+        &call std_sort, cows, N, int
+            return a<b
+
+        &call open_Out
+            $for i=0:Q
+                $my a, b:int
+                $call scan_int, a, b
+                n = get_n(cows, N, a, b)
+                $print $n
+
+fncode: get_n(int* cows, int N, int a, int b)
+    i = find_i(cows, 0, N-1, a)
+    j = find_i(cows, 0, N-1, b)
+    # we want cows[i]<=a but cows[j]>b
+    $if i>0 && cows[i-1]==a
+        i--
+    return j-i
+
+fncode: find_i(int* cows, int i1, int i2, int a)
+    $while i1<=i2
+        i = (i1 + i2) /2
+        $if cows[i]>a # condition for i1 in the end
+            i2 = i-1  # i2 takes the inverse condition
+        $else
+            i1 = i+1  # i1 takes the condition
+    return i1 # cows[i1]>a, cows[i2]<=a
+

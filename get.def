@@ -1,0 +1,42 @@
+# http://www.usaco.org/index.php?page=dec17results
+
+page: get
+    module: perl
+    arg: 14open
+
+    my $root="http://www.usaco.org"
+    my %mon=(1=>"jan",2=>"feb",3=>"mar",4=>"apr",5=>"may",6=>"jun",7=>"jul",8=>"aug",9=>"sep",10=>"oct",11=>"nov",12=>"dec")
+
+    my $dir=$ARGV[0]
+    $if !-d $dir
+        mkdir $dir
+    chdir $dir or die "Can't chdir $dir\n"
+
+    my $t
+    $if $dir=~/\d{4}/
+        $t=$mon{substr($dir,2)+0} . substr($dir, 0, 2) . "results"
+    $elif $dir=~/(\d+)open/
+        $t="open$1"."results"
+    $else
+        die "[$dir]?\n"
+    # http://www.usaco.org/index.php?page=open14results
+    $print [$t]
+    system "wget -O index.html \"$root/index.php?page=$t\""
+
+    get_problems:
+    my @problems
+    &call open_r, index.html
+        $if /^\s*<a href='index.php.*'>View problem/
+            push @problems, $_
+        $elif /<a href="(index.php\?page=\w+problems)">Click here/
+            system "wget -O index.html $root/$1"
+            goto get_problems
+
+    $foreach $t in @problems
+        my $name
+        $if $t=~/(\w+)\.zip/
+            $name = $1
+            $print $1
+            system "wget -O $name.zip $root/current/data/$name.zip"
+        $if $t=~/cpid=(\d+)/
+            system "wget -O $name.html \"$root/index.php?page=viewproblem2&cpid=$1\""

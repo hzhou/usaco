@@ -1,0 +1,38 @@
+include: ../../usaco.def
+page: highcard_silver, basic_frame
+    module: cpp
+    # debug: 1
+
+    &call open_In
+        $global int N
+        $call scan_int, N
+
+        $my int A[N]
+        $for i=0:N
+            $call scan_int, A[i]
+
+        &call std_sort, A, N, int
+            return a<b
+
+    $my int B[N]
+    j = 0
+    $my int card = 1
+    $for i=0:N
+        $for k = card:A[i]
+            B[j++] = k
+        card = A[i]+1
+    $for k=card:2*N+1
+        B[j++] = k
+
+    $my int win=0
+    # $call try_1
+    i_a=0
+    $for i_b=0:N
+        $if A[i_a]<B[i_b]
+            i_a++
+            win++
+
+    $dump win
+    &call open_Out
+        $print $win
+

@@ -1,0 +1,52 @@
+include: ../../usaco.def
+page: cowdance_silver, basic_frame
+    module: cpp
+
+    $my int N, int T_max
+    &call open_In
+        $call scan_int, N, T_max
+        # $dump N, T_max
+
+        $my int dur[N]
+        $for i=0:N
+            $call scan_int, dur[i]
+
+    $list get_K
+    $my int K = get_K(dur, N, T_max)
+    &call open_Out
+        $print "%d", K
+
+fncode: get_K(int* dur, int N, int T_max)
+    $my int sum_1 = 0
+    $for i=0:N
+        sum_1 += dur[i]
+    $if sum_1 <T_max
+        return 1
+
+    $my int K_min = sum_1/T_max
+    $if sum_1 % T_max
+        K_min ++
+    # $dump sum_1, K_min
+    K = K_min
+    $while !try_K(dur, N, T_max, K)
+        K++
+    return K
+
+fncode: try_K(int* dur, int N, int T_max, int K): bool
+    $include <set>
+    $my std::multiset<int> M
+    $for i=0:K
+        M.insert(dur[i])
+    i = K
+    $while i<N
+        $my auto it = M.begin()
+        $my n = *it
+        n += dur[i++]
+        $if n>T_max
+            return false
+        M.erase(it)
+        M.insert(n)
+    return true
+
+
+

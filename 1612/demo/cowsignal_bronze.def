@@ -1,0 +1,33 @@
+include: ../../usaco.def
+page: cowsignal_bronze, basic_frame
+    module: cpp
+    namespace: std
+
+    $my M,N,K:int
+    &call open_In
+        $call scan_int, M,N,K
+        $my char A[N][11], char B[N][11]
+        $my char grid[M*N+2]
+        $for i=0:M
+            fscanf(In, "%s", grid+i*N)
+        grid[M*N] = '\0'
+    $print "%s", grid
+
+    $my char Grid[M*N*K*K]
+    $for i=0:M
+        $for j=0:N
+            $my k = i*N+j
+            $for i2=0:K
+                $for j2=0:K
+                    $my k2 = (i*K+i2)*N*K + (j*K+j2)
+                    Grid[k2] = grid[k]
+
+    &call open_Out
+        k=0
+        $for i=0:M*K
+            $for j=0:N*K
+                $print "%c-", Grid[k++]
+            $print
+            
+
+

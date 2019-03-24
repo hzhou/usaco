@@ -1,0 +1,86 @@
+include: ../usaco.def
+
+page: measurement, basic_frame
+    module: cpp
+    # debug: 1
+
+    $local int N, int G
+    &call open_In
+        fscanf(In, "%d %d", &N, &G)
+        $(if:debug)
+            $dump N, G
+
+        $struct(log_entry) int day, int cow, int change
+        $include <vector>
+        $my vector<struct log_entry> logs
+
+        $for i=0:N
+            $my int day, int cow, int change
+            fscanf(In, "%d %d %d", &day, &cow, &change)
+            logs.push_back({day, cow, change})
+
+    # $print "1: %d %d %d", logs[1].day, logs[1].cow, logs[1].change
+    $call stl_sort, logs
+        return a.day<b.day
+    # $print "0: %d %d %d", logs[0].day, logs[0].cow, logs[0].change
+    $(if:0)
+        &call open_W, "t.dump"
+            $for i=0:N
+                $print "%d %d %d", logs[i].day, logs[i].cow, logs[i].change
+
+    $my int count = 0
+
+    $include <unordered_map>
+    $my unordered_map<int, int> M
+    $my n_max = G, n_dup=0
+    $for i=0:N
+        $my bool need_update = false, int t = G, bool was_max=false
+        $my auto it = M.find(logs[i].cow)
+        $if it == M.end()
+            $if n_max==G
+                was_max = true
+            t = G + logs[i].change
+            M[logs[i].cow] = t
+        $else
+            $if it->second==n_max
+                was_max=true
+            t = it->second + logs[i].change
+            it->second = t
+
+        $if n_max < t
+            $if !was_max || n_dup!=1
+                need_update = 1
+            n_max = t
+            n_dup = 1
+        $elif n_max==t
+            need_update = 1
+            n_dup ++
+        $elif was_max
+            $if n_dup==1
+                $call @find_new_max
+                $if n_max != t || n_dup>1
+                    need_update = 1
+            $else
+                n_dup--
+                need_update = 1
+
+        $if need_update
+            $(if:debug)
+                $dump i, t, n_max, n_dup, was_max, need_update
+            count++
+    $(if:debug)
+        $dump count
+    &call open_Out
+        $print $count
+
+    subcode: find_new_max
+        n_max = G
+        n_dup = 0
+        $foreach it in M
+            $if n_max < it.second
+                n_max = it.second
+                n_dup = 1
+            $elif n_max == it.second
+                n_dup ++
+
+

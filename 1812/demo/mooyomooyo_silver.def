@@ -1,0 +1,95 @@
+include: ../../usaco.def
+page: mooyomooyo_silver, basic_frame
+    module: cpp
+    namespace: std
+    W: 10
+
+    &call open_In
+        $local N,K:int
+        $call scan_int, N, K
+        $dump N, K
+
+        $my char grid[N*$(W)+1]
+        $for i=0:N
+            $my s[$(W)+1]
+            fscanf(In, "%s", s)
+            memcpy(grid+(N-1-i)*$(W), s, $(W))
+
+    $call fall
+    # $call debug(init)
+    $my char G[N*$(W)]
+    $while 1
+        $for i=0:N*$(W)
+            G[i]=grid[i]
+        $my vector< vector<int> > regions
+        $for i=0:N*$(W)
+            $if G[i]!='0'
+                find_region(G, N, i, regions)
+        $call collapse
+        regions.clear()
+        # $call debug(collapse)
+        $if !flag
+            break
+        $call fall
+        # $call debug(fall)
+    &call open_Out
+        $for i=0:N
+            fprintf(Out, "%.*s\n", $(W), grid+(N-1-i)*$(W))
+
+    subcode: debug(msg)
+        $print --$(msg)-------------\n
+        $for i=0:N
+            printf("%d: %.*s\n", i, $(W), grid+(N-1-i)*$(W))
+
+    subcode: collapse
+        $my bool flag=false
+        $for i=0:regions.size()
+            $if regions[i].size()>=K
+                flag=true
+                $foreach k in regions[i]
+                    grid[k] = '0'
+    subcode: fall
+        $for j=0:$(W)
+            i2 = 0
+            $for i=0:N
+                $while i2<N && grid[i2*$(W)+j]=='0'
+                    i2++
+                $if i<i2 
+                    $if i2<N
+                        grid[i*$(W)+j] = grid[i2*$(W)+j]
+                    $else
+                        grid[i*$(W)+j] = '0'
+                i2++
+
+
+fncode: find_region(char* G, int N, int k, vector<vector<int>>& regions)
+    $local vector<int> R
+    $my char c = G[k]
+
+    $local vector<int> stack
+    stack.push_back(k)
+    $while stack.size()>0
+        k = stack.back()
+        stack.pop_back()
+
+        $my int p[4], n = 0
+        $my i = k / $(W)
+        $my j = k % $(W)
+        $if i>0
+            p[n++] = k-$(W)
+        $if i<N-1
+            p[n++] = k+$(W)
+        $if j>0
+            p[n++] = k-1
+        $if j<$(W)-1
+            p[n++] = k+1
+
+        $for i=0:n
+            $if G[p[i]]==c
+                G[p[i]]='0'
+                stack.push_back(p[i])
+                R.push_back(p[i])
+
+    regions.push_back(R)
+
+

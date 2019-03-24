@@ -1,0 +1,87 @@
+page: test
+    module: perl
+    # run: cd 1802 && perl ../out/test.pl demo_1802
+    run: cd 1802 && perl ../out/test.pl demo_1802/teleport_bronze.def
+
+    my @files
+    my $dir=$ARGV[0]
+
+    $if -f $dir and $dir=~/(.*)\/(\w+)\.(cpp|java|py|def)/
+        @files = $dir
+        $dir = $1
+    $elif -d $dir
+        @files=glob("$dir/*.*")
+    $else
+        die "Usage: $0 [dir]\n"
+
+    $call filter
+    $foreach $a in @files
+        $if $a=~/(\w+)\.(cpp|java|py|def)/ -> $name, $ext
+            $call test_one
+
+    subcode: filter
+        my %got
+        $foreach $a in @files
+            $if $a=~/(\w+)\.(cpp|java|py)/ -> $name, $ext
+                $call filter_one
+        $foreach $a in @files
+            $if $a=~/(\w+)\.(def)/ -> $name, $ext
+                $call filter_one
+        subcode: filter_one
+            $if $got{$name}
+                $a = "-"
+            $got{$name}++
+
+
+    subcode: test_one
+        $print $name ...
+        $if -d "t"
+            system "rm -rf t"
+        mkdir "t"
+        chdir "t"
+        $if $name!~/(bronze|silver|gold|platinum)/
+            system "unzip -qq ../$name\_bronze_*.zip"
+        $else
+            system "unzip -qq ../$name\_*.zip"
+        # system "ls"
+        my $old_name=$name
+        $name=~s/_(bronze|silver|gold|platinum)$//
+        $call @do_test
+        chdir ".."
+
+    subcode: do_test
+        $if $ext eq "def"
+            system "cd ../$dir && mydef_page $old_name.def"
+            $a=~s/def$/cpp/
+            $ext = "cpp"
+        # ------------------
+        $if $ext eq "cpp"
+            system "g++ -std=c++0x -O2 -o a ../$a -lm"
+            $if -f "a"
+                &call each_test
+                    system "./a >/dev/null"
+        $case $ext eq "java"
+            system "cp ../$a $name.java"
+            system "javac  $name.java"
+            $if -f "$name.class"
+                &call each_test
+                    system "java $name >/dev/null"
+        $case $ext eq "py"
+            &call each_test
+                system "python ../$a >/dev/null"
+
+        subcode: each_test
+            $use Time::HiRes qw(time)
+            $for $i=1:100
+                $if -f "$i.in"
+                    $if $ARGV[1] && $i != $ARGV[1]
+                        next
+                    system "cp $i.in $name.in"
+                    my $start = time()
+                    $print "    test $i ...-"
+                    BLOCK
+                    my $end = time()
+                    $print "%.2f seconds", $end-$start
+                    system "diff $name.out $i.out |head -n 10"
+                $else
+                    last

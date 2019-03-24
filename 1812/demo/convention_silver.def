@@ -1,0 +1,41 @@
+include: ../../usaco.def
+page: convention_silver, basic_frame
+    module: cpp
+
+    &call open_In
+        $local N,M,C:int
+        $call scan_int, N, M, C
+        $dump N, M, C
+
+        $my int A[N]
+        $for i=0:N
+            $call scan_int, A[i]
+    &call std_sort, A, N, int
+        return a<b
+    $dump A[0], A[N-1]
+
+    $my int w1=0
+    $my int w2=A[N-1]
+
+    $while w1<=w2
+        $my int w = (w1+w2)/2
+
+        j= 0
+        $for i=0:M
+            k = j
+            $while k<N && A[k]-A[j]<=w && k-j+1<=C
+                k++
+            j = k
+        $if j>=N
+            # ok
+            w2=w-1
+        $else
+            w1=w+1
+        # $dump w, j, w1, w2
+
+    $dump w1
+    &call open_Out
+        $print $w1
+
+
+

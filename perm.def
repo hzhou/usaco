@@ -1,0 +1,57 @@
+#---------------------------------------- 
+#- Permutation Array (actually the inverse)
+subcode: get_P_array(Array, N)
+    $my int P[$(N)]
+    $for i=0:$(N)
+        P[i] = i
+    &call std_sort, P, $(N), int
+        $if $(Array)[a] == $(Array)[b]
+            return a<b
+        $else
+            return $(Array)[a] < $(Array)[b]
+
+#- Inversion Table
+subcode: get_I_array(P, N)
+    $my int I[$(N)]
+    &call fenwick, $(N)
+        $call init_C
+        $for i=0:$(N)
+            $call get_sum, P[i]
+            I[i] = P[i] - sum
+            $call add, P[i], 1
+        
+#---------------------------------------- 
+subcode: fenwick(N)
+    BLOCK
+
+    subcode: init_C
+        $my int C[$(N)]
+        $for i=0:$(N)
+            C[i] = 0
+
+    subcode: add(i, v)
+        j = $(i)
+        $while j<$(N)
+            C[j]+=$(v)
+            $if j==0
+                j++
+            $else
+                j+=(j&-j)
+
+    subcode: get_sum(i)
+        $my int sum = 0
+        j = $(i)
+        $if j==0
+            sum = C[0]
+        $else
+            $while j>0
+                sum += C[j]
+                j-=(j&-j)
+
+    # ---------------
+    subcode: dump
+        $for _i=0:$(N)
+            $call get_sum, _i
+            $print "%d -", sum
+        $print
+            

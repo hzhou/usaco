@@ -1,0 +1,54 @@
+include: ../../usaco.def
+# Note that N<=250, an indication of required algorithm complexities.
+page: snowboots_silver, basic_frame
+    module: cpp
+    namespace: std
+
+    &call open_In
+        $global N, B: int
+        $call scan_int, N, B
+
+        $global int* D
+        D = new int[N]
+        $for i=0:N
+            $call scan_int, D[i]
+
+        $global int* s, int* d
+        s = new int[B]
+        d = new int[B]
+        $for i=0:B
+            $call scan_int, s[i], d[i]
+
+    n = find_solution()
+    $dump n
+    &call open_Out
+        $print $n
+
+fncode: find_solution: int
+    $global i_max = 0
+
+    # Establish bottom-line: if a tile can be reached by Boot j, implies reachable by Boot j+
+    $for j=0:B
+        i = i_max
+        # Boot j can only be used at i (any <= i_max) where D <= s[j] 
+        $while D[i]>s[j]
+            i--
+
+        # find i_max reachable by Boot j 
+        $while 1
+            # One step at a time
+            $my k_max=0
+            $for k=1 to d[j]
+                $if i+k==N-1
+                    # made it with j
+                    return j
+                $if D[i+k]<=s[j]
+                    k_max=k
+            $if k_max
+                i += k_max
+                $if i_max<i
+                    i_max=i
+            $else
+                # no more steps
+                break
+    return B

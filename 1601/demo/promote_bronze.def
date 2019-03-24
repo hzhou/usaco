@@ -1,0 +1,21 @@
+include: ../../usaco.def
+
+page: promote_bronze, basic_frame
+    module: cpp
+
+    $my int A[4], int B[4]
+    &call open_In
+        $for i=0:4
+            $call scan_int, A[i], B[i]
+
+    $my int C[4]
+
+    $(for:i in 3,2,1)
+        C[$(i)]=B[$(i)]-A[$(i)]
+        B[$(i)-1]+=C[$(i)]
+
+    $dump C[1], C[2], C[3]
+    &call open_Out
+        $for i=1:4
+            $print "%d", C[i]
+

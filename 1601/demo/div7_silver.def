@@ -1,0 +1,32 @@
+include: ../../usaco.def
+page: div7_silver, basic_frame
+    module: cpp
+
+    &call open_In
+        $my int N
+        $call scan_int, N
+
+        $my int IDs[N]
+        $for i=0:N
+            $call scan_int, IDs[i]
+
+    $my int M[7] = {-1, -1, -1, -1, -1, -1, -1}
+
+    $my int R[N]
+    R[0] = IDs[0] % 7
+    M[R[0]] = 0
+
+    max_size = 0
+    $for i=1:N
+        R[i] = (R[i-1] + IDs[i]) % 7
+        $if M[R[i]]==-1
+            M[R[i]]=i
+        $else
+            $my int d = i-M[R[i]]
+            $if max_size < d
+                max_size = d
+    $dump max_size
+
+    &call open_Out
+        $print $max_size
+

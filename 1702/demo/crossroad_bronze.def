@@ -1,0 +1,27 @@
+include: ../../usaco.def
+
+page: crossroad_bronze, basic_frame
+    module: cpp
+    namespace: std
+
+    &call open_In
+        $my int N
+        $call scan_int, N
+
+        $my int cows[10]
+        $for i=0:10
+            cows[i]=-1
+
+        $my int count =0
+        $for i=0:N
+            $my i_cow, i_side
+            $call scan_int, i_cow, i_side
+            i_cow --
+            $if cows[i_cow]>=0 && cows[i_cow]!=i_side
+                count++
+            cows[i_cow]=i_side
+
+    $dump count
+    &call open_Out
+        $print $count
+

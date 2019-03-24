@@ -1,0 +1,50 @@
+include: ../../usaco.def
+
+page: closing_silver, basic_frame
+    module: cpp
+
+    $global N, M: int
+    &call open_In
+        $call scan_int, N, M
+
+        $include <unordered_set>
+        $my std::unordered_set<int> Paths[N]
+        $for i=0:M
+            $my a, b:int
+            $call scan_int, a, b
+            a--
+            b--
+            Paths[a].insert(b)
+            Paths[b].insert(a)
+
+        $dump N, M
+        &call open_Out
+            $for i=0:N
+                $my j
+                $call scan_int, j
+                j--
+                n = find_region(Paths, j)
+                $dump(erase) j, n
+                $if n==N-i
+                    $print "YES"
+                $else
+                    $print "NO"
+                $foreach k in Paths[j]
+                    Paths[k].erase(j)
+                Paths[j].clear()
+
+fncode: find_region(std::unordered_set<int>* Paths, i): int
+    $local std::vector<int> stack
+    stack.push_back(i)
+    $local std::set<int> cache
+    cache.insert(i)
+
+    $while stack.size()>0
+        i = stack.back()
+        stack.pop_back()
+
+        $foreach j in Paths[i]
+            $if cache.count(j)==0
+                stack.push_back(j)
+                cache.insert(j)
+    return cache.size()

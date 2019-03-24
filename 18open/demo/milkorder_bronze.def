@@ -1,0 +1,82 @@
+# rather tricky
+include: ../../usaco.def
+page: milkorder_bronze, basic_frame
+    module: cpp
+
+    $global N, M, K: int
+    &call open_In
+        $call scan_int, N, M, K
+        $dump N, M, K
+        $my int in_K[N]
+        $for i=0:N
+            in_K[i]=-1
+
+        $my int Mlist[M]
+        $for i=0:M
+            $call scan_int, Mlist[i]
+            Mlist[i]--
+        $call dump_array, Mlist, M
+
+        $my int C[K], int P[K]
+        $for i=0:K
+            $call scan_int, C[i], P[i]
+            C[i]--
+            P[i]--
+            in_K[C[i]]=i
+    #---------------------------------------- 
+    $my int cows[N]
+    $for i=0:N
+        cows[i]=-1
+    $for i=0:K
+        $dump(K) P[i], C[i]
+        cows[P[i]]=C[i]
+    #---------------------------------------- 
+    $my i_pos=-1
+    $if in_K[0]>=0
+        i_pos = in_K[0]
+        $print 0 in K: $i_pos
+    $else
+        $call @find_cow0_pos
+
+    $if i_pos<0
+        j = 0
+        $while cows[j]>=0
+            j++
+        i_pos=j
+
+    i_pos++
+    $dump i_pos
+    &call open_Out
+        $print $i_pos
+
+    #---------------------------------------- 
+    subcode: find_cow0_pos
+        $my j_min=0, i_min=0
+        $for i=0:M
+            $if in_K[Mlist[i]]>=0
+                $call @place_Mlist
+            $elif Mlist[i]==0
+                $dump(in_M_0) i, i_min, j_min
+                j = j_min
+                $while 1
+                    $while cows[j]>=0
+                        j++
+                    $dump j, i_min, i
+                    $if i_min==i
+                        i_pos = j
+                        break
+                    cows[j]=Mlist[i_min]
+                    i_min++
+                break
+
+        subcode: place_Mlist
+            k = in_K[Mlist[i]]
+            j = P[k]
+            $dump(in_K_M) i, k, Mlist[i], C[k], j
+            $for int i2 = i-1; i2>=0 && in_K[Mlist[i2]]==-1; i2--
+                $while cows[j]>=0
+                    j--
+                cows[j]=Mlist[i2]
+                $dump(post_fill) j, i2, Mlist[i2]
+            i_min = i+1
+            j_min = P[k]

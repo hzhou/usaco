@@ -1,0 +1,55 @@
+include: ../../usaco.def
+page: reduce_silver, basic_frame
+    module: cpp
+
+    &call open_In
+        $my int N
+        $call scan_int, N
+    
+        $my int X[N], int Y[N]
+        $for i=0:N
+            $call scan_int, X[i], Y[i]
+
+    $(for:x1,x2,y1,y2 and X,X,Y,Y)
+        $my int $1[4] = {-1,-1,-1,-1} # boundary x1 list
+        $my int $1_idx[4] = {-1,-1,-1,-1}
+    $for i=0:N
+        $(for:x1,x2,y1,y2 and X,X,Y,Y and >,<,>,<)
+            $for j=0:4
+                $if $1[j] $3 $2[i] || $1[j]==-1
+                    $for k=3 downto j+1
+                        $1[k] = $1[k-1]
+                        $1_idx[k] = $1_idx[k-1]
+                    $1[j] = $2[i]
+                    $1_idx[j] = i
+                    break
+
+    $(for:x1,x2,y1,y2)
+        $dump $1[0], $1[1], $1[2], $1[3]
+    $my int min_area = (x2[0]-x1[0])*(y2[0]-y1[0])
+    $for a=0:4
+        $for b=0:4
+            $for c=0:4
+                $for d=0:4
+                    $include <unordered_set>
+                    $my std::unordered_set<int> S
+                    $(for:a,b,c,d and x1,x2,y1,y2)
+                        $for i=0:$1
+                            S.insert($2_idx[i])
+                    $if S.size()!=3
+                        continue
+
+                    $(for:a,b,c,d and x1,x2,y1,y2)
+                        $my int t_$2
+                        $for i=$1:4
+                            $if S.count($2_idx[i])==0
+                                t_$2 = $2[i]
+                                break
+
+                    $if min_area > (t_x2-t_x1)*(t_y2-t_y1)
+                        min_area = (t_x2-t_x1)*(t_y2-t_y1)
+                        $dump min_area
+
+    &call open_Out
+        $print $min_area
+

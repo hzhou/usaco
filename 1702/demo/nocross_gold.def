@@ -1,0 +1,70 @@
+include: ../../usaco.def
+page: nocross_gold, basic_frame
+    module: cpp
+
+    &call open_In
+        $call scan_Int, N
+        $my int A[N], int B[N]
+        $for i=0:N
+            $call scan_int, A[i]
+            A[i]--
+        $for i=0:N
+            $call scan_int, B[i]
+            B[i]--
+    # $dump N
+    #---------------------------------------- 
+    $my int PA[N] # id -> position in A
+    $for i=0:N
+        PA[A[i]]=i
+    #---------------------------------------- 
+    $my int dp[N][N]
+    # ---- special case: i=0 ---------------
+    $call @get_sorted_iA_list, B[0]
+    $for j=0:iA_list[0]
+        dp[0][j] = 0
+    $for j=iA_list[0]:N
+        dp[0][j] = 1
+    # ---- induction ---------------
+    $for i=1:N
+        $call @get_sorted_iA_list, B[i]
+        $for 0:iA_list[0]
+            dp[i][$(i)] = dp[i-1][$(i)]
+        $for j=0:n_iA
+            tn_tmp = 0
+            $if iA_list[j]>0
+                tn_tmp = dp[i-1][iA_list[j]-1]
+            $for iA_list[j]:iA_list[j+1]
+                $if dp[i-1][$(i)] > tn_tmp
+                    dp[i][$(i)] = dp[i-1][$(i)]
+                $else
+                    dp[i][$(i)] = tn_tmp+1
+
+    # --------------------------------------- 
+    &call open_Out
+        $print "%d", dp[N-1][N-1]
+
+#-------------------
+subcode: get_sorted_iA_list(B)
+    $call set_max, j_min, $(B)-4, 0
+    $call set_min, j_max, $(B)+4, N-1
+    $my int iA_list[10], n_iA
+
+    n_iA=j_max-j_min+1
+    iA_list[n_iA]=N
+
+    $for 0:n_iA
+        iA_list[$(i)] = PA[j_min+$(i)]
+    &call std_sort, iA_list, n_iA, int
+        return a<b
+
+# -------------------
+subcode: set_min(var, v1, v2)
+    $(var) = $(v1)
+    $if $(var) > $(v2)
+        $(var) = $(v2)
+
+subcode: set_max(var, v1, v2)
+    $(var) = $(v1)
+    $if $(var) < $(v2)
+        $(var) = $(v2)
+

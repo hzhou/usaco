@@ -1,0 +1,88 @@
+include: ../../usaco.def
+page: bcs_bronze, basic_frame
+    module: cpp
+
+    $local N, K: int
+    &call open_In
+        $call scan_int, N, K
+
+        $my char G[N*N*(K+1)+1]
+        $for i=0:N*(K+1)
+            fscanf(In, "%s", G+i*N)
+
+        $for k=0:N*N*(K+1)
+            $if G[k]=='#'
+                G[k]=1
+                # $print "%d: %d", k, G[k]
+            $else
+                G[k]=0
+
+    $call get_bound, G, N
+    $(for:x1,x2,y1,y2)
+        $my int G$1 = $1
+
+    $for i=1 to K
+        $for j=1 to K
+            $for i_off_x=0:N
+                $for i_off_y=0:N
+                    $for j_off_x=0:N
+                        $for j_off_y=0:N
+                            $call merge_grids
+                            # $call dump_tG
+                            $call check_grids
+    # ------------------
+    subcode: dump_tG
+        $for ky=0:2*N
+            $for kx=0:2*N
+                $print "%d-", tG[ky*2*N+kx]
+            $print
+    subcode: merge_grids
+        $my char tG[4*N*N]
+        $for k=0:4*N*N
+            tG[k] = 0
+        $for ky = 0:N
+            $for kx = 0:N
+                $(set:k=ky*N+kx)
+                $if G[i*N*N+$(k)]
+                    tG[(i_off_y+ky)*2*N+(i_off_x+kx)]++
+                $if G[j*N*N+$(k)]
+                    tG[(j_off_y+ky)*2*N+(j_off_x+kx)]++
+
+    subcode: check_grids
+        $call get_bound, tG, 2*N
+        $if x2-x1 == Gx2-Gx1 && y2-y1 == Gy2-Gy1
+            $my bool flag = true
+            $for kx=Gx1 to Gx2
+                $for ky=Gy1 to Gy2
+                    $(set:y=ky+y1-Gy1)
+                    $(set:x=kx+x1-Gx1)
+                    $if G[ky*N+kx] != tG[($(y))*2*N+$(x)]
+                        flag = false
+                        break
+            $if flag 
+                $print "Got it: $i $j"
+                &call open_Out
+                    $print "$i $j"
+                return 0
+
+
+    # ------------------
+    subcode: get_bound(A, N)
+        $my x1, x2, y1, y2: int
+        x1 = $(N)-1
+        x2 = 0
+        y1 = $(N)-1
+        y2 = 0
+        $for kx = 0:$(N)
+            $for ky = 0:$(N)
+                $if $(A)[ky*$(N)+kx]
+                    $if x1>kx
+                        x1=kx
+                    $if x2<kx
+                        x2=kx
+                    $if y1>ky
+                        y1=ky
+                    $if y2<ky
+                        y2=ky
+
+

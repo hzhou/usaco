@@ -1,0 +1,48 @@
+include: ../../usaco.def
+page: maxcross_silver, basic_frame
+    module: cpp
+
+    &call open_In
+        $my N, K, B: int
+        $call scan_int, N, K, B
+        $dump N, K, B
+        
+        $my int broken_list[B+1]
+        $for i=0:B
+            $call scan_int, broken_list[i]
+            broken_list[i]--
+        broken_list[B] = N
+
+    &call std_sort, broken_list, B, int
+        return a<b
+
+    $my int M = B
+    $my int start = 0
+    $if broken_list[B]-broken_list[B-1]-1>=K
+        M=0
+    $else
+        $for j=0:B
+            $dump K, start, j, broken_list[j]
+            $if broken_list[j]-start >= K
+                M = 0
+                break 
+
+            $my int m = M
+            $if j+m > B
+                m = B - j
+
+            $for i=j:j+m
+                $my int end = broken_list[i+1]
+                $my int length = end-start
+                $if length >=K
+                    M = i-j+1
+                    break
+
+            start = broken_list[j]+1
+
+    $dump M
+    &call open_Out
+        $print $M
+
+
+

@@ -1,0 +1,55 @@
+tag: backtracking
+include: ../../usaco.def
+
+page: planting_silver, basic_frame
+    module: cpp
+
+    &call open_In
+        $call scan_Int, N
+        $my int A[N-1], int B[N-1]
+        $for i=0:N-1
+            $call scan_int, A[i], B[i]
+            A[i]--
+            B[i]--
+
+    #---------------------------------------- 
+    $my $(T_vn) adj_list[N]
+    $for i=0:N-1
+        adj_list[A[i]].push_back(B[i])
+        adj_list[B[i]].push_back(A[i])
+
+    #---------------------------------------- 
+    $my int pointer_list[N]
+    $for i=0:N
+        pointer_list[i] = i
+    $my int count_list[N]
+    $for i=0:N
+        count_list[i]  = 0
+
+    #---- backtracking, of course in this case we could simply count edges ----
+    $my $(T_vn) stack
+    stack.push_back(0)
+    $while stack.size()>0
+        i = stack.back()
+        stack.pop_back()
+
+        count_list[i]++
+        $(set:P=pointer_list[$1])
+        $if $(P:i)!=i
+            count_list[$(P:i)]++
+
+        $foreach j in adj_list[i]
+            $if j!=pointer_list[i]
+                $print $i-> $j
+                pointer_list[j] = i
+                stack.push_back(j)
+
+    #----------------------------------------
+    $my count_max = count_list[0]
+    $for i=1:N
+        $call update_max, count_max, count_list[i]+1
+
+    #---------------------------------------- 
+    &call open_Out
+        $print $count_max
+

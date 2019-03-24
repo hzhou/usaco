@@ -1,0 +1,54 @@
+include: ../../usaco.def
+
+page: homework_silver, basic_frame
+    module: cpp
+
+    $my int N
+    &call open_In
+        $call scan_int, N
+        # $my int L[N]
+        $global int *L
+        L=new int[N]
+        $for i=0:N
+            $call scan_int, L[i]
+
+        $my int idx_list[N]
+        $for i=0:N
+            idx_list[i]=i
+
+    # $dump N, L[3]
+    &call std_sort, idx_list, N, int
+        return L[a]<L[b]
+
+    # $call debug_L
+    $my int sum=0
+    $for i=0:N
+        sum+=L[i]
+
+    $my double max=0
+    $my std::vector<int> max_list
+
+    $my int i0=0
+    $my int sum2=0
+    $for j=0:N-2
+        sum2+=L[j]
+        $while idx_list[i0]<=j
+            i0++
+        $my double t = sum-sum2-L[idx_list[i0]]
+        # $dump j, t, max
+        t/=(N-j-2)
+        $if max<t
+            max=t
+            max_list.clear()
+            max_list.push_back(j+1)
+        $elif max==t
+            max_list.push_back(j+1)
+
+    &call open_Out
+        $for i=0:max_list.size()
+            $print "%d", max_list[i]
+
+
+    subcode: debug_L
+        $for i=0:N
+            $dump i, idx_list[i], L[idx_list[i]]

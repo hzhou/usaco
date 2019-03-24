@@ -1,0 +1,105 @@
+include: ../../usaco.def
+page: where_silver, basic_frame
+    module: cpp
+
+    &call open_In
+        $global int N
+        $call scan_int, N
+        $dump N
+
+        $global char* grid
+        grid = new char[N*N+1]
+        $for i=0:N
+            fscanf(In, "%s", grid+i*N)
+            $(if:debug)
+                printf("%*s\n", N, grid+i*N)
+
+    $struct Rect 
+        x1,x2,y1,y2:int
+    $my std::vector<Rect> PCL_list
+    $for x1=0:N
+        $for x2=x1+1:N+1
+            $for y1=0:N
+                $for y2=y1+1:N+1
+                    $if is_PCL(x1,x2,y1,y2)
+                        PCL_list.push_back({x1,x2,y1,y2})
+
+    $my n_R=PCL_list.size()
+    $my count = 0
+    $for i=0:n_R
+        $my is_maximal = true
+        $for j=0:n_R
+            $if i==j
+                continue
+            $(set:C=PCL_list[i].$1 $2 PCL_list[j].$1)
+            $if $(C:x1,>=) && $(C:x2,<=) && $(C:y1,>=) && $(C:y2,<=)
+                is_maximal = false
+                break
+        $if is_maximal
+            count++
+
+    $dump count
+    &call open_Out
+        $print $count
+
+macros:
+    # debug: 1
+fncode: is_PCL(x1,x2,y1,y2:int):bool
+    $my char a = 0
+    $my char b = 0
+    $my n_a = 0, n_b=0, k_a=-1, k_b=-1
+    $for i=y1:y2
+        $for j=x1:x2
+            $my char c = grid[i*N+j]
+            $if a==0
+                a=c
+                n_a++
+                k_a=i*N+j
+            $elif c==a
+                n_a++
+            $else
+                $if b==0
+                    b=c
+                    n_b++
+                    k_b=i*N+j
+                $elif c==b
+                    n_b++
+                $else
+                    return false
+
+    $(if:debug)
+        $dump(is_PCL) x1,x2,y1,y2, n_a, n_b
+    $if n_b==0
+        return false
+    tn_a = find_region(k_a, x1, x2, y1, y2)
+    tn_b = find_region(k_b, x1, x2, y1, y2)
+    $(if:debug)
+        $dump tn_a, tn_b
+    $if (tn_a==n_a && tn_b<n_b) || (tn_b==n_b && tn_a<n_a)
+        return true
+    return false
+
+fncode: find_region(k, int x1, int x2, int y1, int y2)
+    $local int map[N*N] = {0}
+    $local std::vector<int> stack
+    $my char c = grid[k]
+    stack.push_back(k)
+    count = 0
+    $while stack.size()>0
+        i = stack.back()
+        stack.pop_back()
+        $if map[i]==1
+            continue
+        map[i]=1
+        count++
+        i_y = i/N
+        i_x = i%N
+        $if i_x>x1 && grid[i-1]==c
+            stack.push_back(i-1)
+        $if i_x+1<x2 && grid[i+1]==c
+            stack.push_back(i+1)
+        $if i_y>y1 && grid[i-N]==c
+            stack.push_back(i-N)
+        $if i_y+1<y2 && grid[i+N]==c
+            stack.push_back(i+N)
+    return count

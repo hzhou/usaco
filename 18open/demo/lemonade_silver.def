@@ -1,0 +1,26 @@
+include: ../../usaco.def
+page: lemonade_silver, basic_frame
+    module: cpp
+
+    &call open_In
+        $local int N
+        $call scan_int, N
+        $my int cows[N]
+        $for i=0:N
+            $call scan_int, cows[i]
+
+    &call std_sort, cows, N, int
+        return a < b
+
+    $my int i=0
+    $while i<N && cows[i]<N-1-i
+        # $dump i, cows[i], N-1-i
+        i++
+
+    $my int cnt = N-i
+    $print $cnt
+
+    &call open_Out
+        $print $cnt
+
+

@@ -1,0 +1,83 @@
+include: ../../usaco.def
+
+page: visitfj_gold, basic_frame
+    module: cpp
+
+    &call open_In
+        $call scan_Int, N, T
+        $my int grid[N*N]
+        $for i=0:N*N
+            $call scan_int, grid[i]
+    $dump N, T
+
+    $call @init_cost_cache
+
+    $call init_stack
+    $call push, 0, 0, 0
+    $while stack.size()>0
+        $my int t
+        $call pop, k, t, i_seq
+        $dump k, t, i_seq
+        i = k/N
+        j = k%N
+        $call @get_dirs
+        $for i_dir=0:n_dirs
+            $(set:k=dirs[i_dir])
+            $my int t2
+            t2 = t+T
+            i_seq_next = (i_seq+1) % 3
+            $if i_seq_next == 0
+                t2 += grid[$(k)]
+            &call if_less_cost, $(k), t2, i_seq_next
+                $call push, $(k), t2, i_seq_next
+
+    n_min = costs[0][N*N-1]
+    $(for:1,2)
+        $if n_min > costs[$1][N*N-1]
+            n_min = costs[$1][N*N-1]
+
+    &call open_Out
+        $print $n_min
+
+    subcode: get_dirs
+        $my int dirs[4], n_dirs
+        n_dirs=0
+        $if i>0
+            dirs[n_dirs++] = k - N
+        $if i+1<N
+            dirs[n_dirs++] = k + N
+        $if j>0
+            dirs[n_dirs++] = k - 1
+        $if j+1<N
+            dirs[n_dirs++] = k + 1
+
+    # -----------------
+    subcode: init_cost_cache
+        $my int costs[3][N*N]
+        $for i=0:N*N
+            costs[0][i]=-1
+            costs[1][i]=-1
+            costs[2][i]=-1
+        costs[0][0] = 0
+
+    subcode: if_less_cost(k, t, seq)
+        $(set:C=costs[$(seq)][$(k)])
+        $if $(C)==-1 || $(C)>$(t)
+            $(C)=$(t)
+            BLOCK
+
+    # -----------------
+    subcode: init_stack
+        $struct(k_seq) k, int seq
+        $my std::multimap<int, struct k_seq> stack
+
+    subcode: push(k, t, seq)
+        stack.insert ( {$(t), {$(k), $(seq)} } )
+
+    subcode: pop(k, t, seq)
+        $my auto it = stack.begin()
+        $(t) = it->first
+        $(k) = it->second.k
+        $(seq) = it->second.seq
+        stack.erase(it)
+

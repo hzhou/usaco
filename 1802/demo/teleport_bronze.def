@@ -1,0 +1,22 @@
+include: ../../usaco.def
+page: teleport_bronze, basic_frame
+    module: cpp
+    namespace: std
+
+    &call open_In
+        $my a, b, x, y:int
+        $call scan_int, a, b, x, y
+        $dump a, b, x, y
+
+    n_min = abs(b-a)
+
+    n = abs(x-a)+abs(b-y) 
+    $if n_min > n
+        n_min = n
+
+    n = abs(y-a)+abs(b-x) 
+    $if n_min > n
+        n_min = n
+
+    &call open_Out
+        $print $n_min

@@ -1,0 +1,21 @@
+include: ../../usaco.def
+page: ride, training_frame
+    module: cpp
+
+    $my s_a[7], s_b[7]
+    &call open_In
+        fscanf(In, "%s %s", s_a, s_b)
+    $(for:a,b)
+        n_$1 = 1
+        $for i=0:6
+            $if !s_$1[i]
+                break
+            n_$1 *= s_$1[i]-'A'+1
+        n_$1 %= 47
+    &call open_Out
+        $if n_a == n_b
+            $print "GO"
+        $else
+            $print "STAY"
+
+

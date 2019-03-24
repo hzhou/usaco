@@ -1,0 +1,189 @@
+include: ../../usaco.def
+page: multimoo_silver, basic_frame
+    module: cpp
+
+    &call open_In
+        $global int N
+        $call scan_int, N
+        $global int* grid
+        grid = new int[N*N]
+        $for i=0:N*N
+            $call scan_int, grid[i]
+    # $dump N
+    # $call dump_array, grid, N*N
+
+    $call @find_region_single # finds max_size_1
+    $print $max_size_1
+    $call @find_region_pairs  # finds max_size_2
+    $print $max_size_2
+
+    &call open_Out
+        $print $max_size_1
+        $print $max_size_2
+
+#---------------------------------------- 
+subcode: find_region_single
+    $include <vector>
+    $struct region
+        int cow_id
+        int size
+    $global std::vector<struct region> region_list
+
+    i_min = 0
+    $while i_min<N*N
+        # pushes new region into region_list
+        # updates grid to reflect found region #
+        find_region(i_min)
+        $while i_min<N*N && grid[i_min]<0
+            i_min++
+
+    $call @find_max_size_in_region_list
+
+    subcode: find_max_size_in_region_list
+        $my int max_size_1=0
+        $for i=0:region_list.size()
+            $if max_size_1 < region_list[i].size
+                max_size_1 = region_list[i].size
+
+fncode: find_region(int idx)
+    # finds region in grid that contains grid[idx]
+    i_reg = region_list.size()
+    i_cow = grid[idx]
+    $call @init_region_neighbor_list
+
+    $local std::vector<int> stack
+    stack.push_back(idx)
+
+    n_size = 0
+    $while stack.size()>0
+        i = stack.back()
+        stack.pop_back()
+
+        # NOTE: the same cell can be pushed into stack multiple times
+        $if grid[i]!=i_cow
+            continue
+        # Here we updates grid
+        grid[i] = -(i_reg+1)
+        n_size ++
+
+        $call @get_neighbors_in_L
+        &call foreach_j_in_L
+            $if grid[j] == i_cow
+                stack.push_back(j)
+            $else
+                $call @update_region_neighbor_list
+    region_list.push_back( {i_cow, n_size} )
+
+    # ------------------------
+    subcode: get_neighbors_in_L
+        int L[4];
+        n_L=0
+        $my i_c = i % N
+        $my i_r = i / N
+        $if i_c>0
+            L[n_L++] = i-1
+        $if i_c+1<N
+            L[n_L++] = i+1
+        $if i_r>0
+            L[n_L++] = i-N
+        $if i_r+1<N
+            L[n_L++] = i+N
+
+    subcode: foreach_j_in_L
+        $for _j=0:n_L
+            j = L[_j]
+            BLOCK
+
+#---------------------------------------- 
+subcode: init_region_neighbor_list
+    $include <unordered_set>
+    $global std::vector<std::unordered_set<int> > region_neighbors
+    region_neighbors.resize(i_reg+1)
+
+subcode: update_region_neighbor_list
+    $if grid[j]<=0
+        $my j_reg = -grid[j]-1
+        $if j_reg != i_reg
+            region_neighbors[i_reg].insert(j_reg)
+            region_neighbors[j_reg].insert(i_reg)
+
+# ----------------------
+subcode: find_region_pairs
+    # Now we work with region map, like grid, but for regions
+    $include <unordered_map>
+    $global n_regions
+    n_regions = region_list.size()
+    $call @init_M
+    $global std::vector<int> pair_sizes
+    $for i=0:n_regions
+        $foreach j in region_neighbors[i]
+            # find_pair returns the size of combined region
+            # updates M to reflect processed pairs
+            pair_sizes.push_back(find_pair(i, j))
+
+    $call @find_max_size_in_pair_sizes
+
+    subcode: find_max_size_in_pair_sizes
+        $my int max_size_2=0
+        $foreach size in pair_sizes
+            $if max_size_2 < size
+                max_size_2 = size
+
+fncode: find_pair(i, j)
+    # now we need two cow ids to identify potential regions
+    $my int i_cow = region_list[i].cow_id
+    $my int j_cow = region_list[j].cow_id
+    # instead of grid idx, stack holds region pair
+    $struct reg_pair
+        int i
+        int j
+    $local std::vector<struct reg_pair> stack
+    stack.push_back( {i,-1} ) # -1 is a dummy
+
+    n_size = 0
+    $while stack.size()>0
+        $my struct reg_pair P = stack.back()
+        stack.pop_back()
+        i = P.i
+        j = P.j
+
+        # cache marks a region's neighbor has all been considered
+        # cache is needed to prevent double-process a region 
+        $local std::unordered_map<int,int> cache
+        $if cache[i]
+            continue
+        cache[i]=1
+
+        n_size += region_list[i].size
+
+        $foreach j in region_neighbors[i]
+            &call if_M
+                $if region_list[j].cow_id == j_cow || region_list[j].cow_id == i_cow
+                    stack.push_back( {j, i} )
+                    $call @cache_M
+    # $print $n_size
+    return n_size
+
+# --------------------
+macros:
+    use_M: 1
+
+subcode: init_M
+    $(if:use_M)
+        $global std::unordered_map<int, int> M
+        $for i=0:n_regions
+            $foreach j in region_neighbors[i]
+                M[i*n_regions+j]=1
+                M[j*n_regions+i]=1
+
+subcode: if_M
+    $(if:use_M)
+        $if M[i*n_regions+j]
+            BLOCK
+    $(else)
+        BLOCK
+
+    subcode: cache_M
+        $(if:use_M)
+            M[i*n_regions+j]=0
+            M[j*n_regions+i]=0

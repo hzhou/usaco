@@ -1,0 +1,123 @@
+include: ../../usaco.def
+page: lightson_silver, basic_frame
+    module: cpp
+    # debug: 3
+
+    &call open_In
+        $global N, M: int
+        $call scan_int, N, M
+        $dump N, M
+
+        $struct(Switch) int src, int dst
+        $global Switch *switches
+        switches = new Switch[M]
+        $for i=0:M
+            $my x, y, a, b: int
+            $call scan_int, x, y, a, b
+            $(for:x, y, a, b)
+                $1 --
+            switches[i].src = x*N+y
+            switches[i].dst = a*N+b
+
+        &call std_sort, switches, M, Switch
+            return a.src<b.src
+
+        $(if:debug)
+            $for i=0:M
+                $dump switches[i].src, switches[i].dst
+                $if 0 and i>20
+                    break
+
+    $my int grid[N*N]={0}
+    grid[0] = 1
+    $my int total=1
+    $while 1
+        $my int cnt
+        cnt = find_region(grid)
+        $if cnt==0
+            break
+        $else
+            total+=cnt
+    $dump total
+    &call open_Out
+        $print $total
+
+fncode: find_region(int* grid)
+    $for i=0:N*N
+        $if grid[i]==-1
+            grid[i] = 1
+    cnt = 0
+    $(if:debug)
+        $print --------------------------------\n
+
+    $include <vector>
+    $my std::vector<int> stack
+    stack.push_back(0)
+    $while stack.size()>0
+        k = stack.back()
+        stack.pop_back()
+        $if grid[k]==1
+            grid[k]=-1
+            $(if:debug)
+                $dump k
+
+        $call switch_on_lights
+
+        $call get_L, k
+        $for i=0:n_L
+            $if grid[L[i]] == 1
+                stack.push_back(L[i])
+    return cnt
+
+    subcode: get_L(k)
+        i = $(k) / N
+        j = $(k) % N
+        $my int L[4], n_L=0
+        $if i>0
+            L[n_L++] = $(k)-N
+        $if i<N-1
+            L[n_L++] = $(k)+N
+        $if j>0
+            L[n_L++] = $(k)-1
+        $if j<N-1
+            L[n_L++] = $(k)+1
+
+    subcode: switch_on_lights
+        i = find_switch(switches, M, k)
+        $(if:debug>1)
+            $dump(find_switch) N, k, i, switches[i].src, switches[i].dst
+        $if i>=0
+            $while i<M && switches[i].src == k; i++
+                k2 = switches[i].dst
+                $(if:debug>2)
+                    $dump k2, grid[k2]
+                $if grid[k2]==0
+                    $(if:debug)
+                        $print turning on $k2
+                    grid[k2]=1
+                    cnt++
+
+fncode: find_switch(Switch * switches, int M, k)
+    i1 = 0
+    i2 = M-1
+    $while i1<i2
+        $if switches[i1].src==k
+            return i1
+        $elif switches[i2].src==k
+            $while switches[i2-1].src==k
+                i2--
+            return i2
+
+        i_middle = (i1+i2)/2
+        # $dump i1, i2, i_middle
+        $if k==switches[i_middle].src
+            $while switches[i_middle-1].src == k
+                i_middle-=1
+            return i_middle
+        $elif k<switches[i_middle].src
+            i2 = i_middle-1
+        $else
+            i1 = i_middle+1
+    return -1
+
+
