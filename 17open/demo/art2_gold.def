@@ -1,0 +1,62 @@
+include: ../../usaco.def
+page: art2_gold, basic_frame
+    module: cpp
+
+    $global int color_list[$(inf)], int L[$(inf)], int R[$(inf)]
+
+    &call open_In
+        $call scan_Int, N
+        $for i=0:N
+            $call scan_int, color_list[i]
+
+    $for i=0:N+1
+        L[i] = -1
+        R[i] = -1
+    $for i=0:N
+        $(set:c=color_list[i])
+        $if L[$(c)] == -1
+            L[$(c)] = i
+            R[$(c)] = i
+        $else
+            R[$(c)] = i
+
+    $call init_cache
+    n_max = get_level(0, N-1, 0)
+    $if n_max >= $(inf)
+        n_max = -1
+    $dump n_max
+    &call open_Out
+        $print $n_max
+
+subcode: init_cache
+    $global int *cache
+    cache = new int[N+1]
+    $for i=0:N+1
+        cache[i] = 0
+
+macros:
+    inf: 100001
+
+fncode: get_level(i1, i2, int c0)
+    cache[c0] = 1
+    tn_max = 0
+    i=i1
+    $while i<=i2
+        $my int c = color_list[i]
+        $if c==c0
+            i++
+            continue
+        $if cache[c]
+            return $(inf)
+        $if R[c]>i2
+            return $(inf)
+
+        n_level = get_level(L[c], R[c], c)
+        $if tn_max < n_level
+            tn_max = n_level
+        i = R[c]+1
+    $if c0 > 0
+        tn_max++
+    # $dump i1, i2, tn_max
+    return tn_max
+
