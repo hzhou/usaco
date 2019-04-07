@@ -1,0 +1,58 @@
+include: ../../usaco.def
+page: trapped_silver, basic_frame
+    module: cpp
+
+    &call open_In
+        $call scan_Int, N, B
+        $struct(bale) int pos, int size
+        $my struct bale bale_list[N]
+        $for i=0:N
+            $call scan_int, bale_list[i].size, bale_list[i].pos
+
+    &call std_sort, bale_list, N, struct bale
+        return a.pos<b.pos
+
+    i1 = 0
+    $for i=0:N
+        $if bale_list[i].pos<B
+            i1 = i
+        $else
+            break
+    i2 = i1+1
+
+    $(if:0)
+        $for i=0:N
+            $dump i, bale_list[i].pos
+        $dump i1, i2
+
+    $my int min_add=1000000000
+    $for i=i1 downto 0
+        $for j=i2:N
+            $my D = bale_list[j].pos-bale_list[i].pos
+            $if D<=bale_list[j].size
+                tn_d = D-bale_list[i].size
+                $if tn_d<0
+                    min_add = 0
+                    break
+                $elif min_add>tn_d
+                    min_add = tn_d
+                    break
+
+    $for j=i2:N
+        $for i=i1 downto 0
+            $my D = bale_list[j].pos-bale_list[i].pos
+            $if D<=bale_list[i].size
+                tn_d = D-bale_list[j].size
+                $if tn_d<0
+                    min_add = 0
+                    break
+                $elif min_add>tn_d
+                    min_add = tn_d
+                    break
+
+    $if min_add==1000000000
+        min_add = -1
+    $dump min_add
+    &call open_Out
+        $print $min_add
+

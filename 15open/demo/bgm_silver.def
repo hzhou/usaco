@@ -1,0 +1,37 @@
+include: ../../usaco.def
+page: bgm_silver, basic_frame
+    module: cpp
+    alist: b,e,s,i,g,o,m
+
+    $(for:a in $(alist))
+        $global long long $(a)[7]
+
+    &call open_In
+        $call scan_Int, N
+        $for ii=0:N
+            $my char ss[2], int n
+            fscanf(In, "%s", ss)
+            $call scan_int, n
+            n = (n%7+7)%7
+            $(for:a in $(alist))
+                $case ss[0]=='$(a:uc)'
+                    $(a)[n]+=1
+
+    $(if:0)
+        $(for:a in $(alist))
+            $print "$(a): %d %d %d %d %d %d %d", $(join:$(a)[$1]:,:0-6)
+    $my long long count = 0
+    $nest try, $(alist)
+        # $dump B,E,S,I,G,O,M
+        $if (B+E+S+S+I+E) %7 == 0 || (G+O+E+S) %7==0 || (M+O+O) % 7 == 0
+            count+=b[B]*e[E]*s[S]*i[I]*g[G]*o[O]*m[M]
+
+    $dump count
+    &call open_Out
+        $print "%lld", count
+
+subcode: try(a)
+    $for $(a:uc)=0:7
+        $if $(a)[$(a:uc)]==0
+            continue
+        BLOCK
