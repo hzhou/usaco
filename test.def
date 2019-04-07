@@ -40,9 +40,9 @@ page: test
         mkdir "t"
         chdir "t"
         $if $name!~/(bronze|silver|gold|platinum)/
-            system "unzip -qq ../$name\_bronze_*.zip"
+            system "unzip -qq ../$name\_bronze*.zip"
         $else
-            system "unzip -qq ../$name\_*.zip"
+            system "unzip -qq ../$name*.zip"
         # system "ls"
         my $old_name=$name
         $name=~s/_(bronze|silver|gold|platinum)$//
