@@ -1,0 +1,46 @@
+# dynamic programming - Coin Change 2
+include: ../../usaco.def
+
+page: snakes_gold, basic_frame
+    module: cpp
+
+    &call open_In
+        $call scan_Int, N, K
+        $my int A[N]
+        $for i=0:N
+            $call scan_int, A[i]
+
+    $call @get_max_sum_matrix
+
+    $my int DP[K+1][N]
+    $for i=0:N
+        DP[0][i] = max_matrix[0][i] * (i+1) - sum_matrix[0][i]
+    # $call dump_array, DP[0], N
+
+    $for k=1:K+1
+        $for i=0:N
+            DP[k][i] = DP[k-1][i]
+            $for j=0:i
+                $my int t = max_matrix[i-j][i]*(j+1) - sum_matrix[i-j][i]
+                $if DP[k][i] > DP[k-1][i-j-1] + t
+                    DP[k][i] = DP[k-1][i-j-1] + t
+        # $call dump_array, DP[k], N
+
+    $print "%d", DP[K][N-1]
+    &call open_Out
+        $print "%d", DP[K][N-1]
+
+subcode: get_max_sum_matrix    
+    $my int max_matrix[N][N]
+    $my int sum_matrix[N][N]
+    $for i=0:N
+        $my int sum = 0
+        $my int max = A[i]
+        $for j=i:N
+            $if max < A[j]
+                max = A[j]
+            sum += A[j]
+            max_matrix[i][j] = max
+            sum_matrix[i][j] = sum
+
+

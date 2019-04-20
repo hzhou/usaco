@@ -1,0 +1,9 @@
+# binary index tree
+include: ../../usaco.def
+page: balance_gold, basic_frame
+    module: cpp
+    &call open_In
+        $call scan_Int, N
+        $my int pn_A = new int[N*2]
+        $for i=0:N*2
+            &call scan_int, A[i]

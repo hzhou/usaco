@@ -1,0 +1,66 @@
+include: ../../usaco.def
+
+page: walk_gold, basic_frame
+    module: cpp
+    &call open_In
+        $call scan_Int, N, K
+    $dump N, K
+
+    $my int *pn_dist = new int[N*N]
+    $for i=0:N
+        $for j=0:i
+            tn_a = $(M:j,i)
+            pn_dist[i*N+j] = tn_a
+            pn_dist[j*N+i] = tn_a
+    $for i=0:N
+        pn_dist[i*N+i] = -1
+    # $call dump_array, pn_dist, N*N
+
+    # since it is so regular, there can be a short-cut...
+    n_merge = 0
+    &call iter_i_j
+        $if pn_dist[j*N+i]<0
+            NOOP
+        $elif n_merge == N-K
+            break
+        $else
+            $call merge
+
+    subcode: merge
+        n_merge++ 
+        pn_dist[j*N+i] = -1
+
+        $for k=0:N
+            tn_a = pn_dist[i*N+k]
+            $if tn_a > pn_dist[j*N+k] 
+                tn_a = pn_dist[j*N+k]
+            pn_dist[i*N+k] = tn_a
+            pn_dist[j*N+k] = tn_a
+            pn_dist[k*N+i] = tn_a
+            pn_dist[k*N+j] = tn_a
+
+    $print "%d", pn_dist[j*N+i]
+    &call open_Out
+        $print "%d", pn_dist[j*N+i]
+
+macros:
+    MX: 2019201913
+    MY: 2019201949
+    MZ: 2019201997
+    M: (int)(((long long)($1+1)*$(MX)+(long long)($2+1)*$(MY)) % $(MZ))
+
+subcode: iter_i_j
+    i=N-1
+    j=i-1
+    $while 1
+        BLOCK
+        $if i>2 && j+1<i-2
+            i-=2
+            j++
+        $elif i>1 && j<i-1
+            i-=1
+        $elif j>0
+            j-=1
+        $else
+            break
+            
