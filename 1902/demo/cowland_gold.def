@@ -1,3 +1,4 @@
+# tree
 include: ../../usaco.def
 page: cowland_gold, basic_frame
     module: cpp

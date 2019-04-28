@@ -1,5 +1,6 @@
-# dynamic programming - Coin Change 2
 include: ../../usaco.def
+
+tag: dynamic programming - Coin Change 2
 
 page: snakes_gold, basic_frame
     module: cpp
