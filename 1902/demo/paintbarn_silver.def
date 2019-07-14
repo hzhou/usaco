@@ -1,0 +1,10 @@
+include: ../../usaco.def
+page: paintbarn_gold, basic_frame
+    module: cpp
+
+    &call open_In
+        $call scan_Int, N, K
+        $my int A[N][4]
+        $for i=0:N
+            $call scan_int, A[i][0], A[i][1], A[i][2], A[i][3]
+

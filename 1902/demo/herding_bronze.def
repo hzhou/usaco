@@ -1,0 +1,47 @@
+include: ../../usaco.def
+
+page: herding_bronze, basic_frame
+    module: cpp
+
+    &call open_In
+        $my int A[3]
+        $call scan_int, A[0], A[1], A[2]
+
+    &call std_sort, A, 3, int
+        return a < b
+
+    $dump A[0], A[1], A[2]
+
+    $my int N=3
+    i_max=0
+    n_max=0
+    $for i=0:N
+        n = N-i
+        $for j=i+1:N
+            $if A[j]-A[i]>N-1
+                n = j-i
+                break
+        $if n_max < n || (n_max==n && A[i]+N-1==A[i+n-1] )
+            n_max = n
+            i_max = i
+
+    $my int min_move
+    min_move=N-n_max
+    $if n_max==2 && A[i_max]==A[i_max+1]-1
+        min_move = 2
+
+    $my int max_move
+    max_move = A[N-1]-A[0]-(N-1) 
+    $print holes = $max_move
+    $if A[1]-A[0]<A[N-1]-A[N-2]
+        max_move -= (A[1]-A[0]-1)
+    $else
+        max_move -= (A[N-1]-A[N-2]-1)
+
+    &call open_Out
+        $print $min_move
+        $print $max_move
+
+
+
+

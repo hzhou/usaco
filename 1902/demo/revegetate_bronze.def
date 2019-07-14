@@ -1,0 +1,35 @@
+include: ../../usaco.def
+page: revegetate_bronze, basic_frame
+    module: cpp
+
+    &call open_In
+        $call scan_Int, N, M
+        $my int A[M], int B[M]
+        $for i=0:M
+            $call scan_int, A[i], B[i]
+            A[i]--
+            B[i]--
+            $if A[i]>B[i]
+                $call swap, A[i], B[i]
+
+    $my int F[N]
+    F[0]=0
+    $for i=1:N
+        $my int P[4]={0,0,0,0}
+        $for j=0:M
+            $if B[j]==i
+                P[F[A[j]]]++
+        $dump i
+        $for j=0:4
+            $if P[j]==0
+                F[i]=j
+                break
+
+    # $call dump_array, F, N
+    &call open_Out
+        $for j=0:N
+            $print "%d-", F[j]+1
+        fprintf(Out, "\n")
+
+
+

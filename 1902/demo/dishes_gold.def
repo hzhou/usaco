@@ -1,0 +1,115 @@
+include: ../../usaco.def
+page: dishes_gold, basic_frame
+    module: cpp
+    &call open_In
+        $global int * A, int N
+        $call scan_int, N
+        A=new int[N]
+        $for i=0:N
+            $call scan_int, A[i]
+            A[i]--
+
+    $(if:0)
+        # binary search, timeout on 9,10 --> must do O(N)
+        $call try_binary_search
+    $(else)
+        $call try_direct
+    $dump i_ans
+    &call open_Out
+        $print $i_ans
+
+#---------------------------------------- 
+subcode: try_binary_search
+    $global int * P
+    P = new int[N]
+    $for i=0:N
+        P[i] = i
+    &call std_sort, P, N, int
+        return A[a]<A[b]
+
+    $list can
+
+    i1=1
+    i2=N
+    $while i1<=i2
+        i3 = (i1+i2)/2
+        $if can(i3)
+            i1=i3+1
+        $else
+            i2=i3-1
+    i_ans=i2
+
+fncode: can(int M): bool
+    $my $(T_vn) stacks[M]
+    $my i1 = 0, i2 = 0
+    $my i_finish = 0
+    $while P[i_finish]>=M
+        i_finish++
+    # $dump(can) M, i_finish
+    $for i=0:M
+        $if i1==i2 # i2 always points to an empty stack
+            stacks[i2].push_back(A[i])
+            i2++
+        $elif A[i]>stacks[i2-1][0]
+            stacks[i2].push_back(A[i])
+            i2++
+        $else
+            $for j=i1:i2
+                $if A[i]<stacks[j].back()
+                    stacks[j].push_back(A[i])
+                    break
+                $elif A[i]<stacks[j][0]
+                    return false
+        # Remove to clean stack
+        $while 1
+            $while stacks[i1].size()>0 && stacks[i1].back()==i_finish
+                stacks[i1].pop_back()
+                i_finish++
+                $while P[i_finish]>=M
+                    i_finish++
+            $if stacks[i1].size()==0
+                i1++
+                $if i1==i2
+                    break
+            $else
+                break
+    return true
+
+#---------------------------------------- 
+subcode: try_direct
+    $my $(T_vn) stacks[N]
+    $my i1 = 0, i2 = 0
+    $my i_clean=-1 
+    # $dump(can) M, i_finish
+    $for i=0:N
+        $if A[i]<i_clean
+            i_ans = i
+            goto done
+        $if i1==i2 # i2 always points to an empty stack
+            stacks[i2].push_back(A[i])
+            i2++
+        $elif A[i]>stacks[i2-1][0]
+            stacks[i2].push_back(A[i])
+            i2++
+        $else
+            $for j=i1:i2
+                $if A[i]<stacks[j][0]
+                    $if A[i]>stacks[j].back()
+                        $call @remove_to_clean
+                    stacks[j].push_back(A[i])
+                    break
+                $else
+                    continue
+    done:
+
+    subcode: remove_to_clean
+        $for j2=i1:j+1
+            $(set:S=stacks[j2])
+            $while $(S).size()>0 && $(S).back()<A[i]
+                $if i_clean < $(S).back()
+                    i_clean = $(S).back()
+                $else
+                    i_ans = i
+                    goto done
+                $(S).pop_back()
+        i1 = j
