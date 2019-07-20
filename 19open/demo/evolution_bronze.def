@@ -1,0 +1,85 @@
+include: ../../usaco.def
+
+page: evolution_bronze, basic_frame
+    module: cpp
+
+    &call open_In
+        $global int N
+        $call scan_int, N
+        $my std::vector<int> subpop[N]
+        $for i=0:N
+            $call scan_Int, n
+            char s[21]
+            $for j=0:n
+                fscanf(In, "%s", s)
+                # $dump i, j, s
+                subpop[i].push_back(get_attr(s))
+
+    $call dump_input
+
+    $my std::vector<int> attr_group[n_attr]
+    $for i=0:N
+        $foreach a in subpop[i]
+            attr_group[a].push_back(i)
+
+    $call dump_attr_group
+
+    $my bool proper=true
+    $for i=0:n_attr
+        $for j=i+1:n_attr
+            $my bool t
+            $if attr_group[i].size() > attr_group[j].size()
+                t = is_proper(attr_group[j], attr_group[i])
+            $else
+                t = is_proper(attr_group[i], attr_group[j])
+
+            $if !t
+                # $print inproper: $i <=> $j
+                proper = false
+                goto ans
+
+    ans:
+        &call open_Out
+            $if proper
+                $print yes
+            $else
+                $print no
+
+subcode: dump_input
+    $for i=0:N
+        $print "$i [%d]: -", subpop[i].size()
+        $foreach a in subpop[i]
+            $print "%d -", a
+        $print
+
+subcode: dump_attr_group
+    $for i=0:n_attr
+        $print "attr $i: -"
+        $foreach a in attr_group[i]
+            $print "%d -", a
+        $print
+
+subcode: _autoload
+    $global std::map<std::string, int> attr_map
+    $global n_attr = 0
+
+fncode: get_attr(char* s): int
+    std::string attr(s)
+    $if attr_map.count(attr)==0
+        attr_map[attr]=n_attr++
+    # $print "get_attr: $s -> %d", attr_map[attr]
+    return attr_map[attr]
+
+fncode: is_proper(std::vector<int> & A, std::vector<int> & B): bool
+    # assert A.size() < B.size()
+    $my int in_B[N]
+    $for i=0:N
+        in_B[i] = 0
+    $foreach b in B
+        in_B[b] = 1
+    n_in = 0
+    $foreach a in A
+        $if in_B[a]
+            n_in++
+    return n_in == A.size() || n_in == 0
+

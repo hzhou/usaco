@@ -1,0 +1,113 @@
+include: ../../usaco.def
+page: cowjump_silver, basic_frame
+    module: cpp
+
+    $struct(seg) int x1, int x2, int y1, int y2, is_active
+    &call open_In
+        $call scan_Int, N
+        $global struct seg *seg_list
+        seg_list = new struct seg[N]
+        $for i=0:N
+            $call scan_int, $(join:seg_list[i].*:, :x1,y1,x2,y2)
+            is_active = false
+    $dump N
+    # $call dump_seg_list
+    $my int P[N*2]
+    $for i=0:N*2
+        P[i] = i
+    &call std_sort, P, N*2, int
+        int xa = a<N? seg_list[a].x1 : seg_list[a-N].x2
+        int xb = b<N? seg_list[b].x1 : seg_list[b-N].x2
+        return xa<xb
+    # $call dump_array, P, N*2
+
+    i_found_a=-1
+    i_found_b=-1
+    $my std::map<int, int> Active_segs
+    $for i=0:N*2
+        $my int x, int y
+        i_seg = P[i]
+        $(set:s=seg_list[i_seg])
+        $if i_seg >= N
+            i_seg -= N
+        x = $(s).x1
+        y = $(s).y1
+
+        $if ! $(s).is_active
+            $(s).is_active = true
+            # $print "add $i_seg..."
+            $my auto it = Active_segs.lower_bound(y)
+            $if it!=Active_segs.begin()
+                $my auto it_prev = it
+                it_prev--
+                # $print " ... prev = %d", it_prev->second
+                $if check_intersect(it_prev->second, i_seg)
+                    i_found_a = it_prev->second
+                    i_found_b = i_seg
+                    goto ans
+            $if it!=Active_segs.end()
+                $my auto it_next = it
+                # $print " ... next = %d", it_next->second
+                $if check_intersect(it_next->second, i_seg)
+                    i_found_a = it_next->second
+                    i_found_b = i_seg
+                    goto ans
+            Active_segs.insert(std::make_pair(y, i_seg))
+        $else
+            $(s).is_active = false
+            $my auto it = Active_segs.lower_bound(y)
+            # $print "remove %d...", it->second
+            $my auto it_prev = it
+            $my auto it_next = it
+            it_next++
+            $if it!=Active_segs.begin()
+                it_prev--
+                # $print " ... prev = %d, next = %d", it_prev->second, it_next->second
+                $if check_intersect(it_next->second, it_prev->second)
+                    i_found_a = it_next->second
+                    i_found_b = it_prev->second
+                    goto ans
+            Active_segs.erase(it)
+
+    ans:
+    $if i_found_a > i_found_b
+        $call swap, i_found_a, i_found_b
+    count = 0
+    $for i=0:N
+        $if i!=i_found_b && check_intersect(i, i_found_b)
+            count++
+
+    $if count==1
+        i_found = i_found_a+1
+    $else
+        i_found = i_found_b+1
+    &call open_Out
+        $print $i_found
+
+fncode: check_orientation(x1,y1,x2,y2,x3,y3:int): int
+    $my ret = (y2-y1) * (x3-x1) - (y3-y1) * (x2-x1)
+    $if ret < 0 
+        return -1
+    $elif ret > 0
+        return 1
+    $else
+        return 0
+
+fncode: check_intersect(i1, i2): bool
+    # $print check_intersect: $i1, $i2
+    $(set:s1=seg_list[i1].$1)
+    $(set:s2=seg_list[i2].$1)
+
+    $my int o1 = check_orientation($(s1:x1),$(s1:y1),$(s1:x2),$(s1:y2),$(s2:x1),$(s2:y1))
+    $my int o2 = check_orientation($(s1:x1),$(s1:y1),$(s1:x2),$(s1:y2),$(s2:x2),$(s2:y2))
+    $my int o3 = check_orientation($(s2:x1),$(s2:y1),$(s2:x2),$(s2:y2),$(s1:x1),$(s1:y1))
+    $my int o4 = check_orientation($(s2:x1),$(s2:y1),$(s2:x2),$(s2:y2),$(s1:x2),$(s1:y2))
+    $if o1!=o2 && o3!=o4
+        return true
+    return false
+
+#---------------------------------------- 
+subcode: dump_seg_list
+    $for i=0:N
+        $print "$i: %d, %d, %d, %d", $(join:seg_list[i].*:, :x1,y1,x2,y2)
+        

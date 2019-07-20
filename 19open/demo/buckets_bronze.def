@@ -1,0 +1,68 @@
+include: ../../usaco.def
+
+#- backtracking
+page: buckets_bronze, basic_frame
+    module: cpp
+
+    $global char grid[10*10+1]
+    &call open_In
+        $for i=0:10
+            fscanf(In, "%s", &grid[i*10])
+
+    $my i_lake
+    $for i=0:100
+        $if grid[i]=='L'
+            i_lake = i
+
+    # $call dump_grid
+    $my int dist_list[100]
+    $for i=0:100
+        dist_list[i] = 100
+    dist_list[i_lake] = 0
+
+    $my int min_dist = 100
+
+    $my std::vector<int> stack
+    stack.push_back(i_lake)
+    $while stack.size()>0
+        i_cur = stack.back()
+        stack.pop_back()
+
+        $my int adj_list[4]
+        $my n_adj=0
+        $call get_adj_list
+
+        $(set:cur=dist_list[i_cur])
+        $for i=0:n_adj
+            $(set:i2=adj_list[i])
+            $(set:C=grid[$(i2)])
+            $if $(C) == 'B'
+                $if min_dist > $(cur)
+                    min_dist = $(cur)
+            $elif $(C) == 'R'
+                NOOP
+            $elif dist_list[$(i2)] > $(cur)+1
+                dist_list[$(i2)] = $(cur)+1
+                stack.push_back($(i2))
+
+    &call open_Out
+        $print $min_dist
+
+    subcode: get_adj_list
+        i = i_cur / 10
+        j = i_cur % 10
+        $if i>0
+            adj_list[n_adj++] = i_cur-10
+        $if i<9
+            adj_list[n_adj++] = i_cur+10
+        $if j>0
+            adj_list[n_adj++] = i_cur-1
+        $if j<9
+            adj_list[n_adj++] = i_cur+1
+
+subcode: dump_grid
+    $for i=0:10
+        $for j=0:10
+            $print "%c-", grid[i*10+j]
+        $print
+

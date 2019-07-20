@@ -1,0 +1,72 @@
+include: ../../usaco.def
+page: fenceplan_silver, basic_frame
+    module: cpp
+
+    $struct(cow) int x, int y
+    &call open_In
+        $call scan_Int, N, M
+        $my struct cow cow_list[N]
+        $my int A[M], int B[M]
+        $for i=0:N
+            $call scan_int, cow_list[i].x, cow_list[i].y
+        $for i=0:M
+            $call scan_int, A[i], B[i]
+            A[i]--
+            B[i]--
+
+    #---------------------------------------- 
+    $my std::vector<int> adj_list[N]
+    $for i=0:M
+        adj_list[A[i]].push_back(B[i])
+        adj_list[B[i]].push_back(A[i])
+
+    #---------------------------------------- 
+    $(set:MAX=1000000000)
+    int min_perimeter = $(MAX)
+    #---------------------------------------- 
+    $my int Visited[N]
+    $for i=0:N
+        Visited[i] = 0
+
+    i_next = 0
+    $while 1
+        $while Visited[i_next]
+            i_next++
+            $if i_next==N
+                goto done
+
+        $my std::vector<int> region
+        $my std::vector<int> stack
+        Visited[i_next] = 1
+        region.push_back(i_next)
+        stack.push_back(i_next)
+
+        $while stack.size()>0
+            i = stack.back()
+            stack.pop_back()
+
+            $foreach a in adj_list[i]
+                $if !Visited[a]
+                    Visited[a]=1
+                    region.push_back(a)
+                    stack.push_back(a)
+        $my int x1 = $(MAX)
+        $my int y1 = $(MAX)
+        $my int x2 = 0
+        $my int y2 = 0
+        $foreach i in region
+            $if x1 > cow_list[i].x
+                x1 = cow_list[i].x
+            $if x2 < cow_list[i].x
+                x2 = cow_list[i].x
+            $if y1 > cow_list[i].y
+                y1 = cow_list[i].y
+            $if y2 < cow_list[i].y
+                y2 = cow_list[i].y
+        n_tmp = (y2-y1)*2 + (x2-x1)*2
+        $if min_perimeter > n_tmp
+            min_perimeter = n_tmp
+    done:
+        &call open_Out
+            $print $min_perimeter
+

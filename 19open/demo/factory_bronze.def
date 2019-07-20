@@ -1,0 +1,46 @@
+include: ../../usaco.def
+
+#- union-join
+
+page: factory_bronze, basic_frame
+    module: cpp
+
+    &call open_In
+        $call scan_Int, N
+        $my int A[N], int B[N]
+        $for i=0:N-1
+            $call scan_int, A[i], B[i]
+            A[i]--
+            B[i]--
+
+    $global int * P
+    P = new int[N]
+    $for i=0:N
+        P[i] = i
+
+    $for i=0:N-1
+        $if P[A[i]]==A[i]
+            P[A[i]]=find_root(B[i])
+        $else
+            break
+
+    $my i_root = -1
+    $for i=0:N
+        $if P[i]==i
+            $if i_root<0
+                i_root = i
+            $else
+                i_root = -1
+                break
+
+    $if i_root>=0
+        i_root++
+    &call open_Out
+        fprintf(Out, "%d\n", i_root)
+
+
+fncode: find_root(i)
+    $while i!=P[i]
+        i=P[i]
+    return i
+

@@ -1,0 +1,85 @@
+include: ../../usaco.def
+
+page: leftout_silver, basic_frame
+    module: cpp
+
+    &call open_In
+        $call scan_Int, N
+        $my char grid[N*N+1]
+        $for i=0:N
+            fscanf(In, "%s", &grid[i*N])
+    $for i=0:N*N
+        $if grid[i]=='L'
+            grid[i]=0
+        $else
+            grid[i]=1
+    # $call dump_grid
+    $for j=0:N
+        $if grid[j] == 1
+            $for i=0:N
+                grid[i*N+j] = 1-grid[i*N+j]
+    # $call dump_grid
+    $for i=0:N
+        $if grid[i*N] == 1
+            $for j=0:N
+                grid[i*N+j] = 1-grid[i*N+j]
+    # $call dump_grid
+
+    #---------------------------------------- 
+    $my i_bad=-1
+    $my j_bad=-1
+    #---------------------------------------- 
+    is_all_one = true
+    $for i=1:N
+        $for j=1:N
+            $if grid[i*N+j] != 1
+                is_all_one = false
+                goto check_all_one
+    check_all_one:
+    $if is_all_one
+        i_bad = 0
+        j_bad = 0
+        goto all_done
+    #---------------------------------------- 
+    $for i=1:N
+        is_all_one = true
+        $for j=1:N
+            $if grid[i*N+j] != 1
+                is_all_one = false
+                break
+        $if is_all_one
+            $if i_bad == -1
+                i_bad = i
+                j_bad = 0
+            $else
+                i_bad =-1
+                goto all_done
+    $if i_bad>=0
+        goto all_done
+    #---------------------------------------- 
+    $for i=1:N
+        $for j=1:N
+            $if grid[i*N+j] == 1
+                $if i_bad == -1
+                    i_bad = i
+                    j_bad = j
+                $else
+                    i_bad = -1
+                    goto all_done
+    #---------------------------------------- 
+    all_done:
+    $dump N, i_bad, j_bad
+    &call open_Out
+        $if i_bad<0
+            $print -1
+        $else
+            i_bad++
+            j_bad++
+            $print $i_bad $j_bad
+
+subcode: dump_grid
+    $print ----\n
+    $for i=0:N
+        $for j=0:N
+            $print "%d-", grid[i*N+j]
+        $print
