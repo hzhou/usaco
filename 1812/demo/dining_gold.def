@@ -1,3 +1,4 @@
+# tag: Dijkstra
 include: ../../usaco.def
 page: dining_gold, basic_frame
     module: cpp
