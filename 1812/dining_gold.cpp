@@ -1,67 +1,101 @@
+//Harry Zhou
+//9-14-2019
+//1hr 10min
+//-
+#include <cstdio>
+#include <cstdlib>
+#include <string.h>
+#include <algorithm>
+#include <limits.h>
 #include <vector>
+#include <stack>
+#include <queue>
 #include <set>
-using namespace std;
+#include <map>
 
-using namespace std;
-struct edge2 {
-	int b;
-	int t;
+typedef std::pair<int,int> ipair;
+typedef std::set<int> iset;
+typedef std::map<int,int> imap;
+typedef std::vector<int> ivec;
+typedef std::stack<int> istack;
+typedef std::priority_queue<ipair, std::vector<ipair>, std::greater<ipair>> dijkstra_priority_queue;
+
+struct node {
+    ivec edges;
+    ivec weights;
 };
 
+int main() {
+    FILE *fin = fopen("dining.in", "r");
+    FILE *fout = fopen("dining.out", "w");
 
-int main(int argc, char** argv)
-{
-    set<pair<int, int> > stack;
-    int i;
+    int N, M, K;
+    fscanf(fin, "%d %d %d", &N, &M, &K);
 
-    std::vector<struct edge2> edge2_list[N];
-    for (int  i = 0; i<M; i++) {
-        edge2_list[edge_list[i].a].push_back((struct edge2) {edge_list[i].b, edge_list[i].t});
-        edge2_list[edge_list[i].b].push_back((struct edge2) {edge_list[i].a, edge_list[i].t});
+    node *nodes = new node[N];
+    for (int i=0; i<M; i++) {
+        int a, b, t;
+        fscanf(fin, "%d %d %d", &a, &b, &t);
+        a--; b--;
+        nodes[a].edges.push_back(b);
+        nodes[a].weights.push_back(t);
+        nodes[b].edges.push_back(a);
+        nodes[b].weights.push_back(t);
     }
-    int dist[N];
-    for (int  i = 0; i<N; i++) {
-        dist[i] = 1000000000;
+
+    ipair * haybales = new ipair[K];
+    for (int i=0; i<K; i++) {
+        int idx, yum;
+        fscanf(fin, "%d %d", &idx, &yum);
+        idx--;
+        haybales[i] = std::make_pair(idx, yum);
     }
-    dist[N-1] = 0;
-    stack.insert(make_pair(dist[N-1], N - 1));
-    while (!stack.empty()) {
-        i = stack.begin()->second;
-        stack.erase(stack.begin());
-        for(auto e : edge2_list[i]){
-            if (dist[e.b] > dist[i] + e.t && e.b < N - 1) {
-                dist[e.b] = dist[i] + e.t;
-                stack.insert(make_pair(dist[e.b], e.b));
-            }
-        }
-    }
-    bool has_neg = false;
-    edge2_list[N-1].clear();
-    for (int  i = 0; i<K; i++) {
-        if (dist[hay_list[i].i] - hay_list[i].bonus < 0) {
-            has_neg = true;
-            break;
-        }
-        edge2_list[N-1].push_back((struct edge2) {hay_list[i].i, dist[hay_list[i].i] - hay_list[i].bonus});
-    }
-    if (has_neg) {
-    } else {
-        int dist2[N];
-        for (int  i = 0; i<N; i++) {
-            dist2[i] = 1000000000;
-        }
-        dist2[N-1] = 0;
-        stack.insert(make_pair(dist2[N-1], N - 1));
-        while (!stack.empty()) {
-            i = stack.begin()->second;
-            stack.erase(stack.begin());
-            for(auto e : edge2_list[i]){
-                if (dist2[e.b] > dist2[i] + e.t && e.b < N - 1) {
-                    dist2[e.b] = dist2[i] + e.t;
-                    stack.insert(make_pair(dist2[e.b], e.b));
-                }
-            }
-        }
-    }
-    return 0;
+
+   dijkstra_priority_queue pq;
+   int *barn_dist = new int[N];
+   for (int i=0; i<N; i++) {barn_dist[i] = INT_MAX;}
+   barn_dist[N-1] = 0;
+   pq.push(std::make_pair(barn_dist[N-1], N-1));
+   while (!pq.empty()) {
+       int node = pq.top().second;
+       pq.pop();
+
+       for (int i=0; i<nodes[node].edges.size(); i++) {
+           int neighbor = nodes[node].edges[i];
+           int weight = nodes[node].weights[i];
+           if (barn_dist[neighbor] > barn_dist[node]+weight) {
+               barn_dist[neighbor] = barn_dist[node]+weight;
+               pq.push(std::make_pair(barn_dist[neighbor], neighbor));
+           }
+       }
+   }
+
+   int *bale_dist = new int[N];
+   for (int i=0; i<N; i++) {bale_dist[i] = INT_MAX;}
+   for (int i=0; i<K; i++) {
+       int idx = haybales[i].first;
+       int yum = haybales[i].second;
+       int cost = barn_dist[idx] - yum;
+       bale_dist[idx] = cost;
+       pq.push(std::make_pair(bale_dist[idx], idx));
+   }
+   while (!pq.empty()) {
+       int node = pq.top().second;
+       pq.pop();
+
+       for (int i=0; i<nodes[node].edges.size(); i++) {
+           int neighbor = nodes[node].edges[i];
+           int weight = nodes[node].weights[i];
+           if (bale_dist[neighbor] > bale_dist[node]+weight) {
+               bale_dist[neighbor] = bale_dist[node]+weight;
+               pq.push(std::make_pair(bale_dist[neighbor], neighbor));
+           }
+       }
+   }
+
+   for (int i=0; i<N-1; i++) {
+       int out = bale_dist[i] <= barn_dist[i] ? 1 : 0;
+       printf("%d\n", out);
+       fprintf(fout, "%d\n", out);
+   }
 }
