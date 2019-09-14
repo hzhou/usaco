@@ -1,3 +1,5 @@
+# tag: binary_search
+
 include: ../../usaco.def
 page: convention_silver, basic_frame
     module: cpp
@@ -10,9 +12,9 @@ page: convention_silver, basic_frame
         $my int A[N]
         $for i=0:N
             $call scan_int, A[i]
-    &call std_sort, A, N, int
-        return a<b
-    $dump A[0], A[N-1]
+
+    $call std_Sort, A, N
+    # $dump A[0], A[N-1]
 
     $my int w1=0
     $my int w2=A[N-1]
@@ -27,7 +29,7 @@ page: convention_silver, basic_frame
                 k++
             j = k
         $if j>=N
-            # ok
+            # ok - tgt <= w
             w2=w-1
         $else
             w1=w+1

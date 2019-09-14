@@ -23,9 +23,7 @@ int main(int argc, char** argv)
         fscanf(In, " %d" ,&A[i]);
     }
     fclose(In);
-    std::sort(A, A+N, [&](int a, int b){
-        return a < b;
-    } );
+    std::sort(A, A+N);
     std::cout<<"A[0]="<<A[0]<<", "<<"A[N-1]="<<A[N-1]<<'\n';
     int w1 = 0;
     int w2 = A[N-1];
@@ -38,16 +36,12 @@ int main(int argc, char** argv)
                 k++;
             }
             j = k;
-            if (j >= N) {
-                break;
-            }
         }
         if (j >= N) {
             w2 = w - 1;
         } else {
             w1 = w + 1;
         }
-        std::cout<<"w="<<w<<", "<<"j="<<j<<", "<<"w1="<<w1<<", "<<"w2="<<w2<<'\n';
     }
     std::cout<<"w1="<<w1<<'\n';
     FILE* Out = fopen("convention.out", "w");
