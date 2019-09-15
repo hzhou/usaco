@@ -26,7 +26,7 @@ void spth(int s) {
 	visited.clear();
   	visited.insert(make_pair(0, s));
   	while (!visited.empty()) {
-    	int i = (*visited.begin()).second;
+    	int i = visited.begin()->second;
     	visited.erase(visited.begin());
     	for (auto j : neighbors[i]) {
       		if (dist.count(j) == 0 || dist[i] + val[make_pair(i, j)] < dist[j]) {
@@ -57,11 +57,11 @@ int main() {
 
   	spth(n - 1);
 
-  	map<int, int> orig_dist = dist;
+  	map<int, int> odist = dist;
 
   	for (int i = 0; i < k; ++i) {
     	neighbors[n].push_back(hay[i]);
-    	val[make_pair(n, hay[i])] = orig_dist[hay[i]] - y[i];
+    	val[make_pair(n, hay[i])] = odist[hay[i]] - y[i];
   	}
 
   	dist.clear();
@@ -69,7 +69,11 @@ int main() {
 
   	ofstream fout("dining.out");
   	for (int i = 0; i < n - 1; ++i) {
-    	fout << (dist[i] <= orig_dist[i]) << endl;
+  		if (dist[i] <= odist[i]) {
+    		fout << 1 << endl;
+    	} else {
+    		fout << 0 << endl;
+    	}
     }
   
   	return 0;
