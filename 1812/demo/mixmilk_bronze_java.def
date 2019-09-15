@@ -1,0 +1,33 @@
+include: ../../usaco_java.def
+
+page: mixmilk_bronze, basic_frame
+    module: java
+
+    int A, a, B, b, C, c;
+    &call open_In
+        $map get_int, A, a, B, b, C, c
+    # $print $A, $a, $B, $b, $C, $c
+
+    $for i=0:100
+        $if i % 3 == 0
+            $call pour, a, b
+        $elif i % 3 == 1
+            $call pour, b, c
+        $elif i % 3 == 2
+            $call pour, c, a
+
+    &call open_Out
+        $print $a
+        $print $b
+        $print $c
+
+subcode: pour(a, b)
+    $(set:A=$(a:uc))
+    $(set:B=$(b:uc))
+    $if $(a) + $(b) <= $(B)
+        $(b) += $(a)
+        $(a) = 0;
+    $else
+        $(a) = $(a)+$(b)-$(B);
+        $(b) = $(B);
+

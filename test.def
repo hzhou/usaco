@@ -34,26 +34,34 @@ page: test
 
 
     subcode: test_one
+        my $old_name=$name
         $print $name ...
         $if -d "t"
             system "rm -rf t"
         mkdir "t"
         chdir "t"
+
+        $name=~s/_java$//
+        my $full_name=$name
+
         $if $name!~/(bronze|silver|gold|platinum)/
             system "unzip -qq ../$name\_bronze*.zip"
         $else
             system "unzip -qq ../$name*.zip"
         # system "ls"
-        my $old_name=$name
-        $name=~s/_(bronze|silver|gold|platinum)$//
+        $name=~s/_(bronze|silver|gold|platinum).*$//
         $call @do_test
         chdir ".."
 
     subcode: do_test
         $if $ext eq "def"
             system "cd ../$dir && mydef_page $old_name.def"
-            $a=~s/def$/cpp/
-            $ext = "cpp"
+            $if $a=~/(.*)_java.def/
+                $a = "$1.java"
+                $ext = "java"
+            $else
+                $a=~s/def$/cpp/
+                $ext = "cpp"
         # ------------------
         $if $ext eq "cpp"
             system "g++ -std=c++0x -O2 -o a ../$a -lm"
@@ -61,11 +69,11 @@ page: test
                 &call each_test
                     system "./a >/dev/null"
         $case $ext eq "java"
-            system "cp ../$a $name.java"
-            system "javac  $name.java"
-            $if -f "$name.class"
+            system "cp ../$a $full_name.java"
+            system "javac  $full_name.java"
+            $if -f "$full_name.class"
                 &call each_test
-                    system "java $name >/dev/null"
+                    system "java $full_name >/dev/null"
         $case $ext eq "py"
             &call each_test
                 system "python ../$a >/dev/null"

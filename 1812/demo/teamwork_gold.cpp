@@ -21,33 +21,29 @@ int main(int argc, char** argv)
     fclose(In);
     int sum[N];
     sum[0] = Skills[0];
-    int maxes[K+1];
-    maxes[1] = Skills[0];
+    int *maxes = new int[N*K];
+    for (int  i = 0; i<N; i++) {
+        maxes[(i)*K+0] = Skills[i];
+        for (int  k = 1; k<K; k++) {
+            if (i >= k) {
+                maxes[(i)*K+k] = std::max(maxes[(i-1)*K+k-1], Skills[i]);
+            }
+        }
+    }
     for (int  i = 1; i<N; i++) {
-        for (int  j = K; j >= 1; j--) {
-            maxes[j] = maxes[j-1];
-        }
-        maxes[1] = Skills[i];
-        for (int  j = 2; j<K+1; j++) {
-            if (maxes[j] < Skills[i]) {
-                maxes[j] = Skills[i];
-            }
-        }
-        int max = 0;
-        for (int  j = 1; j<K+1; j++) {
-            int t;
-            if (i - j <- 1) {
+        sum[i] = 0;
+        for (int  k = 0; k<K; k++) {
+            if (i < k) {
                 break;
-            } else if (i - j == -1) {
-                t = maxes[j] * j;
-            } else {
-                t = sum[i-j] + maxes[j] * j;
             }
-            if (max < t) {
-                max = t;
+            int t = maxes[(i)*K+k] * (k+1);
+            if (i > k) {
+                t += sum[i-k-1];
+            }
+            if (sum[i] < t) {
+                sum[i] = t;
             }
         }
-        sum[i] = max;
     }
     FILE* Out = fopen("teamwork.out", "w");
     fprintf(Out, "%d\n", sum[N-1]);

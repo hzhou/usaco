@@ -1,3 +1,4 @@
+tag: counting
 include: ../../usaco.def
 page: cowpatibility_gold, basic_frame
     module: cpp
@@ -71,6 +72,7 @@ subcode: try3
             M[get_S5(j, L[i])]++
     
     count = (long long)N*(N-1)/2
+    # sub match-1, add match-2, sub match-3, ...
     $foreach &p in M
         $my const int *v = &p.first.v[0]
         $if p.first.n % 2 == 1

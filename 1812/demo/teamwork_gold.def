@@ -13,29 +13,27 @@ page: teamwork_gold, basic_frame
     $my int sum[N]
     sum[0]=Skills[0]
 
-    $my int maxes[K+1]
-    maxes[1]=Skills[0]
+    $my int *maxes = new int[N*K]
+    $(set:M=maxes[($1)*K+$2])
+    $call @get_maxes
     $for i=1:N
-        $for j=K downto 1
-            maxes[j]=maxes[j-1]
-        maxes[1]=Skills[i]
-        $for j=2:K+1
-            $if maxes[j]<Skills[i]
-                maxes[j]=Skills[i]
-
-        $my int max = 0
-        $for j=1:K+1
-            $my int t
-            $if i-j<-1
+        sum[i] = 0
+        $for k=0:K
+            $if i<k
                 break
-            $elif i-j==-1
-                t = maxes[j]*j
-            $else
-                t = sum[i-j]+maxes[j]*j
-            $if max<t
-                max=t
-        sum[i] = max
+            $my int t = $(M:i,k) * (k+1)
+            $if i>k
+                t += sum[i-k-1]
+            $if sum[i] < t
+                sum[i] = t
         # $dump i, sum[i]
 
     &call open_Out
         $print "%d", sum[N-1]
+
+subcode: get_maxes
+    $for i=0:N
+        $(M:i,0) = Skills[i]
+        $for k=1:K
+            $if i>=k
+                $(M:i,k) = std::max( $(M:i-1,k-1), Skills[i])

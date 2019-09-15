@@ -5,8 +5,8 @@
 #include <algorithm>
 
 struct S5 {
-	int n;
-	int v[5];
+    int n;
+    int v[5];
 };
 
 bool operator<(const S5 & a, const S5 & b);
