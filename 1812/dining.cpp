@@ -19,13 +19,14 @@ using namespace std;
 int n, m, k, hay[100000], y[100000];
 vector<int> neighbors[100001];
 map<pair<int,int>, int> val;
-map<int,int> dist; 	
+map<int,int> dist; 
+set<pair<int,int>> visited;	
  
 void spth(int s) {
-	set<pair<int,int>> visited;
+	visited.clear();
   	visited.insert(make_pair(0, s));
   	while (!visited.empty()) {
-    	int i = visited.begin() -> second;
+    	int i = (*visited.begin()).second;
     	visited.erase(visited.begin());
     	for (auto j : neighbors[i]) {
       		if (dist.count(j) == 0 || dist[i] + val[make_pair(i, j)] < dist[j]) {
