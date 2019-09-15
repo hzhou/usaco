@@ -16,7 +16,7 @@
 
 using namespace std;
  
-int n, m, k, H[100000], Y[100000];
+int n, m, k, hay[100000], y[100000];
 vector<int> neighbors[100001];
 map<pair<int,int>, int> val;
 map<int,int> dist; 	
@@ -50,8 +50,8 @@ int main() {
     	val[make_pair(b, a)] = t;
   	}
   	for (int i = 0; i < k; ++i) {
-    	fin >> H[i] >> Y[i];
-    	H[i]--;
+    	fin >> hay[i] >> y[i];
+    	hay[i]--;
   	}
 
   	spth(n - 1);
@@ -59,8 +59,8 @@ int main() {
   	map<int, int> orig_dist = dist;
 
   	for (int i = 0; i < k; ++i) {
-    	neighbors[n].push_back(H[i]);
-    	val[make_pair(n, H[i])] = orig_dist[H[i]] - Y[i];
+    	neighbors[n].push_back(hay[i]);
+    	val[make_pair(n, hay[i])] = orig_dist[hay[i]] - y[i];
   	}
 
   	dist.clear();
