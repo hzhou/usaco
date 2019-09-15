@@ -2,7 +2,7 @@
  * ID: jhuang1
  * PROG: Grass Planting
  * LANG: C++11
- * RESULT: 1/10
+ * RESULT: 10/10
  * TIME: 1ms
  * COMMENT: test1
  * */
@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
 
 	int N;
 	fin >> N;
-	int cnt[N + 1];
+	unordered_map<int, int> cnt;
 	int a, b;
 	for (int i = 0; i < N - 1; ++i) {
 		fin >> a >> b;
@@ -45,8 +45,10 @@ int main(int argc, char* argv[]) {
 
 	int ans = -1;
 
-	for (int i = 1; i <= N; ++i) {
-		ans = max(ans, cnt[i]);
+	for (auto i: cnt) {
+		if (i.first != 0) {
+			ans = max(ans, i.second);
+		}
 	}
 	ans++;
 	fout << ans;
