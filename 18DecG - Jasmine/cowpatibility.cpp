@@ -25,7 +25,7 @@ bool operator< (const flavComb &a, const flavComb &b) {
 }
 int main () {
     FILE * In = fopen("cowpatibility.in", "r");
-    int N;
+    long long N;
     fscanf(In, "%d", &N); 
 
     //set is too slow
@@ -52,6 +52,7 @@ int main () {
            
             //cout << "\n";
             fC.n = n;  
+            
             flavors[fC] += 1;
             
             //be careful with pointers
@@ -63,13 +64,16 @@ int main () {
     long long total [5]= {0};
     for (pair <flavComb, int> p : flavors) {
         int i = p.first.n-1;
-        int sum = p.second;
+        //this has to be long long
+        long long sum = p.second;
         total[i] += (sum)*(sum-1)/2;
-        
+        //cout << total[i] << "\n";
     }
-    
+
+   
     
     long long comp = total[0] - total[1] + total[2] - total[3] + total[4];
+    //N needed to be a long
     long long uncomp = (N)*(N-1)/2 - comp;
     FILE * Out = fopen ("cowpatibility.out", "w");
     //signed long long
