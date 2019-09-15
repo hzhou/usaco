@@ -1,0 +1,27 @@
+include: ../../usaco_java.def
+
+page: blist_bronze, basic_frame
+    module: java
+
+    $my int N
+    &call open_In
+        $call get_int, N
+        int[] S = new int[N];
+        int[] T = new int[N];
+        int[] B = new int[N];
+        $for i=0:N
+            $map get_int, S[i], T[i], B[i]
+
+    int[] time_slots = new int[1000];
+    $for i=0:N
+        $for j=S[i]:T[i]
+            time_slots[j]+=B[i]
+
+    int max = 0;
+    $for i=0:1000
+        $if max < time_slots[i]
+            max = time_slots[i];
+
+    &call open_Out
+        $print $max
+
