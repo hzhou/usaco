@@ -2,7 +2,7 @@
  * ID: jhuang1
  * PROG: sample
  * LANG: C++11
- * RESULT: 8/10
+ * RESULT: 9/11
  * TIME: 1ms
  * COMMENT: test1
  * */
@@ -23,39 +23,49 @@
 
 using namespace std;
 
-int mx[] = {1, 0, -1, 0};
-int my[] = {0, 1, 0, -1};
+/*int mx[] = {1, 0, -1, 0};
+int my[] = {0, 1, 0, -1};*/
 
-pair<int, int> comp(vector<vector<int>>& board, vector<vector<bool>> &visited, int r, int c, pair<int, int> ap) {
-	if (r < 0 || c < 0 || r >= board.size() || c >= board.size()) {
-		return make_pair(0, 0);
-	}
-	if (visited[r][c]) {
-		return make_pair(0, 0);
-	}
-	visited[r][c] = true;
-	int newr = r;
-	int newc = c;
-	int per = 4;
-	ap.second += per;
-	pair<int, int> res;
-	for (int i = 0; i < 4; ++i) {
-		newr += mx[i];
-		newc += my[i];
-		if (newr < 0 || newc < 0 || newr >= board.size() || newc >= board.size()) {
-			continue;
-		}
-		if (visited[newr][newc]) {
-			continue;
-		}
-		if (board[newr][newc] == 1) {
-			ap.second--;
-			res = comp(board, visited, newr, newc, ap);
-			ap.first += res.first;
-			ap.second += res.second;
-		}
-	}
-	return ap;
+int areas[1000000], perimeters[1000000];
+
+void visit(vector<vector<int>>& board, vector<vector<int>> &visited, int i, int j, int num) {
+	stack<pair<int, int>> go;
+  	go.push(make_pair(i, j));
+  	while (!go.empty()) {
+    	auto current = go.top();
+    	go.pop();
+    	i = current.first; j = current.second;
+    	if (visited[i][j] != 0 || board[i][j] == 0) continue;
+    	visited[i][j] = num;
+    	areas[num]++;
+    	go.push(make_pair(i - 1,j));
+    	go.push(make_pair(i + 1,j));
+    	go.push(make_pair(i,j - 1));
+    	go.push(make_pair(i,j + 1));
+  	}
+}
+
+void perimeter(int N, vector<vector<int>> &visited) {
+  	for (int i = 1; i <= N; ++i) {
+    	for (int j = 1; j <= N; ++j) {
+      		int r = visited[i][j];
+      		if (r == 0) {
+      			continue;
+      		}
+      		if (visited[i - 1][j]==0) {
+      			perimeters[r]++;
+      		}
+      		if (visited[i + 1][j]==0) {
+      			perimeters[r]++;
+      		}
+      		if (visited[i][j - 1]==0) {
+      			perimeters[r]++;
+      		}
+      		if (visited[i][j + 1]==0) {
+      			perimeters[r]++;
+      		}
+    	}
+    }
 }
 
 int main(int argc, char* argv[]) {
@@ -71,34 +81,41 @@ int main(int argc, char* argv[]) {
 	int N;
 	fin >> N;
 	string a;
-	vector<int> row(N, 0);
-	vector<vector<int>> board(N, row);
-	vector<bool> ro(N, false);
-	vector<vector<bool>> visited(N, ro);
-	for (int i = 0; i < N; ++i) {
+	vector<int> row(N + 2, 0);
+	vector<vector<int>> board(N + 2, row), visited(N + 2, row);
+	for (int i = 1; i <= N; ++i) {
 		fin >> a;
-		for (int j = 0; j < N; ++i) {
+		for (int j = 1; j <= N; ++j) {
 			if (a[j] == '#') {
 				board[i][j] = 1;
 			} else {
 				board[i][j] = 0;
-			}
+			}	
 		}
 	}
 
-	vector<pair<int, int>> res;
+	int num = 0;
 
 	for (int i = 0; i < N; ++i) {
 		for (int j = 0; j < N; ++j) {
-			if (!visited[i][j] && board[i][j]) {
-				res.push_back(comp(board, visited, i, j, make_pair(0, 0)));
+			if (visited[i][j] == 0 && board[i][j] == 1) {
+				visit(board, visited, i, j, ++num);
 			}
 		}
 	}
 
-	sort(res.begin(), res.end());
+	perimeter(N, visited);
 
-	fout << res.rbegin()->first << res.rbegin()->second;
+	int maxarea = -1, maxperi = -1;
+
+	for (int i = 1; i <= num; ++i) {
+    	if (areas[i] > maxarea || (areas[i] == maxarea && perimeters[i] < maxperi)) {
+      		maxarea = areas[i];
+      		maxperi = perimeters[i];
+    	}
+    }
+
+	fout << maxarea << ' ' << maxperi;
 
 	// End of your soulution.
 	//////////////////////////////////////
