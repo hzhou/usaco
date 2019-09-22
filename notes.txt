@@ -1,0 +1,38 @@
+9/15/19
+
+Djikstra’s Algorithm – Used for shortest path problems
+
+anonical form
+
+code example:
+
+stack.insert(s_0)
+while stack.size() > 0
+	s_0 = stack.top();
+	stack.pop();
+	for each s_0.edges
+		update
+		push
+
+
+Can use priority_queue, set, or map, etc.
+
+Teacher hates pair, probably better to use structs b/c of helper methods, names, operators, etc.
+
+9/22/19 <- I'm 15 now!
+
+Cow Poetry: Jan 2019 Gold #1
+
+DP -> dictionary
+
+DP[k] from DP[k - 1]
+
+Mod powers -> from P^n to (P^{n/2})^2 -> P^{M/2} 
+
+a^2 -> b = b/2, etc. 
+
+Insertion sort: 3 2 4 1
+				|       ^
+				|       |
+				|_______|
+
