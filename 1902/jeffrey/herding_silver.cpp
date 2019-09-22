@@ -1,10 +1,10 @@
 /*
  * ID: jhuang1
- * PROG: sample
+ * PROG: Sleepy Cow Herding
  * LANG: C++11
- * RESULT: 8/10
+ * RESULT: 12/12
  * TIME: 1ms
- * COMMENT: test1
+ * COMMENT: Worked, after some slight syntax issues
  * */
 #include <algorithm>
 #include <iostream>
@@ -22,8 +22,6 @@
 #include <unordered_set>
 
 using namespace std;
-
-
 
 int main(int argc, char* argv[]) {
 	const char* FIN  = "herding.in";
