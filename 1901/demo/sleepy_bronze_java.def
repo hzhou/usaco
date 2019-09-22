@@ -1,0 +1,22 @@
+include: ../../usaco_java.def
+
+page: sleepy_bronze, basic_frame
+    module: java
+
+    $my int N
+    &call open_In
+        $call get_int, N
+        $my int[] P=new int[N]
+        $for i=0:N
+            $map get_int, P[i]
+            P[i]--
+
+    $my int i_pos=0
+    $for i=N-1 downto 1
+        $if P[i] < P[i-1]
+            i_pos = i
+            break
+
+    &call open_Out
+        $print $i_pos
+

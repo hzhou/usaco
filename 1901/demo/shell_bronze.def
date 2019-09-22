@@ -1,0 +1,34 @@
+include: ../../usaco.def
+page: shell_bronze, basic_frame
+    module: cpp
+
+    &call open_In
+        $call scan_Int, N
+        $my int A[N], int B[N], int G[N]
+        $for i=0:N
+            $call scan_int, A[i], B[i], G[i]
+            A[i]--
+            B[i]--
+            G[i]--
+
+    $my int poss[3]={0, 1, 2}
+    $my int wins[3]={0}
+
+    $for i=0:N
+        $for j=0:3
+            $if poss[j] == A[i]
+                poss[j] = B[i]
+            $elif poss[j] == B[i]
+                poss[j] = A[i]
+
+            $if G[i] == poss[j]
+                wins[j]++
+
+    $my int max = 0
+    $for j = 0:3
+        $if max < wins[j]
+            max = wins[j]
+
+    &call open_Out
+        $print $max
+

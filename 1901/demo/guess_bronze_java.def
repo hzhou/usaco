@@ -1,0 +1,39 @@
+include: ../../usaco_java.def
+
+page: guess_bronze, basic_frame
+    module: java
+
+    $my int N
+    &call open_In
+        $call get_int, N
+        $my ArrayList<ArrayList<String>> Animals = new ArrayList<ArrayList<String>>()
+        $for i=0:N
+            Animals.add( new ArrayList<String>() )
+            $my String name, int num_attrs
+            $call get_word, name
+            $call get_int, num_attrs
+            $for j=0:num_attrs
+                $call get_word, name
+                Animals.get(i).add(name)
+
+    $my int max = 0
+    $for i=0:N
+        $for j=i+1:N
+            n = num_common(Animals.get(i), Animals.get(j))
+            $if max < n
+                max = n
+    &call open_Out
+        $print $max
+
+    fncode: num_common(ArrayList<String> A, ArrayList<String> B)
+        $my int count=0
+        $for i=0:A.size()
+            $for j=0:B.size()
+                # System.out.println( "cmp "+A.get(i)+" vs "+B.get(j))
+                $if A.get(i).equals(B.get(j))
+                    # System.out.println( ".... Yes")
+                    count++
+                    break
+        # $print --------------- $count
+        return count+1
+

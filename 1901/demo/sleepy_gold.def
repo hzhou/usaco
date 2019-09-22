@@ -1,3 +1,4 @@
+# tag: binary-index-tree
 include: ../../usaco.def
 page: sleepy_gold,basic_frame
     module: cpp
@@ -7,6 +8,7 @@ page: sleepy_gold,basic_frame
         $my int p_list[N]
         $for i=0:N
             $call scan_int, p_list[i]
+            p_list[i]--
 
     $my i_N
     $for i=N-1 downto 1
@@ -18,7 +20,8 @@ page: sleepy_gold,basic_frame
     $my int C[i_N]
 
     # $call try_0
-    $call try_1
+    # $call try_1
+    $call try_2
 
     # $call dump_array, C, i_N
     # --------------
@@ -57,10 +60,12 @@ subcode: try_1
         $for i=i_N-1 downto 0
             k = Q[i]
             $call get_sum, k
+            # k numbers went after it, but sum numbers stays after it
+            # $dump i, k, sum, i_N-i-1
             C[i] = k - sum + (i_N-i-1)
             $call add, k, 1
 
-    $my int count_1[i_N]
+    # add up the additional distance
     $for i=0:i_N
         n = bin_search(p_list, p_list[i], i_N, N-1)
         C[i]+=n-i_N
@@ -77,6 +82,15 @@ fncode: bin_search(int *p_list, int t, i1, i2)
         $else
             i1 = i3+1
     return i1
+
+fncode: try_2
+    &call fenwick, N
+        $for i=i_N:N
+            $call add, p_list[i], 1
+        $for i=0:i_N
+            $call get_sum, p_list[i]
+            C[i] = i_N-1 - i + sum
+            $call add, p_list[i], 1
 
 #---------------------------------------- 
 subcode: fenwick(N)

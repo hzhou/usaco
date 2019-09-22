@@ -1,0 +1,38 @@
+include: ../../usaco_java.def
+
+page: shell_bronze, basic_frame
+    module: java
+
+    $my int N
+    &call open_In
+        $call get_int, N
+        $(for:A,B,G)
+            int[] $1 = new int[N];
+        $for i=0:N
+            $map get_int, A[i], B[i], G[i]
+            $(for:A,B,G)
+                $1[i]--
+
+    $my int[] poss=new int[3]
+    $my int[] wins=new int[3]
+    $for j=0:3
+        poss[j]=j
+
+    $for i=0:N
+        $for j=0:3
+            $if poss[j] == A[i]
+                poss[j] = B[i]
+            $elif poss[j] == B[i]
+                poss[j] = A[i]
+
+            $if G[i] == poss[j]
+                wins[j]++
+
+    $my int max = 0
+    $for j = 0:3
+        $if max < wins[j]
+            max = wins[j]
+
+    &call open_Out
+        $print $max
+

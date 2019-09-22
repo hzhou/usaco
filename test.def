@@ -90,6 +90,6 @@ page: test
                     BLOCK
                     my $end = time()
                     $print "%.2f seconds", $end-$start
-                    system "diff $name.out $i.out |head -n 10"
+                    system "diff $name.out $i.out |head -n 10 |cut -c1-100"
                 $else
                     last
