@@ -1,0 +1,66 @@
+//Max Yang
+//50 minutes
+//5 tests passed
+//Spent most time trying to debug, but couldn't find solution
+import java.io.*;
+import java.util.*;
+
+public class tttt{
+        public static void main(String[] args) throws IOException{
+                Scanner scan = new Scanner(new File("tttt.in"));
+
+                String row1 = scan.next();
+                String row2 = scan.next();
+                String row3 = scan.next();
+                scan.close();
+
+                char[] r1 = new char[4];
+                char[] r2 = new char[4];
+                char[] r3 = new char[4];
+
+                for(int i = 0; i<3; i++) r1[i] = row1.charAt(i);
+                for(int i = 0; i<3; i++)r2[i] = row2.charAt(i);
+                for(int i = 0; i<3; i++)r3[i] = row3.charAt(i);
+
+
+                int win1=0; /*if all char =, then win*/
+		int win2=0; 
+
+                //Single rows
+                if(r1[0]==r1[1]&&r1[1]==r1[2]){win1++; win2--;}
+                if(r2[0]==r2[1]&&r2[1]==r2[2]){win1++; win2--;}
+                if(r3[0]==r3[1]&&r3[1]==r3[2]){win1++; win2--;}
+
+                //Single columns
+                for(int j=0; j<3; j++){
+			if(r1[j]==r2[j]&&r2[j]==r3[j]){win1++; win2--;}
+		}
+
+                //Single diagonal
+                if(r1[0]==r2[1]&&r2[1]==r3[2]){win1++; win2--;}
+                if(r3[0]==r2[1]&&r2[1]==r1[2]){win1++; win2--;}
+
+
+                 /*if any 2 char =, then win*/
+
+                //Team rows
+                if(r1[0]==r1[1]||r1[0]==r1[2]||r1[1]==r1[2]) win2++;
+                if(r2[0]==r2[1]||r2[0]==r2[2]||r2[1]==r2[2]) win2++;
+                if(r3[0]==r3[1]||r3[0]==r3[2]||r3[1]==r3[2]) win2++;
+		
+		//Team columns
+                for(int j=0; j<3; j++){
+			if(r1[j]==r2[j]||r1[j]==r3[j]||r2[j]==r3[j]) win2++;
+		}
+
+                //Team diagonal
+                if(r1[0]==r2[1]||r1[0]==r3[2]||r2[1]==r3[2]) win2++;
+                if(r3[0]==r2[1]||r3[0]==r1[2]||r2[1]==r1[2]) win2++;
+
+
+                PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("tttt.out")));
+                out.println(win1);
+                out.println(win2);
+                out.close();
+        }
+}
