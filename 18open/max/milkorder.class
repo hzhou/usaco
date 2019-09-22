@@ -1,0 +1,63 @@
+//Max Yang
+//40 minutes
+//Unfinished
+//Completed logic, but not code
+
+import java.io.*;
+import java.util.*;
+
+public class milkorder{
+        public static void main(String[] args) throws IOException{
+                Scanner scan = new Scanner(new File("milkorder.in"));
+                int N = scan.nextInt();
+
+                int[] nArr = new int[N+1];
+                for(int i=0; i<N; i++){
+                        nArr[i] = i+1;
+                        System.out.println(nArr[i]);
+                }
+
+                int M = scan.nextInt();
+                int K = scan.nextInt();
+
+                int[] mArr = new int[M+1];
+                for(int i=0; i<M; i++){
+                        mArr[i] = scan.nextInt();
+                        System.out.println("mArr[" + i + "] = " + mArr[i]);
+                }
+
+                int firstIndex = 0, secondIndex = 0;
+                for(int i=0; i<M; i++){
+                        if(mArr[i]>mArr[i+1]){
+                                for(int j=0; j<N; j++){
+                                        if(nArr[j]==mArr[i]){
+                                                firstIndex = j;
+                                                System.out.println(j);
+                                        }
+                                }
+                                for(int k=0; k<N; k++){
+                                        if(nArr[k]==mArr[k+1]){
+                                                secondIndex = k;
+                                                System.out.println(k);
+                                        }
+                                }
+				//Switch values to hierarchy order
+                                nArr[secondIndex] = mArr[i];
+                                nArr[firstIndex] = mArr[i+1];
+                        }
+                }
+
+                //for next K lines, K1[i] and K2[i]
+
+
+                //if K cow has hierarchy, shift all hierarchy by factor k1-k2
+                //else, only switch K cow
+
+
+                //if position of M+1 or more is not K cow, position is ans
+
+
+                //Output ans to file
+
+        }
+}

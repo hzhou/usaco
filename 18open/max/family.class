@@ -1,0 +1,41 @@
+//Max Yang
+//35 minutes
+//Not finished
+//Tried every situation, but too much time; couldn't figure out efficient algorithm
+
+import java.io.*;
+import java.util.*;
+
+public class family{
+        public static void main(String[] args) throws IOException{
+                Scanner scan = new Scanner(new File("family.in"));
+                int N = scan.nextInt();
+                String X = scan.next();
+                String Y = scan.next();
+
+                String[] mother = new String[N];
+                String[] child = new String[N];
+
+
+                for(int i=0; i<N; i++){
+                        mother[i] = scan.next();
+                        child[i] = scan.next();
+                }
+
+                String relation = " ";
+
+                for(int i=0; i<N; i++){
+                        for(int j=0; j<N; j++){
+                                if((mother[i].equals("MOTHER")&&child[i].equals(X)) && (mother[j].equals("MOTHER")&&child[j].equals(Y))){ //Mother of 2 are same
+                                        relation = "SIBLINGS";
+                                }
+                                else if(child[i].equals(X)&&mother[i].equals(child[j])&&mother[j].equals(Y)){ //direct relation
+                                        relation = "GRANDMOTHER";
+                                }
+
+
+                        }
+                }
+
+        }
+}
