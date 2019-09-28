@@ -1,3 +1,8 @@
+//Max Yang
+//35 minutes
+//All tests passed
+//Logic took longest with some debugging
+
 import java.io.*;
 import java.util.*;
 
