@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
 	//////////////////////////////////////
 	const char* FOUT = "herding.out";
 	ofstream fout(FOUT);
-	fout << minV << endl << maxV;
+	fout << minV << endl << maxV << endl;
 
 
 	return 0;

@@ -18,10 +18,78 @@ page: paintbarn_gold, basic_frame
     $my int n_K_1=0
     $for i=0:200*200
         $if grid[i]==K
+            grid[i]=-1
             n_K++
         $elif grid[i]==K-1
+            grid[i]=1
             n_K_1++
+        $else
+            grid[i]=0
 
     $dump n_K, n_K_1
 
+    int max_2 = 0
+    $if 1
+        $call get_max_1, x
+    $if 1
+        $call get_max_1, y
+
+    max_2 += n_K
+
+    &call open_Out
+        $print $max_2
+
+subcode: get_max_1(x)
+    int L[201] = {0}
+    int R[201] = {0}
+
+    int col[201]
+    $for x1=0:200
+        $for i=0:200
+            col[i]=0
+        $for x2=x1+1:201
+            $for i=0:200
+                $(if:x=x)
+                    col[i]+=grid[i*200+x2-1]
+                $(else)
+                    col[i]+=grid[(x2-1)*200+i]
+
+            int max_sum = 0
+            int sum = 0
+            int y1=0
+            int y2=0
+            $for i=0:200
+                sum+=col[i]
+                $if sum<0
+                    sum = 0
+                $if max_sum < sum
+                    max_sum = sum
+            $call update_LR
+    $call update_LR_final
+    $call get_max_2
+
+    subcode: update_LR
+        $if L[x2] < max_sum
+            L[x2] = max_sum
+        $if R[x1] < max_sum
+            R[x1] = max_sum
+
+    subcode: update_LR_final
+        max = 0
+        $for i=0:201
+            $if max < L[i]
+                max = L[i]
+            $else
+                L[i] = max
+        max = 0
+        $for i=200 downto 0
+            $if max < R[i]
+                max = R[i]
+            $else
+                R[i] = max
+
+    subcode: get_max_2
+        $for i=0:201
+            $if max_2 < L[i] + R[i]
+                max_2 = L[i] + R[i]
 

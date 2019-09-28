@@ -1,0 +1,80 @@
+include: ../../usaco.def
+
+page: revegetate_silver, basic_frame
+    module: cpp
+
+    &call open_In
+        $call scan_Int, N, M
+
+        $my int A[M], int B[M], int is_S[M]
+        $for i=0:M
+            char s[2];
+            fscanf(In, "%s", s)
+            $if s[0]=='S'
+                is_S[i] = 1
+            $else
+                is_S[i] = 0
+            $call scan_int, A[i], B[i]
+            A[i]--
+            B[i]--
+
+    $my std::vector<int> *edge_list = new std::vector<int>[N]
+    $for i=0:M
+        edge_list[A[i]].push_back(i)
+        edge_list[B[i]].push_back(i)
+
+    int *cache = new int[N];
+    $for i=0:N
+        cache[i] = 0
+
+    $my int region_cnt=0
+
+    $my std::vector<int> stack
+    $my int i_next = 0
+    $while 1
+        $while i_next<N && cache[i_next]
+            i_next++
+        $if i_next>=N
+            break
+
+        region_cnt++
+        stack.push_back(i_next)
+        cache[i_next]=1
+        $while stack.size()>0
+            int a = stack.back()
+            stack.pop_back()
+
+            $foreach edge in edge_list[a]
+                int b = A[edge];
+                $if a==b
+                    b = B[edge];
+
+                $my int color
+                $if is_S[edge]
+                    color=cache[a]
+                $else
+                    color=3-cache[a]
+
+                # $dump a, b, is_S[edge], color, cache[a], cache[b]
+                $if !cache[b]
+                    stack.push_back(b)
+                    cache[b] = color
+                $elif cache[b]!=color
+                    region_cnt=-1
+                    goto answer
+
+    answer:
+    &call open_Out
+        $if region_cnt>0
+            $print "1-"
+            $for i=0:region_cnt
+                $print "0-"
+            $print "\n"
+        $else
+            $print "0"
+
+
+
+
+
+
