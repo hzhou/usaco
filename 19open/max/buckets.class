@@ -1,0 +1,59 @@
+//Max Yang
+//40 minutes
+//All tests passed
+//Could have shortened without char array, but still works
+
+import java.io.*;
+import java.util.*;
+
+public class buckets{
+        public static void main(String[] args) throws IOException{
+                Scanner scan = new Scanner(new File("buckets.in"));
+                String line = " ";
+
+                char[][] farm = new char[11][11];
+                int Br=0, Bc=0, Rr=0, Rc=0, Lr=0, Lc=0; //row, column
+
+                for(int i=0; i<10; i++){
+                        line = scan.nextLine();
+                        for(int j=0; j<10; j++){
+                                farm[i][j] = line.charAt(j);
+                                if(farm[i][j]=='B'){
+                                        Br = i;
+                                        Bc = j;
+                                }
+                                if(farm[i][j]=='R'){
+                                        Rr = i;
+                                        Rc = j;
+                                }
+                                if(farm[i][j]=='L'){
+                                        Lr = i;
+                                        Lc = j;
+                                }
+                        }
+                //      System.out.println();
+                }
+                scan.close();
+
+                int min = 0;
+                if(Bc==Rc&&Rc==Lc){
+                        if((Rr>Br&&Rr<Lr)||(Rr<Br&&Rr>Lr))
+                                min = Math.abs(Lr-Br)+1;
+                        else
+                                min = Math.abs(Lr-Br)-1;
+                }
+                else if(Br==Rr&&Rr==Lr){
+                        if((Rc>Bc&&Rc<Lc)||(Rc<Bc&&Rc>Lc))
+                                min = Math.abs(Lc-Bc)+1;
+                        else
+                                min = Math.abs(Lc-Bc)-1;
+                }
+                else
+                        min = Math.abs(Lr-Br)+Math.abs(Lc-Bc)-1;
+
+                //System.out.println(min);
+                PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("buckets.out")));
+                out.println(min);
+                out.close();
+        }
+}
