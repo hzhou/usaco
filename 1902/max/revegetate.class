@@ -1,0 +1,40 @@
+//Max Yang
+//40 minutes
+//Unfinished
+//Couldn't figure out right algorithm
+
+import java.io.*;
+import java.util.*;
+
+public class revegetate{
+        public static void main(String[] args) throws IOException{
+                Scanner scan = new Scanner(new File("revegetate.in"));
+
+                int N = scan.nextInt();
+                int M = scan.nextInt();
+
+                int[] cows;
+                for(int i=0; i<M*2; i++) //even index 1st column, odd 2nd
+                       cows[i]=scan.nextInt();
+
+                int holder=0;
+                for(int i=0; i<M; i++){  //swap for every value
+                        if(cows[i*2]>cows[i*2+1]){
+                                place=cows[i*2+1];
+                                cows[i*2+1]=cows[i*2];
+                                cows[i*2]=place;
+                        }
+                }
+
+                for(int i=0; i<M; i++){
+                        for(int j=0; j<N; j++){
+                                if(cows[i]==j+1)
+
+                        }
+                }
+
+
+
+
+        }
+}
