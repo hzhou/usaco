@@ -96,7 +96,7 @@ int main() {
   }
 
   FILE *output = fopen("paintbarn.out", "w");
-  fprintf(output, "%d", area);
+  fprintf(output, "%d\n", area);
   fclose(output);
 
   return 0;

@@ -81,9 +81,9 @@ int main(int argc, char** argv)
     }
     std::vector<std::pair<int,int> > chains[10];
     int map_chain[N];
-        for (int  i = 0; i<N; i++) {
-            map_chain[i] = -1;
-        }
+    for (int  i = 0; i<N; i++) {
+        map_chain[i] = -1;
+    }
     int P[N];
     for (int  i = 0; i<N; i++) {
         P[i] = i;

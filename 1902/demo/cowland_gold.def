@@ -115,8 +115,8 @@ page: cowland_gold, basic_frame
         # potentially, mutliple long chains
         $my $(T_vn2) chains[10]
         $my int map_chain[N]
-            $for i=0:N
-                map_chain[i] = -1
+        $for i=0:N
+            map_chain[i] = -1
         $call sort_levels
         i = P[0]
         $(set:i_chain=0)

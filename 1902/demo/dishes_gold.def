@@ -9,8 +9,9 @@ page: dishes_gold, basic_frame
             $call scan_int, A[i]
             A[i]--
 
-    $(if:0)
+    $(if:1)
         # binary search, timeout on 9,10 --> must do O(N)
+        # binary search within binary search works!
         $call try_binary_search
     $(else)
         $call try_direct
@@ -54,12 +55,10 @@ fncode: can(int M): bool
             stacks[i2].push_back(A[i])
             i2++
         $else
-            $for j=i1:i2
-                $if A[i]<stacks[j].back()
-                    stacks[j].push_back(A[i])
-                    break
-                $elif A[i]<stacks[j][0]
-                    return false
+            $(if:1)
+                $call binary_search
+            $(else)
+                $call linear_search
         # Remove to clean stack
         $while 1
             $while stacks[i1].size()>0 && stacks[i1].back()==i_finish
@@ -75,6 +74,28 @@ fncode: can(int M): bool
                 break
     return true
 
+    subcode: binary_search
+        j1 = i1
+        j2 = i2
+        $while j1<=j2
+            j = (j1+j2)/2
+            $if A[i] > stacks[j][0]
+                j1 = j+1
+            $elif j>i1 && A[i] < stacks[j-1][0]
+                j2 = j-1
+            $elif A[i] < stacks[j].back()
+                stacks[j].push_back(A[i])
+                break
+            $else
+                return false
+
+    subcode: linear_search
+        $for j=i1:i2
+            $if A[i]<stacks[j].back()
+                stacks[j].push_back(A[i])
+                break
+            $elif A[i]<stacks[j][0]
+                return false
 #---------------------------------------- 
 subcode: try_direct
     $my $(T_vn) stacks[N]
