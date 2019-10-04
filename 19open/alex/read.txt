@@ -1,0 +1,1 @@
+I tried the cowjump problem and couldn't do it. Read solution. Still don't get how to check if lines intersect or not.
