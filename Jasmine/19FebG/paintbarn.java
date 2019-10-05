@@ -1,3 +1,5 @@
+//Jasmine Zhang
+//Submission back in February, brute force
 import java.util.*;
 import java.io.*;
 public class paintbarn {
