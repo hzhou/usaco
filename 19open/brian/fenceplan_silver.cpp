@@ -89,7 +89,7 @@ int main() {
 
 
   FILE *output = fopen("fenceplan.out", "w");
-  fprintf(output, "%d", minperimeter);
+  fprintf(output, "%d\n", minperimeter);
   fclose(output);
 
   return 0;

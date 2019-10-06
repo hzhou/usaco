@@ -12,6 +12,7 @@ page: cowjump_silver, basic_frame
             is_active = false
     $dump N
     # $call dump_seg_list
+    #-- sort all 2N x cordinates
     $my int P[N*2]
     $for i=0:N*2
         P[i] = i
@@ -23,6 +24,7 @@ page: cowjump_silver, basic_frame
 
     i_found_a=-1
     i_found_b=-1
+    #-- (y, i_seg)
     $my std::map<int, int> Active_segs
     $for i=0:N*2
         $my int x, int y
@@ -34,6 +36,7 @@ page: cowjump_silver, basic_frame
         y = $(s).y1
 
         $if ! $(s).is_active
+            #-- begin a segment
             $(s).is_active = true
             # $print "add $i_seg..."
             $my auto it = Active_segs.lower_bound(y)
@@ -54,6 +57,7 @@ page: cowjump_silver, basic_frame
                     goto ans
             Active_segs.insert(std::make_pair(y, i_seg))
         $else
+            #-- end a segment
             $(s).is_active = false
             $my auto it = Active_segs.lower_bound(y)
             # $print "remove %d...", it->second

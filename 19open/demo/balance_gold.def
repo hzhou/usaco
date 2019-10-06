@@ -4,6 +4,112 @@ page: balance_gold, basic_frame
     module: cpp
     &call open_In
         $call scan_Int, N
-        $my int pn_A = new int[N*2]
+        $my int *A = new int[N*2]
         $for i=0:N*2
-            &call scan_int, A[i]
+            $call scan_int, A[i]
+
+    #-- cache and count zeros
+    $my int *Z_list = new int[N*2]
+    $my int *O_list = new int[N*2]
+    $my int nZ0 = 0
+    $my int nZ1 = 0
+    $for i=0:2*N
+        $if A[i] == 0
+            Z_list[nZ0+nZ1] = i
+            $if i<N
+                nZ0++
+            $else
+                nZ1++
+        $else
+            O_list[i-(nZ0+nZ1)] = i
+
+    $my int n_Inv_0 = 0
+    $my int n_Inv_1 = 0
+
+    #-- count inversions
+    $my tn_Z=0
+    $for i=0:N
+        $if A[i] == 0
+            tn_Z++
+        $else
+            n_Inv_0 += nZ0 - tn_Z
+
+    tn_Z=0
+    $for i=N:2*N
+        $if A[i] == 0
+            tn_Z++
+        $else
+            n_Inv_1 += nZ1 - tn_Z
+
+    $my int n
+    n = n_Inv_0 - n_Inv_1
+    $dump nZ0, nZ1, N, n_Inv_0, n_Inv_1, n
+
+    $my int count = 0
+    #  0 ->: -(N-nZ0)   +(nZ1)    or tn_cross
+    #  <- 0: +(N-nZ0-1) -(nZ1-1)  or -tn_cross
+    tn_cross = nZ0+nZ1 - N
+
+    #- PAY ATTENTION: overshoot
+    $while 1
+        # $dump n, count, tn_cross
+        $(set:swaps=tn_swaps_0+tn_swaps_1+1)
+        $if abs(n-tn_cross)<abs(n)
+            # <- 0
+            tn_swaps_0 = N-1-O_list[N-nZ0-1]
+            tn_swaps_1 = Z_list[nZ0]-N
+            $if abs(n) < $(swaps)
+                break
+            $(set:t=-tn_cross -tn_swaps_0 +tn_swaps_1)
+            $(set:cond=abs(n) > $(swaps)+abs(n+$(t)))
+            $if abs($(t)) > $(swaps) && $(cond)
+                count += $(swaps)
+                n+=$(t)
+                $my int tmp
+                tmp = O_list[N-nZ0-1]
+                O_list[N-nZ0-1] = Z_list[nZ0]
+                Z_list[nZ0] = tmp
+                nZ0++
+            $else
+                break
+        $elif abs(n+tn_cross)<abs(n)
+            # 0 ->
+            tn_swaps_0 = N-1-Z_list[nZ0-1]
+            tn_swaps_1 = O_list[N-nZ0]-N
+            $if abs(n) < $(swaps)
+                break
+            $(set:t=tn_cross +tn_swaps_0 -tn_swaps_1) 
+            $(set:cond=abs(n) > $(swaps)+abs(n+$(t)))
+            $if abs($(t)) > $(swaps) && $(cond)
+                count += $(swaps)
+                n+=$(t)
+                $my int tmp
+                tmp = O_list[N-nZ0]
+                O_list[N-nZ0] = Z_list[nZ0-1]
+                Z_list[nZ0-1] = tmp
+                nZ0--
+            $else
+                break
+        $else
+            break
+
+    Ans:
+    count += abs(n)
+    $dump count
+    &call open_Out
+        $print $count
+
+fncode: cnt_inversions(int * A, int N)
+    $my int cnt_0 = 0
+    $for i=0:N
+        $if A[i] == 0
+            cnt_0++
+    $my int cnt_inv = 0
+    $for i=0:N
+        $if A[i] == 1
+            cnt_inv += cnt_0
+        $else
+            cnt_0--
+    return cnt_inv
+
+
