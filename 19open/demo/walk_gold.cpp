@@ -5,10 +5,7 @@
 
 int main(int argc, char** argv)
 {
-    int tn_a;
-    int n_merge;
-    int i;
-    int j;
+    int i_min;
 
     FILE* In = fopen("walk.in", "r");
     if (!In) {
@@ -20,52 +17,38 @@ int main(int argc, char** argv)
     fscanf(In, " %d %d" ,&N,&K);
     fclose(In);
     std::cout<<"N="<<N<<", "<<"K="<<K<<'\n';
-    int *pn_dist = new int[N*N];
+    int *cache = new int[N];
+    int *D = new int[N];
     for (int  i = 0; i<N; i++) {
-        for (int  j = 0; j<i; j++) {
-            tn_a = (int) (((long long) (j + 1) * 2019201913 + (long long) (i + 1) * 2019201949) % 2019201997);
-            pn_dist[i*N+j] = tn_a;
-            pn_dist[j*N+i] = tn_a;
-        }
+        cache[i] = 0;
+        D[i] = 2019201997;
     }
     for (int  i = 0; i<N; i++) {
-        pn_dist[i*N+i] = -1;
-    }
-    n_merge = 0;
-    i = N - 1;
-    j = i - 1;
-    while (1) {
-        if (pn_dist[j*N+i] < 0) {
-        } else if (n_merge == N - K) {
-            break;
-        } else {
-            n_merge++;
-            pn_dist[j*N+i] = -1;
-            for (int  k = 0; k<N; k++) {
-                tn_a = pn_dist[i*N+k];
-                if (tn_a > pn_dist[j*N+k]) {
-                    tn_a = pn_dist[j*N+k];
-                }
-                pn_dist[i*N+k] = tn_a;
-                pn_dist[j*N+k] = tn_a;
-                pn_dist[k*N+i] = tn_a;
-                pn_dist[k*N+j] = tn_a;
+        i_min = 0;
+        for (int  j = 0; j<N; j++) {
+            if (!cache[j] && D[i_min] > D[j]) {
+                i_min = j;
             }
         }
-        if (i > 2 && j + 1 < i - 2) {
-            i -= 2;
-            j++;
-        } else if (i > 1 && j < i - 1) {
-            i -= 1;
-        } else if (j > 0) {
-            j -= 1;
-        } else {
-            break;
+        cache[i_min] = 1;
+        for (int  j = 0; j<N; j++) {
+            if (!cache[j]) {
+                int tn_dist;
+                if (i_min < j) {
+                    tn_dist = (int) (((long long) (i_min + 1) * 2019201913 + (long long) (j + 1) * 2019201949) % 2019201997);
+                } else {
+                    tn_dist = (int) (((long long) (j + 1) * 2019201913 + (long long) (i_min + 1) * 2019201949) % 2019201997);
+                }
+                if (D[j] > tn_dist) {
+                    D[j] = tn_dist;
+                }
+            }
         }
     }
-    printf("%d\n", pn_dist[j*N+i]);
+    std::sort(D, D+N);
+    int dist = D[N-K];
     FILE* Out = fopen("walk.out", "w");
-    fprintf(Out, "%d\n", pn_dist[j*N+i]);
+    fprintf(Out, "%d\n", dist);
     fclose(Out);
     return 0;
 }

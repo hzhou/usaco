@@ -1,11 +1,50 @@
 include: ../../usaco.def
 
+macros:
+    MX: 2019201913
+    MY: 2019201949
+    MZ: 2019201997
+    M: (int)(((long long)($1+1)*$(MX)+(long long)($2+1)*$(MY)) % $(MZ))
+
 page: walk_gold, basic_frame
     module: cpp
     &call open_In
         $call scan_Int, N, K
     $dump N, K
+    $(if:0)
+        $call try1
+    $(else)
+        $call try2
 
+    &call open_Out
+        $print "%d", dist
+
+subcode: try2
+    int *cache = new int[N];
+    int *D = new int[N];
+    $for i=0:N
+        cache[i] = 0
+        D[i] = $(MZ)
+    $for i=0:N
+        i_min = 0
+        $for j=0:N
+            $if !cache[j] && D[i_min] > D[j]
+                i_min = j
+        cache[i_min] = 1
+
+        $for j=0:N
+            $if !cache[j]
+                $my tn_dist
+                $if i_min<j
+                    tn_dist = $(M:i_min, j)
+                $else
+                    tn_dist = $(M:j, i_min)
+                $if D[j] > tn_dist
+                    D[j] = tn_dist
+    $call std_Sort, D, N
+    int dist = D[N-K];
+
+subcode: try1
     $my int *pn_dist = new int[N*N]
     $for i=0:N
         $for j=0:i
@@ -40,14 +79,7 @@ page: walk_gold, basic_frame
             pn_dist[k*N+j] = tn_a
 
     $print "%d", pn_dist[j*N+i]
-    &call open_Out
-        $print "%d", pn_dist[j*N+i]
-
-macros:
-    MX: 2019201913
-    MY: 2019201949
-    MZ: 2019201997
-    M: (int)(((long long)($1+1)*$(MX)+(long long)($2+1)*$(MY)) % $(MZ))
+    int dist = pn_dist[j*N+i]
 
 subcode: iter_i_j
     i=N-1
