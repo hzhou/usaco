@@ -1,7 +1,8 @@
-//Alex Yang, 1 hour, WHY IS MY FILE MISSING? Does fout not work?
+//Alex Yang 1 hour
 #include <iostream>
 #include <fstream>
 #include <map>
+#include <algorithm>
 using namespace std;
 struct log
 {
@@ -30,11 +31,15 @@ int main()
 	int maxx = 0;
 	int count = 0;
 	for(int i = 0; i < n; i++)
-	{
+	{//what if the same cow holds the max and he goes up/down in production
 		if(cows.find(logs[i].id) == cows.end())
 		{
 			cows[logs[i].id] = logs[i].change;
-			if(logs[i].change >= maxx)
+			if(cows[logs[i].id] == maxx)
+			{
+				count++;
+			}
+			else if(cows[logs[i].id] > maxx)
 			{
 				count++;
 				maxx = logs[i].change;
@@ -50,11 +55,15 @@ int main()
 				}
 			}
 			cows[logs[i].id] = cows[logs[i].id] + logs[i].change;
-			if(cows[logs[i].id] >= maxx)
-			{
-				maxx = cows[logs[i].id];
-				count++;
-			}
+			if(cows[logs[i].id] == maxx)
+                        {       
+                                count++;
+                        }
+                        else if(cows[logs[i].id] > maxx)
+                        {
+                                count++;
+                                maxx = logs[i].change;
+                        }
 		}
 	}
 	fout << count << "\n";
