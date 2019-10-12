@@ -2,9 +2,9 @@
  * ID: jhuang1
  * PROG: sample
  * LANG: C++11
- * RESULT: 8/10
- * TIME: 1ms
- * COMMENT: test1
+ * RESULT: 0/10
+ * TIME: 90 min
+ * COMMENT: Didn't really know how to optimize my algorithm, so I read the solution (which used BFS)
  * */
 #include <algorithm>
 #include <iostream>
