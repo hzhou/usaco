@@ -1,61 +1,78 @@
-#define scanN() fscanf(fileIn, "%d\n", &N);
-#define scanm(identifiers, ptrs...) fscanf(fileIn, #identifiers, ptrs);
-#define scand(ptr) fscanf(fileIn, "%d\n", ptr);
-#define scanld(ptr) fscanf(fileIn, "%ld\n", ptr);
-#define scans(ptr) fscanf(fileIn, "%s\n", ptr);
-#define scanmA(amount, identifiers, ptrs...) for (int i=0; i<amount; i++) {fscanf(fileIn, #identifiers, ptrs);}
-#define scandA(amount, ptr) for (int i=0; i<amount; i++) {fscanf(fileIn, "%d", ptr);}
-#define forN(amount) for (int i=0; i<amount; i++)
-
-#include <cstdio>
+//Harry Zhou
+//10-12-2019
+//15min
+//
+#include <iostream>
+#include <fstream>
 #include <cstdlib>
 #include <string.h>
+#include <math.h>
 #include <algorithm>
 #include <limits.h>
+#include <vector>
+#include <stack>
+#include <queue>
 #include <set>
+#include <map>
+
+using std::cout;
+using std::endl;
+using std::make_pair;
+
+using std::pair;
+using std::set;
+using std::map;
+using std::vector;
+using std::stack;
+using std::priority_queue;
+
+typedef long long int LL;
+
+typedef pair<int,int> ipair;
+typedef set<int> iset;
+typedef map<int,int> imap;
+typedef vector<int> ivec;
+typedef stack<int> istack;
+typedef priority_queue<ipair, std::vector<ipair>, std::greater<ipair>> dijkstra_priority_queue;
 
 int main() {
-    FILE *fileIn = fopen("hayfeast.in", "r");
-    FILE *fileOut = fopen("hayfeast.out", "w");
+    std::ifstream fin;
+    fin.open("hayfeast.in");
+    std::ofstream fout;
+    fout.open("hayfeast.out");
 
     int N;
-    int64_t M;
-    scanm(%d %ld, &N, &M);
-    int *bflavor = new int[N];
-    int *bspice = new int[N];
-    scanmA(N, %d %d, bflavor+i, bspice+i);
+    LL M;
+    fin >> N >> M;
+    
+    ipair *bales = new ipair[N];
+    for (int i=0; i<N; i++) {
+        fin >> bales[i].first >> bales[i].second;
+    }
 
     int minSpice = INT_MAX;
-
-    std::multiset<int> spices;
-    int64_t flavor = 0;
-    int b = 0;
-    for (int a=0; a<N; a++) {
-        while (flavor<M) {
-            if (b==N) {
-                goto exit;
-            }
-            spices.insert(bspice[b]);
-            flavor += bflavor[b];
-            b++;
+    imap s_map;
+    LL total_flavor = 0;
+    int beg = 0;
+    int end = 0;
+    for (beg = 0; beg < N; beg++) {
+        while (total_flavor < M) {
+            if (end==N) {goto output;}
+            total_flavor += bales[end].first;
+            s_map[bales[end].second]++;
+            end++;
         }
+        int spice = s_map.rbegin()->first;
+        minSpice = std::min(spice, minSpice);
 
-        int spice = *(spices.rbegin());
-        if (spice < minSpice) {
-            minSpice = spice;
+        total_flavor -= bales[beg].first;
+        s_map[bales[beg].second]--;
+        if (s_map[bales[beg].second] == 0) {
+            s_map.erase(bales[beg].second);
         }
-
-        /*printf("%d: ", spice);
-        for (auto itr = spices.begin(); itr != spices.end(); itr++) {
-            printf("%d ", *itr);
-        }
-        printf("\n");*/
-
-        spices.erase(spices.find(bspice[a]));
-        flavor -= bflavor[a];
     }
-exit:
 
-    printf("%d\n", minSpice);
-    fprintf(fileOut, "%d\n", minSpice);
+output:
+    cout << minSpice << endl;
+    fout << minSpice << endl;
 }
