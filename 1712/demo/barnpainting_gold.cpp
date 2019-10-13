@@ -4,11 +4,10 @@
 #include <algorithm>
 using namespace std;
 
-using namespace std;
 struct node {
-	int flag;
-	int c[3];
-	vector<int> L;
+    int flag;
+    int c[3];
+    vector<int> L;
 };
 
 int get_cnt(node *nodes, int i, int parent, int color);
@@ -40,12 +39,12 @@ int main(int argc, char** argv)
     }
     for (int  _i = 0; _i<K; _i++) {
         int i;
-        int j;
-        fscanf(In, " %d %d" ,&i,&j);
+        int color;
+        fscanf(In, " %d %d" ,&i,&color);
         i--;
-        j--;
+        color--;
         for (int  c = 0; c<3; c++) {
-            if (c != j) {
+            if (c != color) {
                 nodes[i].flag |= 1 << c;
                 nodes[i].c[c] = 0;
             }

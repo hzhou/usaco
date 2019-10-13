@@ -48,5 +48,5 @@ int main()
 			answer = answer + "\n" + to_string(i+1);
 		}
 	}
-	fout << answer;
+	fout << answer <<"\n";
 }

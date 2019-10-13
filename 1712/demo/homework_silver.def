@@ -12,11 +12,48 @@ page: homework_silver, basic_frame
         $for i=0:N
             $call scan_int, L[i]
 
-        $my int idx_list[N]
-        $for i=0:N
-            idx_list[i]=i
+    $my std::vector<int> max_list
+    $(if:0)
+        $call try1
+        &call open_Out
+            $for i=0:max_list.size()
+                $print "%d", max_list[i]
+    $(else)
+        $call try2
+        &call open_Out
+            $for i=max_list.size()-1 downto 0
+                $print "%d", max_list[i]
 
-    # $dump N, L[3]
+    subcode: update_max(sum, min, K)
+        $my double t = $(sum)-$(min)
+        # $dump j, t, max
+        t/=N-($(K))-1
+        $if max<t
+            max=t
+            max_list.clear()
+            max_list.push_back($(K))
+        $elif max==t
+            max_list.push_back($(K))
+
+
+subcode: try2
+    $my double max = 0
+    $my int sum = L[N-1]
+    $my int min = L[N-1]
+
+    $for j=N-2 downto 1
+        sum += L[j]
+        $if min > L[j]
+            min = L[j]
+        $call update_max, sum, min, j
+
+
+subcode: try1
+    # sorted list to facilitate finding min.
+    $my int idx_list[N]
+    $for i=0:N
+        idx_list[i]=i
+
     &call std_sort, idx_list, N, int
         return L[a]<L[b]
 
@@ -26,29 +63,12 @@ page: homework_silver, basic_frame
         sum+=L[i]
 
     $my double max=0
-    $my std::vector<int> max_list
 
     $my int i0=0
-    $my int sum2=0
+    # NOTE: if we reverse the loop, maintaining min is O(1)
     $for j=0:N-2
-        sum2+=L[j]
+        sum-=L[j]
         $while idx_list[i0]<=j
             i0++
-        $my double t = sum-sum2-L[idx_list[i0]]
-        # $dump j, t, max
-        t/=(N-j-2)
-        $if max<t
-            max=t
-            max_list.clear()
-            max_list.push_back(j+1)
-        $elif max==t
-            max_list.push_back(j+1)
 
-    &call open_Out
-        $for i=0:max_list.size()
-            $print "%d", max_list[i]
-
-
-    subcode: debug_L
-        $for i=0:N
-            $dump i, idx_list[i], L[idx_list[i]]
+        $call @update_max, sum, L[idx_list[i0]], j+1

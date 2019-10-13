@@ -4,11 +4,10 @@
 #include <algorithm>
 using namespace std;
 
-using namespace std;
 struct item {
-	int val;
-	int val2;
-	int idx;
+    int val;
+    int val2;
+    int idx;
 };
 
 int bin_search(item *A, int val);

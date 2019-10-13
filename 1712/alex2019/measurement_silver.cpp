@@ -4,13 +4,13 @@
 #include <map>
 #include <algorithm>
 using namespace std;
-struct log
+struct log_entry
 {
 	int day;
 	int id;
 	int change;
 };
-bool compare(log a, log b)
+bool compare(log_entry a, log_entry b)
 {
 	return a.day<b.day;
 }
@@ -20,7 +20,7 @@ int main()
 	ofstream fout ("measurement.out");
 	int n, g;
 	fin >> n >> g;
-	log logs[n];
+	log_entry logs[n];
 	for(int i = 0; i < n; i++)
 	{
 		fin >> logs[i].day >> logs[i].id >> logs[i].change;

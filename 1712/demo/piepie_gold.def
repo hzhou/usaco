@@ -38,6 +38,7 @@ page: piepie_gold, basic_frame
             R[j]=1
             pool->push_back(i)
         $else
+            # because it is sorted
             break
     #----
     $for i=0:N

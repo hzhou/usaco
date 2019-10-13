@@ -28,17 +28,14 @@ int main(int argc, char** argv)
         P[i] = i;
     }
     for (int  i = 0; i<N-1; i++) {
-        if (P[A[i]] == A[i]) {
-            P[A[i]] = find_root(B[i]);
-        } else {
-            break;
-        }
+        P[A[i]] = B[i];
     }
     int i_root = -1;
     for (int  i = 0; i<N; i++) {
-        if (P[i] == i) {
-            if (i_root < 0) {
-                i_root = i;
+        if (i_root < 0) {
+            i_root = find_root(i);
+        } else {
+            if (i_root == find_root(i)) {
             } else {
                 i_root = -1;
                 break;

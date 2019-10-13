@@ -14,23 +14,22 @@ page: factory_bronze, basic_frame
             B[i]--
 
     $global int * P
-    P = new int[N]
+    P = new int[N] # i -> P[i]
     $for i=0:N
         P[i] = i
 
     $for i=0:N-1
-        $if P[A[i]]==A[i]
-            P[A[i]]=find_root(B[i])
-        $else
-            break
+        P[A[i]] = B[i]
 
-    $my i_root = -1
+    $my i_root = -1 # sentinel
     $for i=0:N
-        $if P[i]==i
-            $if i_root<0
-                i_root = i
+        $if i_root < 0
+            i_root = find_root(i)
+        $else
+            $if i_root == find_root(i)
+                # good
             $else
-                i_root = -1
+                i_root=-1
                 break
 
     $if i_root>=0

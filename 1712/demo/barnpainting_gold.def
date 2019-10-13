@@ -1,3 +1,4 @@
+# backtracking or recursive
 include: ../../usaco.def
 
 page: barnpainting_gold, basic_frame
@@ -27,13 +28,13 @@ page: barnpainting_gold, basic_frame
             nodes[i].L.push_back(j)
             nodes[j].L.push_back(i)
         $for _i=0:K
-            $my i, j
-            $call scan_int, i, j
+            $my i, int color
+            $call scan_int, i, color
             i--
-            j--
+            color--
             # $dump(K) i, j
             $for c=0:3
-                $if c!=j
+                $if c!=color
                     nodes[i].flag |= (1<<c)
                     nodes[i].c[c] = 0
 

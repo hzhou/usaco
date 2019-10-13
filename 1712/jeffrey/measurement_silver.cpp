@@ -37,7 +37,7 @@ int main() {
   	int G;
   	fin >> N >> G;
  
-  	vector<m> list(N, 0);
+  	vector<m> list(N, {0});
   	for (int i = 0; i < N; ++i) {
     	cin >> list[i].d >> list[i].c >> list[i].g;
   	}
@@ -47,26 +47,26 @@ int main() {
  
   	int ans = 0;
   	map<int, int> temp;
-  	for (auto& m : A) {
-    	int& ref = temp[m.c];
- 
-    	bool wastop = ref == cnts.begin()->first;
-    	int wascnt = cnts[ref]--;
-    	if (wascnt == 1) {
-      		cnts.erase(ref);
-    	}
- 
-    	ref += m.g;
- 
-    	int iscnt = ++cnts[ref];
-    	bool istop = ref == cnts.begin() -> first;
-    	if (wastop) {
-      		if (!istop || wascnt != 1 || iscnt != 1) {
-        		ans++;
-      		}
-    	} else if (istop) {
-      		ans++;
-    	}
+  	for (auto& m : list) {
+            int& ref = temp[m.c];
+    
+            bool wastop = ref == cnts.begin()->first;
+            int wascnt = cnts[ref]--;
+            if (wascnt == 1) {
+                    cnts.erase(ref);
+            }
+    
+            ref += m.g;
+    
+            int iscnt = ++cnts[ref];
+            bool istop = ref == cnts.begin() -> first;
+            if (wastop) {
+                    if (!istop || wascnt != 1 || iscnt != 1) {
+                            ans++;
+                    }
+            } else if (istop) {
+                    ans++;
+            }
   	}
   	ofstream fout("measurement.out"); 
   	fout << ans;

@@ -1,4 +1,4 @@
-include: ../usaco.def
+include: ../../usaco.def
 
 page: measurement, basic_frame
     module: cpp
@@ -20,7 +20,7 @@ page: measurement, basic_frame
             logs.push_back({day, cow, change})
 
     # $print "1: %d %d %d", logs[1].day, logs[1].cow, logs[1].change
-    $call stl_sort, logs
+    &call stl_sort, logs, struct log_entry
         return a.day<b.day
     # $print "0: %d %d %d", logs[0].day, logs[0].cow, logs[0].change
     $(if:0)
