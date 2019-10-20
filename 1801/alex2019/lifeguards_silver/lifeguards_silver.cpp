@@ -3,12 +3,12 @@
 #include <fstream>
 #include <algorithm>
 using namespace std;
-struct log
+struct lifeguard
 {
 	int start;
 	int end;
 };
-bool compare(struct log a, struct log b)
+bool compare(struct lifeguard a, struct lifeguard b)
 {
 	return a.start < b.start;
 }
@@ -18,43 +18,34 @@ int main()
 	ofstream fout ("lifeguards.out");
 	int n;
 	fin >> n;
-	struct log times[n];
+	struct lifeguard times[n];
 	for(int i = 0; i < n; i++)
 	{
 		fin >> times[i].start >> times[i].end;
 	}
 	sort(times, times + n, compare);
 	int minn = 10000000;
-	//find time w/o removing things
-	int a, b;
-	a = 0;
-	b = 0;
-	int endval = times[b].end;
+	int t1, t2;
+	t1 = times[0].start;
+	t2 = times[0].end;
 	int length = 0;
-	int check = 0;
-	while(b < n)
+	for(int i = 1; i < n; i++)
 	{
-		if(endval > times[b+1].start)
+		if(t2 > times[i].start)
 		{
-			b++;
-			if(endval < times[b+1].end)
+			if(t2 < times[i].end)
 			{
-				endval = times[b+1].end;
+				t2 = times[i].end;
 			}
 		}
 		else
 		{
-			check = 1;
-			length += endval - times[a].start;
-			a = b + 1;
-			b = b + 1;
-			endval = times[b].end;
-		}
-		if(b >= n-1 and check == 0)
-		{
-			length += endval - times[a].start;
+			length += t2 - t1;
+			t1 = times[i].start;
+			t2 = times[i].end;
 		}
 	}
+	length += t2 - t1;
 	for(int i = 0; i < n-1; i++)
 	{//what if no intersection
 		if(minn > min(times[i+1].start, times[i].end) - times[i].start)
