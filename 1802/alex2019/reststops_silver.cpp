@@ -39,7 +39,7 @@ int main()
 			index++;
 		}
 	}
-	long answer = 0;
+	long long answer = 0;
 	int start = 0;
 	int rate = rF - rB;
 	int temp;
