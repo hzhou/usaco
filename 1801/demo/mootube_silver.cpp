@@ -16,6 +16,10 @@ int Q;
 
 int main(int argc, char** argv)
 {
+    int i;
+    int k;
+
+
     FILE* In = fopen("mootube.in", "r");
     if (!In) {
         fprintf(stderr, "Can't open In\n");
@@ -37,20 +41,25 @@ int main(int argc, char** argv)
         V[i]--;
     }
     fclose(In);
+
     vector<rel> Adj[N];
     for (int  i = 0; i<N-1; i++) {
         Adj[A[i]].push_back({B[i], R[i]});
         Adj[B[i]].push_back({A[i], R[i]});
     }
+
     int Ans[Q];
-    for (int  i = 0; i<Q; i++) {
+    for (int  i_q = 0; i_q<Q; i_q++) {
+        i = V[i_q];
+        k = K[i_q];
         vector<int> cache;
         cache.resize(N, 0);
-        Ans[i] = get_adj(Adj, V[i], K[i], cache) - 1;
+        Ans[i_q] = get_adj(Adj, i, k, cache) - 1;
     }
+
     FILE* Out = fopen("mootube.out", "w");
-    for (int  i = 0; i<Q; i++) {
-        fprintf(Out, "%d\n", Ans[i]);
+    for (int  i_q = 0; i_q<Q; i_q++) {
+        fprintf(Out, "%d\n", Ans[i_q]);
     }
     fclose(Out);
     return 0;

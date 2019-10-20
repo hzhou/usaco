@@ -13,13 +13,12 @@ public class lifeguards{
 
                 int[] T = new int[1001];
 
-                int max=0, count=0;
                 int[] Start = new int[N+1];
                 int[] End = new int[N+1];
 
                 for(int i=0; i<N; i++){
                         Start[i] = scan.nextInt();
-                        End[i]=scan.nextInt()+1;
+                        End[i]=scan.nextInt();
                 }
 
 		//Initialization
@@ -30,12 +29,14 @@ public class lifeguards{
                 }
 
                 //Check
+                int max=0;
                 for(int j=0; j<N; j++){
                         //each lifeguard
 			for(int k=Start[j]; k<End[j]; k++){
                                 T[k]--;
                         }
                         //shifts per lifeguard fired
+                        int count=0;
 			for(int k=0; k<1001; k++){
                                 if(T[k]>0) count++;
                         }
@@ -50,7 +51,7 @@ public class lifeguards{
 
                 }
 
-                max-=2;
+                // max-=2;
 		
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("lifeguards.out")));
 		out.println(max);

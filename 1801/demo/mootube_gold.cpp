@@ -15,6 +15,7 @@ int main(int argc, char** argv)
     int i_a;
     int i_b;
 
+
     FILE* In = fopen("mootube.in", "r");
     if (!In) {
         fprintf(stderr, "Can't open In\n");
@@ -65,23 +66,28 @@ int main(int argc, char** argv)
     int Ans[Q];
     for (int  i_q2 = 0; i_q2<Q; i_q2++) {
         i_q = P[i_q2];
+
         while (i_edge_start < n_edges) {
             i = E[i_edge_start];
+
             if (R[i] >= K[i_q]) {
                 i_a = find_root(A[i]);
                 i_b = find_root(B[i]);
                 region_sizes[i_a] += region_sizes[i_b];
                 pointers[i_b] = i_a;
+
                 i_edge_start++;
             } else {
                 break;
             }
         }
+
         Ans[i_q] = region_sizes[find_root(V[i_q])] - 1;
     }
     FILE* Out = fopen("mootube.out", "w");
     for (int  i_q = 0; i_q<Q; i_q++) {
         fprintf(Out, "%d\n", Ans[i_q]);
+
     }
     fclose(Out);
     return 0;

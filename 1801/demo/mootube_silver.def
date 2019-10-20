@@ -28,10 +28,9 @@ page: mootube_silver, basic_frame
     $for i_q=0:Q
         i=V[i_q]
         k=K[i_q]
-
         $my vector<int> cache
         cache.resize(N, 0)
-        Ans[i] = get_adj(Adj, i, k, cache) -1
+        Ans[i_q] = get_adj(Adj, i, k, cache) -1
 
     &call open_Out
         $for i_q=0:Q
