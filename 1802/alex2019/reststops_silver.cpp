@@ -10,10 +10,6 @@ struct stop
 	int distance;
 	int taste;
 };
-bool compare(struct stop a, struct stop b)
-{
-	return a.distance > b.distance;
-}
 int main()
 {//fin places to stop
 	ifstream fin ("reststops.in");
@@ -25,29 +21,27 @@ int main()
 	{
 		fin >> stops[i].distance >> stops[i].taste;
 	}
-	sort(stops, stops + N, compare);
+	sort(stops, stops + N, [](struct stop a, struct stop b){return a.distance>b.distance;});
 	int high = 0;
 	struct stop realstops[N];
 	int index = 0;
 	for(int i = 0; i < N; i++)
-	{
+	{//stops is sorted backwards. Farthest first
 		if(stops[i].taste > high)
 		{
 			realstops[index].distance = stops[i].distance;
 			realstops[index].taste = stops[i].taste;
 			high = stops[i].taste;
 			index++;
-		}
+		}//realstops[0] is the farthest. Run through realstops backwards
 	}
 	long long answer = 0;
-	int start = 0;
-	int rate = rF - rB;
-	int temp;
+	long long start = 0;
+	long long rate = rF - rB;
 	for(int i = index - 1; i > -1; i--)
 	{
-		temp = realstops[i].distance-start;
-		temp = temp*realstops[i].taste;
-		answer = answer + temp;
+		cout << realstops[i].distance << " " << realstops[i].taste << "\n";
+		answer += realstops[i].taste*(realstops[i].distance-start);
 		start = realstops[i].distance;
 	}
 	answer = answer * rate;
