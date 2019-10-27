@@ -19,6 +19,7 @@ int main(int argc, char** argv)
     int n_err;
     int i;
 
+
     FILE* In = fopen("taming.in", "r");
     if (!In) {
         fprintf(stderr, "Can't open In\n");
@@ -36,8 +37,10 @@ int main(int argc, char** argv)
         printf("%d ", logs[_i]);
     }
     puts("");
+
     std::vector<struct entry> *plist = new std::vector<struct entry>;
     plist->push_back((struct entry) {0, 1, 0});
+
     for (int  i = 0; i<N; i++) {
         std::unordered_map<int, int> M;
         for(auto p : (*plist)){
@@ -77,6 +80,7 @@ int main(int argc, char** argv)
                 }
             }
         }
+
         plist->clear();
         for (auto it=M.begin(); it!=M.end(); it++) {
             n_breakout = it->first / (N + 1);
@@ -85,10 +89,12 @@ int main(int argc, char** argv)
             plist->push_back((struct entry) {n_err, n_breakout, n_val});
         }
     }
+
     int M[N];
     for (int  i = 0; i<N; i++) {
         M[i] = N;
     }
+
     for(auto p : (*plist)){
         if (p.n_val > 0) {
             i = p.n_breakout - 1;
@@ -97,10 +103,12 @@ int main(int argc, char** argv)
             }
         }
     }
+
     FILE* Out = fopen("taming.out", "w");
     for (int  i = 0; i<N; i++) {
         fprintf(Out, "%d\n", M[i]);
     }
     fclose(Out);
+
     return 0;
 }

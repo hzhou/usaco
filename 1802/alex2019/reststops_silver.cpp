@@ -40,9 +40,9 @@ int main()
 		}
 	}
 	long long answer = 0;
-	int start = 0;
-	int rate = rF - rB;
-	int temp;
+        long long start = 0;
+	long long rate = rF - rB;
+	long long temp;
 	for(int i = index - 1; i > -1; i--)
 	{
 		temp = realstops[i].distance-start;
