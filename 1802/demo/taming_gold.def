@@ -1,3 +1,5 @@
+# dynamic programing
+
 include: ../../usaco.def
 page: taming_gold, basic_frame
     module: cpp

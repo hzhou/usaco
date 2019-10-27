@@ -78,6 +78,7 @@ fncode: update_count(i, struct node * nodes)
     n_total_count = nodes[0].count
 
     $foreach j in nodes[i].child_list
+        #  A/B -> B, ../A2/B -> ../../A2/B
         nodes[j].total = nodes[i].total - (nodes[j].length + 1)*nodes[j].count + 3 * (n_total_count - nodes[j].count)
         update_count(j, nodes)
 
