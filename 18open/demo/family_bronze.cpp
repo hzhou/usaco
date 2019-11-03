@@ -1,129 +1,150 @@
-#include <vector>
-#include <unordered_map>
-#include <string>
+#include <cstring>
 #include <cstdio>
 #include <iostream>
 #include <cstdio>
 #include <algorithm>
 using namespace std;
 
-int get_id(char* name);
-void get_rel(string& rel, vector<int>& AA, vector<int>& BB, char* A, char* B);
+int get_id(char *name);
+int get_level(int i);
+char* get_rel(int i_A, int i_B, int n_diff);
 
-unordered_map<string, int> name_set;
-vector<int> mothers;
+char names[200][11];
+int n_names = 0;
+int parent_list[200];
+char s_rel_buf[1000];
 
-int main(int argc, char** argv){
+int main(int argc, char** argv)
+{
+    int i_a;
+    int i_b;
+    int n_A;
+    int n_B;
+    char *s_rel;
+
+
+    for (int  i = 0; i<200; i++) {
+        parent_list[i] = i;
+    }
+
+    int N;
     int i_A;
     int i_B;
-    int j;
-    int N;
-    char A[12];
-    char B[12];
     FILE* In = fopen("family.in", "r");
-    if(!In){
+    if (!In) {
         fprintf(stderr, "Can't open In\n");
         exit(-1);
     }
+    char A[12];
+    char B[12];
     fscanf(In, "%d %s %s", &N, A, B);
-    std::cout<<"N="<<N<<", "<<"A="<<A<<", "<<"B="<<B<<'\n';
     i_A = get_id(A);
     i_B = get_id(B);
-    std::cout<<"i_A="<<i_A<<", "<<"i_B="<<i_B<<'\n';
-    for(int  i=0; i<N; i++){
-        char sA[12];
-        char sB[12];
-        fscanf(In, "%s %s", sA, sB);
-        i_A = get_id(sA);
-        i_B = get_id(sB);
-        mothers[i_B] = i_A;
-        printf("%d -> %d\n", i_B, i_A);
+
+    for (int  i = 0; i<N; i++) {
+        fscanf(In, "%s %s", A, B);
+        i_a = get_id(A);
+        i_b = get_id(B);
+        parent_list[i_b] = i_a;
     }
     fclose(In);
-    vector<int> AA;
-    vector<int> BB;
-    j = 0;
-    AA.push_back(j);
-    while(mothers[j] >= 0){
-        j = mothers[j];
-        AA.push_back(j);
+
+    n_A = get_level(i_A);
+    n_B = get_level(i_B);
+
+    if (n_A <= n_B) {
+        s_rel = get_rel(i_A, i_B, n_B - n_A);
+    } else {
+        s_rel = get_rel(i_B, i_A, n_A - n_B);
     }
-    j = 1;
-    BB.push_back(j);
-    while(mothers[j] >= 0){
-        j = mothers[j];
-        BB.push_back(j);
-    }
-    string rel;
-    if(AA.size() > BB.size()){
-        get_rel(rel, BB, AA, B, A);
-    }
-    else{
-        get_rel(rel, AA, BB, A, B);
-    }
+
+    std::cout<<"s_rel="<<s_rel<<'\n';
     FILE* Out = fopen("family.out", "w");
-    fprintf(Out, "%s\n", rel.c_str());
+    fprintf(Out, "%s\n", s_rel);
     fclose(Out);
     return 0;
 }
 
-int get_id(char* name){
-    string s(name);
-    if(name_set.count(s) == 0){
-        name_set[s] = mothers.size();
-        mothers.push_back(-1);
+int get_id(char *name)
+{
+    int i;
+
+    for (int  i = 0; i<n_names; i++) {
+        if (strcmp(names[i], name) == 0) {
+            return i;
+        }
     }
-    return name_set[s];
+    i = n_names;
+    strcpy(names[i], name);
+    n_names++;
+    return i;
 }
 
-void get_rel(string& rel, vector<int>& AA, vector<int>& BB, char* A, char* B){
-    int n_A;
-    int n_B;
+int get_level(int i)
+{
     int n;
-    n_A = AA.size();
-    n_B = BB.size();
-    n = n_B - n_A;
-    std::cout<<"n_B="<<n_B<<", "<<"n_A="<<n_A<<", "<<"n="<<n<<'\n';
-    rel += A;
-    rel += " is the ";
-    if(n == 0 && BB[1] == AA[1]){
-        rel = "SIBLINGS";
+
+    n = 0;
+    while (parent_list[i] != i) {
+        i = parent_list[i];
+        n++;
     }
-    else if(BB[n] == AA[0]){
-        if(n == 1){
-            rel += "mother of ";
-        }
-        else if(n == 2){
-            rel += "grand-mother of ";
-        }
-        else{
-            for(int  i=0; i<n-2; i++){
-                rel += "great-";
+    return n;
+}
+
+char* get_rel(int i_A, int i_B, int n_diff)
+{
+    char *s;
+    int n;
+
+    char *s_A = names[i_A];
+    char *s_B = names[i_B];
+    for (int  i = 0; i<n_diff; i++) {
+        i_B = parent_list[i_B];
+    }
+    if (i_A == i_B) {
+        if (n_diff == 1) {
+            sprintf(s_rel_buf, "%s is the mother of %s", s_A, s_B);
+        } else if (n_diff == 2) {
+            sprintf(s_rel_buf, "%s is the grand-mother of %s", s_A, s_B);
+        } else {
+            s = s_rel_buf;
+            n = sprintf(s, "%s is the ", s_A);
+            s += n;
+            for (int  i = 0; i<n_diff-2; i++) {
+                n = sprintf(s, "great-");
+                s += n;
             }
-            rel += "grand-mother of ";
+            sprintf(s, "grand-mother of %s", s_B);
         }
-        rel += B;
-    }
-    else if(n_A > 1 && BB[n+1] == AA[1]){
-        if(n == 1){
-            rel += "aunt of ";
-        }
-        else{
-            for(int  i=0; i<n-1; i++){
-                rel += "great-";
+    } else if (parent_list[i_A] == parent_list[i_B]) {
+        if (n_diff == 0) {
+            sprintf(s_rel_buf, "SIBLINGS");
+        } else if (n_diff == 1) {
+            sprintf(s_rel_buf, "%s is the aunt of %s", s_A, s_B);
+        } else {
+            s = s_rel_buf;
+            n = sprintf(s, "%s is the ", s_A);
+            s += n;
+            for (int  i = 0; i<n_diff-1; i++) {
+                n = sprintf(s, "great-");
+                s += n;
             }
-            rel += "aunt of ";
+            sprintf(s, "aunt of %s", s_B);
         }
-        rel += B;
-    }
-    else{
-        rel = "NOT RELATED";
-        for(int  i=2; i<n_A; i++){
-            if(BB[n+i] == AA[i]){
-                rel = "COUSINS";
+    } else {
+        while (parent_list[i_A] != i_A) {
+            i_A = parent_list[i_A];
+            i_B = parent_list[i_B];
+            if (i_A == i_B) {
                 break;
             }
         }
+        if (i_A == i_B) {
+            sprintf(s_rel_buf, "COUSINS");
+        } else {
+            sprintf(s_rel_buf, "NOT RELATED");
+        }
     }
+    return s_rel_buf;
 }
-
