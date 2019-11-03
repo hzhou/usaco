@@ -47,9 +47,9 @@ int main () {
     FILE * Out = fopen("milkorder.out", "w");
     for (int i = 0; i < N; i++) {
         if (i != N-1)
-            fprinf("%d ", &answer[i]);
+            fprintf("%d ", &answer[i]);
         else
-            fprinf("%d\n", &answer[i]);
+            fprintf("%d\n", &answer[i]);
     }
 
     return 0;

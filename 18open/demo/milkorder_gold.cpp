@@ -21,6 +21,7 @@ int main(int argc, char** argv)
     int i2;
     int i;
 
+
     FILE* In = fopen("milkorder.in", "r");
     if (!In) {
         fprintf(stderr, "Can't open In\n");
@@ -38,6 +39,7 @@ int main(int argc, char** argv)
         }
     }
     fclose(In);
+
     k = find_k();
     std::cout<<"k="<<k<<'\n';
     int L[N];
@@ -46,6 +48,7 @@ int main(int argc, char** argv)
         dep_counts[i] = 0;
     }
     std::unordered_set<int> followers[N];
+
     n_edges = 0;
     for (int  i = 0; i<k; i++) {
         for (int  j = 0; j<order_list[i].size()-1; j++) {
@@ -59,16 +62,20 @@ int main(int argc, char** argv)
     std::set<int> stack;
     for (int  i = 0; i<N; i++) {
         if (dep_counts[i] == 0) {
+            printf("inserting %d\n", i);
             stack.insert(i);
         }
     }
+
     int *p = L;
     while (stack.size() > 0) {
         auto it = stack.begin();
         i = *it;
         stack.erase(it);
+
         *p = i + 1;
         p++;
+
         for(auto j : followers[i]){
             dep_counts[j]--;
             if (dep_counts[j] == 0) {
@@ -77,6 +84,7 @@ int main(int argc, char** argv)
             n_edges--;
         }
     }
+
     FILE* Out = fopen("milkorder.out", "w");
     for (int  i = 0; i<N-1; i++) {
         fprintf(Out, "%d ", L[i]);
@@ -117,6 +125,7 @@ int check_cycle(int k)
         dep_counts[i] = 0;
     }
     std::unordered_set<int> followers[N];
+
     n_edges = 0;
     for (int  i = 0; i<k; i++) {
         for (int  j = 0; j<order_list[i].size()-1; j++) {
@@ -133,9 +142,11 @@ int check_cycle(int k)
             stack.push_back(i);
         }
     }
+
     while (stack.size() > 0) {
         i = stack.back();
         stack.pop_back();
+
         for(auto j : followers[i]){
             dep_counts[j]--;
             if (dep_counts[j] == 0) {
@@ -144,6 +155,7 @@ int check_cycle(int k)
             n_edges--;
         }
     }
+
     if (n_edges > 0) {
         return 1;
     } else {

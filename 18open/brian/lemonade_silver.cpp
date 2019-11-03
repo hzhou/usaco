@@ -39,7 +39,7 @@ int main() {
   }
 
   FILE *output = fopen("lemonade.out", "w");
-  fprintf(output, "%d", line);
+  fprintf(output, "%d\n", line);
   fclose(output);
   
   return 0;

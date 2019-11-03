@@ -100,6 +100,7 @@ subcode: try_2
                 n_max=C[i]
 
     subcode: try_2_2
+        # binary index tree
         $for i=0:N
             $if P[i]>i
                 $call add, i, 1

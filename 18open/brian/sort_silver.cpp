@@ -36,14 +36,20 @@ int main() {
   int max = -1;
   int temp = 0;
   for (int i = 0; i < N; i++) {
-    temp = abs(i-sortarr[i].origindex)+1;
+    int temp = 0;
+    if (i < sortarr[i].origindex) {
+        temp = sortarr[i].origindex - i;
+    }
     if (temp > max) {
       max = temp;
     }
   }
 
+  if(max < N){
+    max ++;
+  }
   FILE *output = fopen("sort.out", "w");
-  fprintf(output, "%d", max);
+  fprintf(output, "%d\n", max);
   fclose(output);
   
   return 0;

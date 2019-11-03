@@ -82,9 +82,10 @@ fncode: check_cycle(k)
 #---------------------------------------- 
 subcode: topo_sort
     $call @init_graph
-    $my std::set<int> stack
+    $my std::set<int> stack  # It is important to keep it ordered
     $for i=0:N
         $if dep_counts[i]==0
+            $print inserting $i
             stack.insert(i)
 
     $my int * p = L

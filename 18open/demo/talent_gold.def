@@ -32,6 +32,7 @@ fncode: try_y(int y)
     $include <climits>
     $(set:Inf=LLONG_MIN)
 
+    # dynamic programming
     $my long long  T[W+1]
     $for i=0:W+1
         T[i] = $(Inf)
