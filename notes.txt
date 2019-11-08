@@ -36,3 +36,35 @@ Insertion sort: 3 2 4 1
 				|       |
 				|_______|
 
+
+9/29/19
+
+Binary Index Tree ('Tree' part is misleading)
+
+7 = 4 + 2 + 1
+
+9 = 8 + 1
+
+Binary Index Tree -> Insertion sort
+
+^ -> XOR 
+
+A ^ B -> convert to binary
+
+1 1 -> 0
+0 0 -> 0
+1 0 -> 1
+0 1 -> 1
+
+DO MORE GOLD!!!!!
+
+10/6/19
+
+Left Out - Other ways to do
+
+HW - 1712
+
+Every inversion changes one number
+
+
+

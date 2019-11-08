@@ -2,7 +2,7 @@
  * ID: jhuang1
  * PROG: sample
  * LANG: C++11
- * RESULT: 9/11
+ * RESULT: 9/11	
  * TIME: 1ms
  * COMMENT: test1
  * */
