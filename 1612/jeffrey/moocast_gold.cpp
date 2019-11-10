@@ -1,6 +1,6 @@
 /*
  * ID: jhuang1
- * PROG: sample
+ * PROG: Moocast
  * LANG: C++11
  * RESULT: 8/10
  * TIME: 1ms
@@ -23,9 +23,28 @@
 
 using namespace std;
 
+struct cow {
+	int x, y;
+};
+
 int main() {
-	ifstream fin("haybales.in");
-	ofstream fout("haybales.out");
+	ifstream fin("moocast.in");
+	int N;
+	fin >> N;
+	vector<cow> cows(N);
+	for (int i = 0; i < N; ++i) {
+		fin >> cows[i].x >> cows[i].y; 
+	}
+	
+	int dp[1000][1000];
+	for (int i = 0; i < N; ++i) {
+		for (int j = 0; j < N; ++j) {
+			dp[i][j] = dp[i - 1][j] + dp[i][j - 1] + cows[i].x * cows[i].y;
+		}
+	}
+
+	fout 
+	ofstream fout("moocast.out");
 	return 0;
 }
 

@@ -2,9 +2,15 @@
  * ID: jhuang1
  * PROG: Milk Measurement
  * LANG: C++11
+<<<<<<< HEAD
+ * RESULT: 8/11
+ * TIME: 45 min
+ * COMMENT: test1
+=======
  * RESULT: 10/10
  * TIME: 45 min
  * COMMENT: No problems, just some minor syntax issues after first draft
+>>>>>>> f9984f29666a11f13ab58868dc64b8ce0bcc038d
  * */
 #include <algorithm>
 #include <iostream>
@@ -20,6 +26,33 @@
 #include <numeric>
 #include <unordered_map>
 #include <unordered_set>
+<<<<<<< HEAD
+
+using namespace std;
+
+struct m {
+	int d, c, g;
+};
+
+bool comp(const m& a, const m& b) {
+	return a.d < b.d;
+}
+
+int main(int argc, char* argv[]) {
+	ifstream fin("measurement.in");
+	int N, G;
+	fin >> N >> G;
+	vector<m> log(N);
+	for (int i = 0; i < N; ++i) {
+		cin >> log[i].d >> log[i].c >> log[i].g;
+	} 
+	sort(log.begin(), log.end(), comp);
+	map<int, int, greater<int> > cnt;
+	cnt[0] = N + 1;
+
+	ofstream fout("measurement.out");
+	return 0;
+=======
  
 using namespace std;
  
@@ -72,6 +105,7 @@ int main() {
   	fout << ans;
  
   	return 0;
+>>>>>>> f9984f29666a11f13ab58868dc64b8ce0bcc038d
 }
 
 /*

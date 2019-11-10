@@ -1,6 +1,6 @@
 /*
  * ID: jhuang1
- * PROG: sample
+ * PROG: Cities and States
  * LANG: C++11
  * RESULT: 8/10
  * TIME: 1ms
@@ -24,15 +24,13 @@
 using namespace std;
 
 int main() {
-	ifstream fin("haybales.in");
-	ofstream fout("haybales.out");
+	ifstream fin("citystate.in");
+	int N;
+	fin >> N;
+	for (int i = 0; i < N; ++i) {
+
+	}
+	ofstream fout("citystate.out");
 	return 0;
 }
-
-/*
-Instructions:
-git add dining_gold.cpp
-git commit
-git push
-*/
 
