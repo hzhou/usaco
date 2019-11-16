@@ -36,3 +36,5 @@ public class notlast{
                 if(win1>win2) out.println(win1);
                 if(win2>win1) out.println(win2);
                 out.close();
+        }
+}
