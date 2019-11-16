@@ -19,6 +19,7 @@ public class notlast{
                     if(name.equals("Maggie")) Cows[5]++;                   
                     if(name.equals("Henrietta")) Cows[6]++;                  
                 }
+                scan.close();
                 
                 int min=100;
                 for(int i=0; i<7; i++)
@@ -32,16 +33,21 @@ public class notlast{
                         if(Cows[i]<min) min=Cows[i];
                        
                 
-                if(min==0||min>1) System.out.println("Tie");
+                PrintWriter out = new PrintWriter(new BufferedWriter (new FileWriter("notlast.out")));
+                
+                if(min==0||min>1) out.println("Tie");
                 else{
                         for(int i=0; i<7; i++){
                                 if(Cows[i]==min){
-                                        if(i=0) Cows[0]++;
-                                        if(i=1)Cows[1++];             
-                                        if() Cows[2]++;                  
-                                        if() Cows[3]++;                  
-                                        if() Cows[4]++;                    
-                                        if() Cows[5]++;                   
-                                        if() Cows[6]++;         
+                                        if(i==0)  out.println("Bessie");
+                                        if(i==1)  out.println("Elsie");           
+                                        if(i==2)  out.println("Daisy");                 
+                                        if(i==3)  out.println("Gertie");              
+                                        if(i==4)  out.println("Annabelle");                   
+                                        if(i==5)  out.println("Maggie");                  
+                                        if(i==6)  println("Henrietta");        
+                                }
+                        }
+                }
           }
  }
