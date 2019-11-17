@@ -63,7 +63,7 @@ int main(int argc, char* argv[]) {
 
 	ans /= 2;
 
-	fout << ans;
+	fout << ans << "\n";
 	// End of your soulution.
 	//////////////////////////////////////
 

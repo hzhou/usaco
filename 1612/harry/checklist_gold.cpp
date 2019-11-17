@@ -101,5 +101,5 @@ int main() {
     }
 
     cout << dp[H][G][0];
-    fout << dp[H][G][0];
+    fout << dp[H][G][0] << '\n';
 }

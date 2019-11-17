@@ -9,7 +9,7 @@ page: blocks_bronze, basic_frame
         $my char A[N][11], char B[N][11]
         $for i=0:N
             fscanf(In, "%s %s", A[i], B[i])
-    $print "%s - %s", A[2], B[2]
+    # $print "%s - %s", A[2], B[2]
 
     $my int count[26]={0}
     $for i=0:N

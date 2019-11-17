@@ -1,12 +1,18 @@
-#include <vector>
 #include <cstdio>
-#include <map>
+#include <climits>
 #include <cstdio>
 #include <algorithm>
+
+int dist(int i, int j);
+
+int *x_list;
+int *y_list;
+int DP[1001][1001][2];
 
 int main(int argc, char** argv)
 {
     int n;
+
 
     FILE* In = fopen("checklist.in", "r");
     if (!In) {
@@ -16,79 +22,53 @@ int main(int argc, char** argv)
     int H;
     int G;
     fscanf(In, " %d %d" ,&H,&G);
-    int x_list[H+G];
-    int y_list[H+G];
+    x_list = new int[H+G];
+    y_list = new int[H+G];
     for (int  i = 0; i<H+G; i++) {
         fscanf(In, " %d %d" ,&x_list[i],&y_list[i]);
     }
     fclose(In);
-    std::vector<std::pair<int,int> > Q;
-    Q.push_back({0, 0});
-    for (int  i = 1; i<H+G; i++) {
-        std::map<int,int> M;
-        for(auto q : Q){
-            int j = q.first;
-            int cost = q.second;
-            if (j < H) {
-                if (j + 1 < H) {
-                    if (j + 1 != H - 1 || i == H + G - 1) {
-                        int dx = x_list[j+1]-x_list[j];
-                        int dy = y_list[j+1]-y_list[j];
-                        int t = cost+dx*dx+dy*dy;
-                        if (M.count(j + 1) == 0) {
-                            M[j+1] = t;
-                        } else if (M[j+1] > t) {
-                            M[j+1] = t;
-                        }
-                    }
-                }
-                if (H + i - 1 - j < H + G) {
-                    if (H + i - 1 - j != H - 1 || i == H + G - 1) {
-                        int dx = x_list[H+i-1-j]-x_list[j];
-                        int dy = y_list[H+i-1-j]-y_list[j];
-                        int t = cost+dx*dx+dy*dy;
-                        if (M.count(H + i - 1 - j) == 0) {
-                            M[H+i-1-j] = t;
-                        } else if (M[H+i-1-j] > t) {
-                            M[H+i-1-j] = t;
-                        }
-                    }
-                }
-            } else {
-                if (j + 1 < H + G) {
-                    if (j + 1 != H - 1 || i == H + G - 1) {
-                        int dx = x_list[j+1]-x_list[j];
-                        int dy = y_list[j+1]-y_list[j];
-                        int t = cost+dx*dx+dy*dy;
-                        if (M.count(j + 1) == 0) {
-                            M[j+1] = t;
-                        } else if (M[j+1] > t) {
-                            M[j+1] = t;
-                        }
-                    }
-                }
-                if (i - 1 - (j - H) < H) {
-                    if (i - 1 - (j - H) != H - 1 || i == H + G - 1) {
-                        int dx = x_list[i-1-(j-H)]-x_list[j];
-                        int dy = y_list[i-1-(j-H)]-y_list[j];
-                        int t = cost+dx*dx+dy*dy;
-                        if (M.count(i - 1 - (j - H)) == 0) {
-                            M[i-1-(j-H)] = t;
-                        } else if (M[i-1-(j-H)] > t) {
-                            M[i-1-(j-H)] = t;
-                        }
-                    }
-                }
-            }
-        }
-        Q.clear();
-        for(auto it : M){
-            Q.push_back(it);
+
+
+    for (int  g = 1; g <= G; g++) {
+        DP[0][g][0] = -1;
+        DP[0][g][1] = -1;
+    }
+    DP[1][0][0] = 0;
+    DP[1][0][1] = -1;
+    for (int  h = 2; h <= H; h++) {
+        DP[h][0][0] = DP[h-1][0][0] + dist(h - 2, h - 1);
+        DP[h][0][1] = -1;
+    }
+    for (int  h = 1; h <= H; h++) {
+        for (int  g = 1; g <= G; g++) {
+            int t1;
+            int t2;
+            int t;
+            t1 = DP[h-1][g][0] < 0 ? INT_MAX: DP[h-1][g][0] + dist(h - 2, h - 1);
+            t2 = DP[h-1][g][1] < 0 ? INT_MAX: DP[h-1][g][1] + dist(H + g - 1, h - 1);
+            t = std::min(t1, t2);
+            DP[h][g][0]  = (t==INT_MAX? -1: t);
+
+            t1 = DP[h][g - 1][0] < 0 ? INT_MAX: DP[h][g - 1][0] + dist(h - 1, H + g - 1);
+            t2 = DP[h][g - 1][1] < 0 ? INT_MAX: DP[h][g - 1][1] + dist(H + g - 2, H + g - 1);
+            t = std::min(t1, t2);
+            DP[h][g][1]  = (t==INT_MAX? -1: t);
         }
     }
-    n = Q[0].second;
+    n = DP[H][G][0];
     FILE* Out = fopen("checklist.out", "w");
     fprintf(Out, "%d\n", n);
     fclose(Out);
     return 0;
+}
+
+int dist(int i, int j)
+{
+    int n_x;
+    int n_y;
+
+    n_x = x_list[i] - x_list[j];
+    n_y = y_list[i] - y_list[j];
+    return n_x * n_x + n_y * n_y;
 }

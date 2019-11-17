@@ -1,5 +1,5 @@
 #include <cstdio>
-#include <set>
+#include <queue>
 #include <cstdio>
 #include <algorithm>
 
@@ -21,6 +21,7 @@ int main(int argc, char** argv)
         fscanf(In, " %d %d" ,&x_list[i],&y_list[i]);
     }
     fclose(In);
+
     int M[N*N];
     for (int  i = 0; i<N; i++) {
         for (int  j = i+1; j<N; j++) {
@@ -29,16 +30,30 @@ int main(int argc, char** argv)
             M[j*N+i] = n;
         }
     }
-    int L[N];
-    for (int  i = 0; i<N; i++) {
-        L[i] = 0;
-    }
-    std::set<int> stack;
-    stack.insert(0);
+
+    int L[N] = {0};
+
+    int visited[N] = {0};
+    auto cmp_fn = [&](int a, int b) {
+        if (L[b] == 0) {
+            return false;
+        } else if (L[a] == 0) {
+            return true;
+        } else {
+            return L[a] > L[b];
+        }
+    };
+
+    std::priority_queue<int, std::vector<int>, decltype(cmp_fn)> stack(cmp_fn);
+    stack.push(0);
     while (stack.size() > 0) {
-        auto it=stack.begin();
-        i = *it;
-        stack.erase(it);
+        i = stack.top();
+        stack.pop();
+        if (visited[i]) {
+            continue;
+        } else {
+            visited[i] = 1;
+        }
         for (int  j = 0; j<N; j++) {
             if (j != i) {
                 int t = L[i];
@@ -47,7 +62,7 @@ int main(int argc, char** argv)
                 }
                 if (L[j] == 0 || L[j] > t) {
                     L[j] = t;
-                    stack.insert(j);
+                    stack.push(j);
                 }
             }
         }

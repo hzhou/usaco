@@ -29,7 +29,7 @@ int main()
 				min = (X[i]-X[j])*(X[i]-X[j])+(Y[i]-Y[j])*(Y[i]-Y[j]);
 			}
 		}
-		if(min > highestmin and min != 2000000000)
+		if(min > highestmin)
 		{
 			highestmin = min;
 		}

@@ -27,12 +27,14 @@ int main(int argc, char** argv)
         fscanf(In, " %d %d" ,&X[i],&Y[i]);
     }
     fclose(In);
+
     std::multimap<int,int> Mx;
     std::multimap<int,int> My;
     for (int  i = 0; i<N; i++) {
         Mx.insert(std::pair < int, int > (X[i], i));
         My.insert(std::pair < int, int > (Y[i], i));
     }
+
     std::unordered_set<int> cache;
     std::vector<int> Q;
     if (cache.count(yL) == 0) {
@@ -43,6 +45,7 @@ int main(int argc, char** argv)
         Q.push_back(xL + 1000000000);
         cache.insert(xL + 1000000000);
     }
+
     count = 0;
     while (Q.size() > 0) {
         std::vector<int> Q2;

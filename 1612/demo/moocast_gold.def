@@ -19,14 +19,16 @@ page: moocast_gold, basic_frame
         $print $n_max
 
 subcode: try_1 # dijkstra
-    $my int L[N]
-    $for i=0:N
-        L[i] = 0
+    $my int L[N] = {0}
 
-    &call stack_map
+    $call @init_cache
+    # &call stack_vector
+    # &call stack_set
+    &call stack_priority_queue
         $call push, 0
         $while stack.size()>0
             $call pop, i
+            $call @check_cache
             $for j=0:N
                 $if j!=i
                     $my int t = L[i]
@@ -39,7 +41,18 @@ subcode: try_1 # dijkstra
     $for i=0:N
         $call update_max, n_max, L[i]
 
-subcode: stack_map
+subcode: stack_vector
+    $my std::vector<int> stack
+    BLOCK
+
+    subcode: push(i)
+        stack.push_back($(i))
+
+    subcode: pop(i)
+        i = stack.back()
+        stack.pop_back()
+
+subcode: stack_set
     $my std::set<int> stack
     BLOCK
 
@@ -50,4 +63,34 @@ subcode: stack_map
         $my auto it=stack.begin()
         i = *it
         stack.erase(it)
+
+subcode: stack_priority_queue
+    auto cmp_fn = [&](int a, int b) {
+        $if L[b]==0
+            return false
+        $elif L[a]==0
+            return true
+        $else
+            return L[a]>L[b]
+    };
+
+    $include <queue>
+    std::priority_queue<int, std::vector<int>, decltype(cmp_fn)> stack(cmp_fn);
+    BLOCK
+
+    subcode: push(i)
+        stack.push($(i))
+
+    subcode: pop(i)
+        i=stack.top()
+        stack.pop()
+
+    # -------------------
+    subcode: init_cache
+        $my int visited[N] = {0}
+    subcode: check_cache
+        $if visited[i]
+            continue
+        $else
+            visited[i]=1
 

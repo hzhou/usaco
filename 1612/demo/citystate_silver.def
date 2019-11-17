@@ -16,8 +16,10 @@ page: citystate_silver, basic_frame
         $for i=0:N
             fscanf(In, "%s %s", A[i], B[i])
 
-    $call method_1
-    # $call method_2
+    $(if:0)
+        $call method_1
+    $(else)
+        $call method_2
     &call open_Out
         $print $total_count
 

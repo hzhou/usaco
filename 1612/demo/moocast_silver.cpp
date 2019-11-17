@@ -21,18 +21,22 @@ int main(int argc, char** argv)
     int n_max;
     int n;
 
+
     FILE* In = fopen("moocast.in", "r");
     if (!In) {
         fprintf(stderr, "Can't open In\n");
         exit(-1);
     }
     fscanf(In, " %d" ,&N);
+
     struct cow cows[N];
     for (int  i = 0; i<N; i++) {
         fscanf(In, " %d %d %d" ,&cows[i].x,&cows[i].y,&cows[i].p);
     }
     fclose(In);
     std::cout<<"N="<<N<<'\n';
+
+
     for (int  i = 0; i<N; i++) {
         for (int  j = 0; j<N; j++) {
             if ((cows[i].x - cows[j].x) * (cows[i].x - cows[j].x) + (cows[i].y - cows[j].y) * (cows[i].y - cows[j].y) <= cows[i].p * cows[i].p) {
@@ -42,6 +46,7 @@ int main(int argc, char** argv)
             }
         }
     }
+
     n_max = 0;
     for (int  i = 0; i<N; i++) {
         n = get_Reach(i);
@@ -49,10 +54,12 @@ int main(int argc, char** argv)
             n_max = n;
         }
     }
+
     std::cout<<"n_max="<<n_max<<'\n';
     FILE* Out = fopen("moocast.out", "w");
     fprintf(Out, "%d\n", n_max);
     fclose(Out);
+
     return 0;
 }
 
@@ -64,6 +71,7 @@ int get_Reach(int i)
     int L[N];
     for (int  i = 0; i<N; i++) {
         L[i] = 0;
+
     }
     std::vector<int> stack;
     stack.push_back(i);
