@@ -3,12 +3,12 @@
 import java.io.*;
 import java.util.*;
 
-public class notlast{
+public class hps{
         public static void main(String[] args)throws IOException{
                 Scanner scan = new Scanner(new File("hps.in"));
                 int N = scan.nextInt();
                 int[] A = new int[N+1];
-                int[] B = new int[N+1]'
+                int[] B = new int[N+1];
                 
                 for(int i=0; i<N; i++){
                     A[i] = scan.nextInt();

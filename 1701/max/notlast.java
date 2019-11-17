@@ -65,3 +65,5 @@ public class notlast{
 			out.println("Tie");
 		}
 		out.close();
+        }
+}
