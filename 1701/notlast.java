@@ -1,4 +1,6 @@
 //Max Yang
+//40 minutes
+//All tests passed
 
 import java.io.*;
 import java.util.*;
