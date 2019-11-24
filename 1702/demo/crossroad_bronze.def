@@ -17,6 +17,7 @@ page: crossroad_bronze, basic_frame
             $my i_cow, i_side
             $call scan_int, i_cow, i_side
             i_cow --
+            # check count
             $if cows[i_cow]>=0 && cows[i_cow]!=i_side
                 count++
             cows[i_cow]=i_side

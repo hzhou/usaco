@@ -19,6 +19,7 @@ int main(int argc, char** argv)
     int i_seq_next;
     int n_min;
 
+
     FILE* In = fopen("visitfj.in", "r");
     if (!In) {
         fprintf(stderr, "Can't open In\n");
@@ -33,6 +34,7 @@ int main(int argc, char** argv)
     }
     fclose(In);
     std::cout<<"N="<<N<<", "<<"T="<<T<<'\n';
+
     int costs[3][N*N];
     for (int  i = 0; i<N*N; i++) {
         costs[0][i] = -1;
@@ -40,6 +42,7 @@ int main(int argc, char** argv)
         costs[2][i] = -1;
     }
     costs[0][0] = 0;
+
     std::multimap<int, struct k_seq> stack;
     stack.insert({0, {0, 0}});
     while (stack.size() > 0) {
@@ -80,6 +83,7 @@ int main(int argc, char** argv)
             }
         }
     }
+
     n_min = costs[0][N * N - 1];
     if (n_min > costs[1][N * N - 1]) {
         n_min = costs[1][N * N - 1];
@@ -87,8 +91,10 @@ int main(int argc, char** argv)
     if (n_min > costs[2][N * N - 1]) {
         n_min = costs[2][N * N - 1];
     }
+
     FILE* Out = fopen("visitfj.out", "w");
     fprintf(Out, "%d\n", n_min);
     fclose(Out);
+
     return 0;
 }

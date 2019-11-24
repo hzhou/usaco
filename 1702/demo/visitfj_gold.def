@@ -1,3 +1,5 @@
+# tag: dijkstra
+
 include: ../../usaco.def
 
 page: visitfj_gold, basic_frame

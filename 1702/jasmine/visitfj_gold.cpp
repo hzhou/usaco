@@ -19,6 +19,7 @@ struct State {
     State(int index, int iStep, long long time) 
         : index(index), iStep(iStep), time(time)
     { 
+        // printf("push %d - %d - %lld\n", index, iStep, time);
     }
 }; 
 struct CompareState { 
@@ -51,10 +52,12 @@ int main () {
     while(!pq.empty()) {
         State current = pq.top();
         pq.pop();
-        if (sPath[current.index][current.iStep%3] != -1 && current.time > sPath[current.index][current.iStep%3])
+        if (sPath[current.index][current.iStep%3] != -1 && current.time >= sPath[current.index][current.iStep%3])
             continue;
         else 
             sPath[current.index][current.iStep%3] = current.time;
+
+        printf("%d - %lld - %d\n", current.index, current.time, current.iStep % 3);
 
         int i = current.index/N;
         int j = current.index%N;
@@ -90,7 +93,7 @@ int main () {
     }
     
     long long minT = min(sPath[N*N-1][0], min (sPath[N*N-1][1], sPath[N*N-1][2]));
-    //cout << minT;
+    cout << minT <<"\n";
     FILE * Out = fopen ("visitfj.out", "w");
     fprintf(Out, "%lld\n", minT);
 

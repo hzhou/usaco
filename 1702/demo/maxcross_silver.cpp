@@ -3,9 +3,11 @@
 #include <cstdio>
 #include <algorithm>
 
-int main(int argc, char** argv){
+int main(int argc, char** argv)
+{
+
     FILE* In = fopen("maxcross.in", "r");
-    if(!In){
+    if (!In) {
         fprintf(stderr, "Can't open In\n");
         exit(-1);
     }
@@ -14,41 +16,37 @@ int main(int argc, char** argv){
     int B;
     fscanf(In, " %d %d %d" ,&N,&K,&B);
     std::cout<<"N="<<N<<", "<<"K="<<K<<", "<<"B="<<B<<'\n';
+
     int broken_list[B+1];
-    for(int  i=0; i<B; i++){
+    for (int  i = 0; i<B; i++) {
         fscanf(In, " %d" ,&broken_list[i]);
         broken_list[i]--;
     }
     broken_list[B] = N;
     fclose(In);
+
     std::sort(broken_list, broken_list+B, [&](int a, int b){
         return a < b;
     } );
-    int M = B;
-    int start = 0;
-    if(broken_list[B] - broken_list[B-1] - 1 >= K){
-        M = 0;
+
+    int broken_counts[N+1];
+    int count = 0;
+    int i_B = 0;
+    for (int  i = 0; i<N; i++) {
+        broken_counts[i] = count;
+        if (i_B < B && i == broken_list[i_B]) {
+            count++;
+            i_B++;
+        }
     }
-    else{
-        for(int  j=0; j<B; j++){
-            std::cout<<"K="<<K<<", "<<"start="<<start<<", "<<"j="<<j<<", "<<"broken_list[j]="<<broken_list[j]<<'\n';
-            if(broken_list[j] - start >= K){
-                M = 0;
-                break;
-            }
-            int m = M;
-            if(j + m > B){
-                m = B - j;
-            }
-            for(int  i=j; i<j+m; i++){
-                int end = broken_list[i+1];
-                int length = end-start;
-                if(length >= K){
-                    M = i - j + 1;
-                    break;
-                }
-            }
-            start = broken_list[j] + 1;
+    broken_counts[N] = B;
+
+    int M = B;
+    for (int  i = 0; i<N-K+1; i++) {
+        if (M > broken_counts[i+K] - broken_counts[i]) {
+            M = broken_counts[i+K] - broken_counts[i];
+
+
         }
     }
     std::cout<<"M="<<M<<'\n';
@@ -57,4 +55,3 @@ int main(int argc, char** argv){
     fclose(Out);
     return 0;
 }
-

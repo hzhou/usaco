@@ -15,18 +15,17 @@ page: cowqueue_bronze, basic_frame
         &call std_sort, L, N, item
             return a.arrival<b.arrival
 
-    $my int t=0, int t2
-    t2 = L[0].arrival+L[0].duration
-    t=t2
+    $my int t
+    t = L[0].arrival+L[0].duration
     $for i=1:N
-        $if L[i].arrival<t2
-            t2+=L[i].duration
+        $if L[i].arrival<t
+            t+=L[i].duration
         $else
-            t2 =L[i].arrival+L[i].duration
+            t =L[i].arrival+L[i].duration
 
-    $dump t2
+    $dump t
     &call open_Out
-        $print $t2
+        $print $t
 
 
 

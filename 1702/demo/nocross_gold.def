@@ -17,7 +17,7 @@ page: nocross_gold, basic_frame
     $for i=0:N
         PA[A[i]]=i
     #---------------------------------------- 
-    $my int dp[N][N]
+    $my int dp[N][N] # dp[i][j]: count up to B[i] and A[j]
     # ---- special case: i=0 ---------------
     $call @get_sorted_iA_list, B[0]
     $for j=0:iA_list[0]

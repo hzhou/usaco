@@ -37,6 +37,7 @@ page: helpcross_silver, basic_frame
         $if j==N
             break
         # ---------------------------
+        # among the list of cows that $(c) can help, take the smallest interval [$(c), $(B:k)]
         $for k=j:N
             $if $(A:k)<=$(c)
                 n++

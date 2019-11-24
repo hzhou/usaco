@@ -16,6 +16,17 @@ page: maxcross_silver, basic_frame
     &call std_sort, broken_list, B, int
         return a<b
 
+    $(if:0)
+        # fixing each light and count the reach
+        $call try1
+    $(else)
+        # count broken lights within the reach
+        $call try2
+    $dump M
+    &call open_Out
+        $print $M
+
+subcode: try1
     $my int M = B
     $my int start = 0
     $if broken_list[B]-broken_list[B-1]-1>=K
@@ -40,9 +51,20 @@ page: maxcross_silver, basic_frame
 
             start = broken_list[j]+1
 
-    $dump M
-    &call open_Out
-        $print $M
+subcode: try2
+    $my int broken_counts[N+1]
+    $my int count=0, int i_B=0
+    $for i=0:N
+        broken_counts[i] = count
+        $if i_B < B && i==broken_list[i_B]
+            count++
+            i_B++
+    broken_counts[N] = B
+
+    $my int M=B
+    $for i=0:N-K+1
+        $if M > broken_counts[i+K] - broken_counts[i]
+            M = broken_counts[i+K] - broken_counts[i]
 
 
 
