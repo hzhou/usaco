@@ -71,7 +71,7 @@ int main() {
 
 
   FILE *output = fopen("pairup.out", "w");
-  fprintf(output, "%d", max);
+  fprintf(output, "%d\n", max);
   fclose(output);
   
   return 0;

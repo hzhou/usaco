@@ -46,11 +46,15 @@ fncode: get_level(i1, i2, int c0)
         $if c==c0
             i++
             continue
+        # new color patch
         $if cache[c]
+            # across to lower patches but not covering the inner edges
             return $(inf)
         $if R[c]>i2
+            # across lower patch's right edge but not covering it
             return $(inf)
 
+        # recursively get this new patch
         n_level = get_level(L[c], R[c], c)
         $if tn_max < n_level
             tn_max = n_level

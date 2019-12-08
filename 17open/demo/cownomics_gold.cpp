@@ -20,6 +20,7 @@ int main(int argc, char** argv)
     int tn_flag;
     int count;
 
+
     FILE* In = fopen("cownomics.in", "r");
     if (!In) {
         fprintf(stderr, "Can't open In\n");
@@ -37,6 +38,7 @@ int main(int argc, char** argv)
         memcpy(s_plain[i], s, M);
     }
     fclose(In);
+
     i1 = 1;
     i2 = M;
     while (i1 <= i2) {
@@ -58,8 +60,12 @@ int main(int argc, char** argv)
     }
     count = i1;
     std::cout<<"count="<<count<<'\n';
+
     FILE* Out = fopen("cownomics.out", "w");
     fprintf(Out, "%d\n", count);
+
+
+
     fclose(Out);
     return 0;
 }
@@ -71,6 +77,7 @@ int match(int j, int k)
         std::string s(s_spotty[i]+j, k);
         S.insert(s);
     }
+
     for (int  i = 0; i<N; i++) {
         std::string s(s_plain[i]+j, k);
         if (S.count(s) > 0) {

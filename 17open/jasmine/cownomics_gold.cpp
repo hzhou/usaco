@@ -18,14 +18,14 @@ int main () {
 
     string spotty [N];
     for (int i = 0; i < N; i++) {
-        char s [M];
+        char s [M+1];
         fscanf(In,  "%s", &s);
         spotty[i] = (s); //built in constructor that converts char array to string 
     }
 
     string plain [N];
     for (int i = 0; i < N; i++) {
-        char s [M];
+        char s [M+1];
         fscanf(In,  "%s", &s);
         plain[i] = (s); 
     }
