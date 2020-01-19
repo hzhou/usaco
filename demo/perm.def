@@ -1,0 +1,35 @@
+include: ../usaco_java.def
+page: perm, basic_frame
+    module: java
+
+    $print Hello World!
+
+    $(set:N=4)
+    int[] P = new int[$(N)];
+    $for i=0:$(N)
+        P[i] = i
+
+    perm(P, $(N), 0)
+
+fncode: perm(int[] P, int N, int pos)
+    $if pos == N-1
+        $call dump_P
+    $for i=pos:N
+        $call P_copy
+        $call swap_pos_i
+        perm(P_copy, N, pos+1)
+
+    subcode: dump_P
+        $for i=0:N
+            $print "%d -", P[i]
+        $print
+
+    subcode: P_copy
+        int[] P_copy = new int[N];
+        $for i2=0:N
+            P_copy[i2] = P[i2]
+
+    subcode: swap_pos_i
+        int tmp = P_copy[pos];
+        P_copy[pos] = P_copy[i];
+        P_copy[i] = tmp;
