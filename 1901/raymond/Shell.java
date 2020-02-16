@@ -1,14 +1,12 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.StringTokenizer;
 
 public class Shell {
     public static void main(String[] args) throws IOException {
-        BufferedReader buf = new BufferedReader(new InputStreamReader(System.in));
+        BufferedReader buf = new BufferedReader(new FileReader("shell.in"));
         StringTokenizer st = new StringTokenizer(buf.readLine());
+        PrintWriter out = new PrintWriter("shell.out");
 
         int n = Integer.parseInt(st.nextToken());
 
@@ -23,8 +21,9 @@ public class Shell {
             guesses.add(Integer.parseInt(st.nextToken()));
         }
 
-        int maxGuesses = Math.max(correctGuesses(a, b, guesses, 0), correctGuesses(a, b, guesses, 1));
-        System.out.println(Math.max(maxGuesses, correctGuesses(a, b, guesses, 2)));
+        int maxGuesses = Math.max(correctGuesses(a, b, guesses, 1), correctGuesses(a, b, guesses, 2));
+        out.println(Math.max(maxGuesses, correctGuesses(a, b, guesses, 3)));
+        out.close();
     }
 
     private static int correctGuesses(ArrayList<Integer> a, ArrayList<Integer> b, ArrayList<Integer> guesses, int startingPos){
