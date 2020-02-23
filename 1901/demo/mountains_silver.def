@@ -1,3 +1,4 @@
+tag: iter_pairs
 include: ../../usaco.def
 page: mountains_silver, basic_frame
     module: cpp

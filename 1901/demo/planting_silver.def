@@ -1,4 +1,4 @@
-tag: backtracking
+tag: insight
 include: ../../usaco.def
 
 page: planting_silver, basic_frame
@@ -12,7 +12,33 @@ page: planting_silver, basic_frame
             A[i]--
             B[i]--
 
+    $my int count_list[N]
+    $for i=0:N
+        count_list[i]  = 0
+
+    $(if:0)
+        $call try_1
+    $(else)
+        $call try_2
+
+    #----------------------------------------
+    # $call dump_array count_list, N
+    $my count_max = count_list[0]+1
+    $for i=1:N
+        $call update_max, count_max, count_list[i]+1
+
     #---------------------------------------- 
+    &call open_Out
+        $print $count_max
+
+#---------------------------------------- 
+subcode: try_2
+    $for i=0:N-1
+        count_list[A[i]]++
+        count_list[B[i]]++
+
+#---------------------------------------- 
+subcode: try_1
     $my $(T_vn) adj_list[N]
     $for i=0:N-1
         adj_list[A[i]].push_back(B[i])
@@ -22,13 +48,10 @@ page: planting_silver, basic_frame
     $my int pointer_list[N]
     $for i=0:N
         pointer_list[i] = i
-    $my int count_list[N]
-    $for i=0:N
-        count_list[i]  = 0
-
     #---- backtracking, of course in this case we could simply count edges ----
     $my $(T_vn) stack
     stack.push_back(0)
+    count_list[0]--
     $while stack.size()>0
         i = stack.back()
         stack.pop_back()
@@ -40,16 +63,6 @@ page: planting_silver, basic_frame
 
         $foreach j in adj_list[i]
             $if j!=pointer_list[i]
-                $print $i-> $j
+                # $print $i-> $j
                 pointer_list[j] = i
                 stack.push_back(j)
-
-    #----------------------------------------
-    $my count_max = count_list[0]
-    $for i=1:N
-        $call update_max, count_max, count_list[i]+1
-
-    #---------------------------------------- 
-    &call open_Out
-        $print $count_max
-

@@ -1,3 +1,4 @@
+tag: find_region
 include: ../../usaco.def
 
 page: perimeter_silver, basic_frame

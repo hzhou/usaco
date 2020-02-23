@@ -5,7 +5,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-public class GuessTheAnimal {
+public class guess {
     public static void main(String[] args) throws IOException {
         BufferedReader buf = new BufferedReader(new FileReader("guess.in"));
         PrintWriter out = new PrintWriter("guess.out");

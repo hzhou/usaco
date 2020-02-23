@@ -11,7 +11,6 @@ int main(int argc, char** argv){
     }
     int N;
     fscanf(In, " %d" ,&N);
-    std::cout<<"N="<<N<<'\n';
     int grid[N*N];
     for(int  i=0; i<N; i++){
         char s[12];
@@ -21,6 +20,7 @@ int main(int argc, char** argv){
         }
     }
     fclose(In);
+    // -------------------------
     int HAS[10] = {0};
     int X1[10] = {0};
     int X2[10] = {0};
@@ -52,6 +52,7 @@ int main(int argc, char** argv){
             }
         }
     }
+    // all rect are defined
     for(int  i=1; i<10; i++){
         X2[i]++;
         Y2[i]++;
@@ -61,8 +62,8 @@ int main(int argc, char** argv){
         if(HAS[i] == 0){
             continue;
         }
-        for(int  j=1; j<10; j++){
-            if(i == j || HAS[j] == 0){
+        for(int  j=i+1; j<10; j++){
+            if(HAS[j] == 0){
                 continue;
             }
             int x1;

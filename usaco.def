@@ -31,6 +31,11 @@ subcode: open_Out
     fclose(Out)
 
 #----------------------------------------------- 
+subcode: new(T, var, n)
+    $global $(T) * $(var)
+    $(var) = new $(T)[$(n)]
+
+#----------------------------------------------- 
 subcode: dump_array(L, N)
     $print "$(L)[%d]: -", $(N)
     $for _i=0:$(N)
@@ -40,8 +45,6 @@ subcode: dump_array(L, N)
 subcode: scan_int(@plist)
     $(unset:fmt, vars)
     $(for:p in $(plist))
-        $(if:_decl)
-            $my int $(p)
         $(set-1:fmt.= %d)
         $(set-1:vars.=,&$(p))
     fscanf(In, "$(fmt)" $(vars));
@@ -51,13 +54,26 @@ subcode: scan_int_array(n, @plist)
         $call scan_int, $(join:*[i]:,:$(plist))
 
 subcode: scan_Int(@plist)
-    $(set:_decl=1)
+    $global $(plist): int
     $call scan_int, $(plist)
 
 subcode: scan_Int_array(n, @plist)
     $(for:p in $(plist))
-        $my int $(p)[$(n)]
+        $call new, int, $(p), $(n)
     $call scan_int_array, $(n), $(plist)
+
+subcode: scan_str(s)
+    fscanf(In, "%s", $(s))
+
+subcode: scan_Str(n, s)
+    $call new, char, $(s), $(n)+1
+    $call scan_str, $(s)
+
+subcode: scan_Int_struct(name, n, @plist)
+    $struct($(name)) $(join:int *:, :$(plist))
+    $call new, $(name), $(name:lc)_list, $(n)
+    $for i=0:$(n)
+        $call scan_int, $(join:$(name:lc)_list[i].*:,:$(plist))
 
 #---------------------------------------- 
 macros:

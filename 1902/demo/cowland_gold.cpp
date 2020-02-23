@@ -14,6 +14,7 @@ int main(int argc, char** argv)
     int n_j;
     int n;
 
+
     FILE* In = fopen("cowland.in", "r");
     if (!In) {
         fprintf(stderr, "Can't open In\n");
@@ -33,6 +34,7 @@ int main(int argc, char** argv)
         A[i]--;
         B[i]--;
     }
+
     int type_list[Q];
     int i_list[Q];
     int v_list[Q];
@@ -51,6 +53,7 @@ int main(int argc, char** argv)
         adj_list[A[i]].push_back(B[i]);
         adj_list[B[i]].push_back(A[i]);
     }
+
     int pointer_list[N];
     for (int  i = 0; i<N; i++) {
         pointer_list[i] = i;
@@ -59,6 +62,7 @@ int main(int argc, char** argv)
     for (int  i = 0; i<N; i++) {
         level_list[i] = -1;
     }
+
     int cache[N];
     for (int  i = 0; i<N; i++) {
         cache[i] = 0;
@@ -67,9 +71,11 @@ int main(int argc, char** argv)
     stack.push_back(0);
     cache[0] = 1;
     level_list[0] = 0;
+
     while (stack.size() > 0) {
         i = stack.back();
         stack.pop_back();
+
         for(auto j : adj_list[i]){
             if (!cache[j]) {
                 pointer_list[j] = i;
@@ -79,6 +85,7 @@ int main(int argc, char** argv)
             }
         }
     }
+
     std::vector<std::pair<int,int> > chains[10];
     int map_chain[N];
     for (int  i = 0; i<N; i++) {
@@ -171,10 +178,12 @@ int main(int argc, char** argv)
             ans_list.push_back(tn_ans);
         }
     }
+
     FILE* Out = fopen("cowland.out", "w");
     for(auto i : ans_list){
         fprintf(Out, "%d\n", i);
     }
     fclose(Out);
+
     return 0;
 }

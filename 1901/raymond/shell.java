@@ -2,7 +2,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-public class Shell {
+public class shell {
     public static void main(String[] args) throws IOException {
         BufferedReader buf = new BufferedReader(new FileReader("shell.in"));
         StringTokenizer st = new StringTokenizer(buf.readLine());
