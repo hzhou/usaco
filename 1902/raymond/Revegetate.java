@@ -16,23 +16,47 @@ public class Revegetate {
         StringTokenizer st = new StringTokenizer(buf.readLine());
         PrintWriter out = new PrintWriter("revegetate.out");
 
-        //Input (using arrays based on the max size of the input), and variables representing what they are in the problem
+        //Input (using arrays based on the max size of the input, and variables representing what they are in the problem)
         int n = Integer.parseInt(st.nextToken());
         int m = Integer.parseInt(st.nextToken());
 
-        int[] a = new int[150];
-        int[] b = new int[150];
-        int[] grasstype = new int[100];
+        int[] a = new int[151];
+        int[] b = new int[151];
+        int[] grasstype = new int[101];
 
-        for(int i = 0; i < n; i++){
-
+        for(int i = 0; i < m; i++){
+            st = new StringTokenizer(buf.readLine());
+            a[i] = Integer.parseInt(st.nextToken());
+            b[i] = Integer.parseInt(st.nextToken());
         }
 
         /*
-         * It's 2AM and I'm too tired to finish writing this. If you're reading this,
-         * I'll try to finish this today, but I'm at a science competition right now,
-         * so you might want to just take my Traffic and run with it. :(
+         * For each pasture, check all adjacent pastures (connected b/c favorites of cow)
+         * and make sure they're different colors.
+         * Runs in O(n m) time, which is not a concern with our constraints.
          */
+
+        //make i 1-based because the pastures are numbered in that fashion
+        for(int i = 1; i <= n; i++){
+            int j;
+            for(j = 1; j <= 4; j++){
+                boolean works = true;
+                for(int k = 0; k < a.length; k++){
+                    //If this grass type works (no adjacent same grass type)... say that it works
+                    //Otherwise, continue looping until we find one that does work (we are guaranteed to find one)
+                    if((i == a[k] && j == grasstype[b[k]]) || (i == b[k] && j == grasstype[a[k]])){
+                        works = false;
+                    }
+                }
+                if(works) {
+                    break;
+                }
+            }
+            grasstype[i] = j;
+            out.print(j);
+        }
+
+        out.println();
 
         //Close output
         out.close();

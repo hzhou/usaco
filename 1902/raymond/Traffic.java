@@ -5,7 +5,7 @@ import java.io.PrintWriter;
 import java.util.StringTokenizer;
 
 /*
- * 2019-02 Bronze 01
+ * 2019-02 Bronze 03
  * Question link:
  * http://usaco.org/index.php?page=viewproblem2&cpid=917
  */
@@ -16,7 +16,7 @@ public class Traffic {
         StringTokenizer st;
         PrintWriter out = new PrintWriter("traffic.out");
 
-        //Input (using arrays based on the max size of the input), and variables representing what they are in the problem
+        //Input (using arrays based on the max size of the input, and variables representing what they are in the problem)
         int n = Integer.parseInt(buf.readLine());
         String[] traffic = new String[100];
         int[] a = new int[100];
