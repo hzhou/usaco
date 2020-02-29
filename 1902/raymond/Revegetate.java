@@ -33,7 +33,8 @@ public class Revegetate {
         /*
          * For each pasture, check all adjacent pastures (connected b/c favorites of cow)
          * and make sure they're different colors.
-         * Runs in O(n m) time, which is not a concern with our constraints.
+         * Runs in O(n m) time, which is not a concern with our constraints. Could definitely be optimized,
+         * but that's definitely not necessary when your constraints are 100 and 150.
          */
 
         //make i 1-based because the pastures are numbered in that fashion
