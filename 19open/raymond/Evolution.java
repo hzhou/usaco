@@ -15,7 +15,9 @@ import java.util.StringTokenizer;
  * Coding: 20 minutes
  * Debugging: 5 minutes (NPE)
  *
- *
+ * Struggles: Figuring out the algorithm to do this properly took
+ * way too long. This was really hard for a bronze problem. Once you figure
+ * it out, the coding isn't too bad.
  */
 public class Evolution {
     public static void main(String[] args) throws IOException {
