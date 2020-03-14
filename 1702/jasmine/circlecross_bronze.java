@@ -1,5 +1,5 @@
 //Jasmine Zhang
-//February Bronze 2017 - circlecross
+//February OldCode.Bronze 2017 - circlecross
 //20 minutes, all cases passed
 
 

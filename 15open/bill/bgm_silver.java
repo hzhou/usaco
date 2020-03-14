@@ -11,7 +11,7 @@ import java.util.*;
 
 public class bgm {
 	public static void main(String[] args) throws IOException {
-		//Scanner scan = new Scanner(new File("D:\\eclipse-workspace\\USACO\\Silver\\testSilver.txt"));
+		//Scanner scan = new Scanner(new File("D:\\eclipse-workspace\\USACO\\OldCode.Silver\\testSilver.txt"));
 		Scanner scan = new Scanner (new File ("bgm.in"));
 
 		// ------------------------------------------------------------------------------------------

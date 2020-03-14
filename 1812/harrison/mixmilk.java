@@ -1,7 +1,7 @@
 /*
  * Harrison Zhang
  * Time: 22:44.88
- * 2018-12 USACO Bronze Test 1
+ * 2018-12 USACO OldCode.Bronze Test 1
  */
 
 package com.bronze.dec2018;

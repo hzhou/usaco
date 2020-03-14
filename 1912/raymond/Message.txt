@@ -1,0 +1,16 @@
+I did this contest in the past (it was the contest I got promoted to Silver on).
+Attached you can find my old code. I didn't change anything in it, so it's
+probably very terrible (especially the brute force code for #3 Bronze).
+
+If you're curious about the amount of time I spent on Bronze, it was about an hour precisely in the
+actual contest.
+
+I got a 1000/1000 on Bronze in this contest and got an in-contest promotion, so
+I've also thoroughly analyzed the silver problems already. However, in the actual competition,
+I didn't get #2 and #3 Silver (just #1, that solution is also attached).
+
+I've tried to write new solutions for #2 and #3, even though I analyzed them in the past. My old solutions
+obviously didn't work, or I'd be in Gold. My new solutions didn't work either - I really need to learn tree
+algorithms.
+
+I gave up on Meetings after about an hour of thinking, though. That problem is extremely hard.

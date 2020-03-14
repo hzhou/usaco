@@ -1,5 +1,5 @@
 //Jasmine Zhang
-//February 2017 Bronze - crossroad
+//February 2017 OldCode.Bronze - crossroad
 //5 minutes to clear all cases
 
 

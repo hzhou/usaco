@@ -12,10 +12,10 @@ import java.util.*;
 
 public class reststops {
 	public static void main(String[] args) throws IOException {
-		//BufferedReader f = new BufferedReader(new FileReader("D:\\eclipse-workspace\\USACO\\Silver\\testSilver.txt"));
+		//BufferedReader f = new BufferedReader(new FileReader("D:\\eclipse-workspace\\USACO\\OldCode.Silver\\testSilver.txt"));
 		// BufferedReader f = new BufferedReader(new FileReader("test.in"));
 
-		//Scanner scan = new Scanner(new File("D:\\eclipse-workspace\\USACO\\Silver\\testSilver.txt"));
+		//Scanner scan = new Scanner(new File("D:\\eclipse-workspace\\USACO\\OldCode.Silver\\testSilver.txt"));
 		Scanner scan = new Scanner (new File ("reststops.in"));
 
 		//StringTokenizer st = new StringTokenizer(scan.readLine());

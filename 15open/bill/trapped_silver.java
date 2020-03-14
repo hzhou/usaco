@@ -23,7 +23,7 @@ class Haybales implements Comparable <Haybales>{
 
 public class trapped {
 	public static void main(String[] args) throws IOException {
-		//Scanner scan = new Scanner(new File("D:\\eclipse-workspace\\USACO\\Silver\\testSilver.txt"));
+		//Scanner scan = new Scanner(new File("D:\\eclipse-workspace\\USACO\\OldCode.Silver\\testSilver.txt"));
 		Scanner scan = new Scanner (new File ("trapped.in"));
 //--------------------------------------------------------------------------------------------------------------------------
 		int N = scan.nextInt();
