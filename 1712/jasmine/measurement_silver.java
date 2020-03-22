@@ -1,5 +1,5 @@
 //Jasmine Zhang
-//December Silver 2017 - Milk Measurement
+//December OldCode.Silver 2017 - Milk Measurement
 //1 hour, 5/11 cases passed, other 6 has incorrect answer 
 
 import java.util.*;

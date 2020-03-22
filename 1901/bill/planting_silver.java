@@ -9,7 +9,7 @@ import java.util.*;
 
 class planting {
   public static void main (String [] args) throws IOException {
-	//BufferedReader f = new BufferedReader(new FileReader("D:\\eclipse-workspace\\USACO\\Silver\\testSilver.txt"));
+	//BufferedReader f = new BufferedReader(new FileReader("D:\\eclipse-workspace\\USACO\\OldCode.Silver\\testSilver.txt"));
     BufferedReader f = new BufferedReader(new FileReader("planting.in"));
     
     PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("planting.out")));

@@ -1,5 +1,5 @@
 //Jasmine Zhang
-//December 2017 Silver - Homework
+//December 2017 OldCode.Silver - Homework
 //1 hour 30 minutes to clear all cases
 //Needed the second test case to pass 9 and the last case to pass all 10 cases 
 

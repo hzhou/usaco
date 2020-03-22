@@ -9,7 +9,7 @@ import java.util.*;
 
 class billboard {
   public static void main (String [] args) throws IOException {
-	//BufferedReader f = new BufferedReader(new FileReader("D:\\eclipse-workspace\\USACO\\Bronze\\test1.txt"));
+	//BufferedReader f = new BufferedReader(new FileReader("D:\\eclipse-workspace\\USACO\\OldCode.Bronze\\test1.txt"));
     BufferedReader f = new BufferedReader(new FileReader("billboard.in"));
     
     PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("billboard.out")));

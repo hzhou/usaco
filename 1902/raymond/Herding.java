@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.StringTokenizer;
 
 /*
- * 2019-02 Bronze 01
+ * 2019-02 OldCode.Bronze 01
  * Question link:
  * http://usaco.org/index.php?page=viewproblem2&cpid=915
  */

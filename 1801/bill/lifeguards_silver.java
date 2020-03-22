@@ -5,8 +5,8 @@ Bill Zheng
 I wasn't able to figure out how to make it faster so I looked at the solution for inspiration
 Afterwards ~ 2 hours
 **********
-I learned that for Silver, time and complexity is much more important than in Bronze
-Almost all of my ideas to attack this problem from Bronze didn't translate over which made it very hard to solve.
+I learned that for OldCode.Silver, time and complexity is much more important than in OldCode.Bronze
+Almost all of my ideas to attack this problem from OldCode.Bronze didn't translate over which made it very hard to solve.
  */
 
 import java.io.*;
