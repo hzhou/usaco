@@ -15,6 +15,7 @@ page: rental_silver, basic_frame
         $for i=0:R
             $call scan_int, rents[i]
 
+    #---------------------------------------
     &call std_sort, cows, N, int
         return a<b
     &call std_sort, stores, M, store

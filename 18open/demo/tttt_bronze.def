@@ -3,11 +3,12 @@ page: tttt_bronze, basic_frame
     module: cpp
 
     $my char M[9]
-    $global int S[26], int D[26*26]
     &call open_In
         $my char s[10]
         fscanf(In, "%s %s %s", s, s+3, s+6)
         $dump s
+
+    $global int S[26], int D[26*26]
     stat3(s[0], s[1], s[2])
     stat3(s[3], s[4], s[5])
     stat3(s[6], s[7], s[8])

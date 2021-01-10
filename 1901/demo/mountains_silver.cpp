@@ -1,10 +1,14 @@
 #include <cstdio>
 #include <iostream>
 #include <cstdio>
+#include <cassert>
 #include <algorithm>
+
+int N;
 
 int main(int argc, char** argv)
 {
+    int n_ret;
     int count;
     int flag;
 
@@ -13,22 +17,27 @@ int main(int argc, char** argv)
         fprintf(stderr, "Can't open In\n");
         exit(-1);
     }
-    int N;
-    fscanf(In, " %d" ,&N);
+    n_ret = fscanf(In, " %d" ,&N);
+    assert(n_ret > 0);
     int x_list[N];
     int y_list[N];
     for (int  i = 0; i<N; i++) {
-        fscanf(In, " %d %d" ,&x_list[i],&y_list[i]);
+        n_ret = fscanf(In, " %d %d" ,&x_list[i],&y_list[i]);
+        assert(n_ret > 0);
     }
     fclose(In);
+
     int P[N];
     for (int  i = 0; i<N; i++) {
         P[i] = i;
     }
+
     std::sort(P, P+N, [&](int a, int b){
         return y_list[a] > y_list[b];
     } );
+
     int visible[N];
+
     count = 0;
     for (int  i = 0; i<N; i++) {
         flag = 1;
@@ -42,12 +51,14 @@ int main(int argc, char** argv)
         }
         visible[i] = flag;
     }
+
     count = 0;
     for (int  i = 0; i<N; i++) {
         if (visible[i]) {
             count++;
         }
     }
+
     std::cout<<"count="<<count<<'\n';
     FILE* Out = fopen("mountains.out", "w");
     fprintf(Out, "%d\n", count);

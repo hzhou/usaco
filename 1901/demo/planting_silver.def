@@ -1,9 +1,8 @@
-tag: insight
+tag: backtracking, insight
 include: ../../usaco.def
 
 page: planting_silver, basic_frame
     module: cpp
-
     &call open_In
         $call scan_Int, N
         $my int A[N-1], int B[N-1]
@@ -16,7 +15,7 @@ page: planting_silver, basic_frame
     $for i=0:N
         count_list[i]  = 0
 
-    $(if:0)
+    $(if:1)
         $call try_1
     $(else)
         $call try_2

@@ -9,7 +9,7 @@ page: perimeter_silver, basic_frame
         $call scan_int, N
         grid = new char[N*N+1]
         $for i=0:N
-            fscanf(In, "%s", grid+i*N)
+            $call scan_str, grid+i*N
 
     # ----------------------------
     $my $(T_vn2) region_list
@@ -68,9 +68,9 @@ subcode: find_region
             j = P[i]
             $if grid[j] == '.'
                 perimeter++
-            $elif cache[j]
-                cache[j]=0
+            $elif cache[j] # odd, TODO: should reverse the value
                 stack.push_back(j)
+                cache[j]=0
     region_list.push_back( {area, perimeter} )
 
     subcode: get_adj

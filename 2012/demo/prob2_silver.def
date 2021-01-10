@@ -1,0 +1,69 @@
+include: ../../usaco.def
+page: prob2_silver
+    module: cpp
+    exe: cat t/1.in | ./prob2_silver
+
+    # ---- input ----
+    $call scan_Int, N
+    
+    $struct(pos) int x, int y
+    $local struct pos *A
+    $allocate(N) A
+
+    $for i=0:N
+        $call scan_int, A[i].x, A[i].y
+
+    # ---- sort ----
+    &call std_sort, A, N, struct pos
+        return a.x < b.x
+    $for i=0:N
+        A[i].x = i
+    &call std_sort, A, N, struct pos
+        return a.y < b.y
+    $for i=0:N
+        A[i].y = i
+
+    # ---- 2D prefix sum ----
+    $(set:P=PSUM[$1 + ($2)*N])
+    $local int *PSUM
+    $allocate(N*N, 0) PSUM
+    $for i=0:N
+        $(P:A[i].x, A[i].y) = 1
+    $for i=1:N
+        $(P:i,0) += $(P:i-1,0)
+        $(P:0,i) += $(P:0,i-1)
+    $for i=1:N
+        $for j=1:N
+            $(P:i,j) += $(P:i-1,j) + $(P:i, j-1) - $(P:i-1,j-1)
+
+    # $call debug_PSUM
+
+    # ---- preset count ----
+    $local long long count
+    count = 1 + N
+    # $dump N, count
+    # ---- foreach xlist pair
+    $for i=0:N
+        $for j=i+1:N
+            $my x0, x1, y0, y1, n0, n1:int
+            x0 = std::min(A[i].x, A[j].x)
+            x1 = std::max(A[i].x, A[j].x)
+            y0 = std::min(A[i].y, A[j].y)
+            y1 = std::max(A[i].y, A[j].y)
+            n0 = $(P:x1,y0)
+            $if x0>0
+                n0 -= $(P:x0-1,y0)
+            n1 = $(P:x1,N-1) - $(P:x0,N-1) - $(P:x1,y1) + $(P:x0,y1) + 1
+            # $dump i, j, x0, y0, x1, y1, n0, n1
+            count += n0 * n1
+
+    # ---- output ----
+    $print "%lld", count
+
+subcode: debug_PSUM
+    $for i=0:N
+        $for j=0:N
+            $print "%d, -", $(P:j, i)
+        $print
+
+fncode: get_PSUM(x0,x1,y0,y1:int)

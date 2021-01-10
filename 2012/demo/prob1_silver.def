@@ -1,0 +1,61 @@
+include: ../../usaco.def
+page: prob1_silver
+    module: cpp
+    exe: cat t/1.in | ./prob1_silver
+
+    $call scan_Int, N
+    $global A, B: int *
+    $allocate(N) A, B
+    $for i=0:N-1
+        $call scan_int, A[i], B[i]
+        A[i]--
+        B[i]--
+
+    $local std::vector<int> * adj_list
+    $allocate(N) adj_list
+    $for i=0:N-1
+        adj_list[A[i]].push_back(B[i])
+        adj_list[B[i]].push_back(A[i])
+
+    # No travel back - level sort
+
+    count = 0
+
+    $local std::deque<int> queue
+    $local int *cache
+    $allocate(N, 0) cache
+
+    queue.push_back(0)
+    cache[0]=1
+    $my int parent = -1
+    $while !queue.empty()
+        i = queue.front()
+        queue.pop_front()
+        $call push_children
+        $call update_count
+        parent = i
+
+    $print $count
+
+    subcode: push_children
+        n_children = adj_list[i].size()
+        $for j=0:n_children
+            $if !cache[adj_list[i][j]]
+                queue.push_back(adj_list[i][j])
+                cache[adj_list[i][j]] = 1
+
+    subcode: update_count
+        $if i>0
+            n_children--
+        $if n_children > 0
+            $call get_power_of_2_in_k
+            count+=k+n_children
+
+    subcode: get_power_of_2_in_k
+        k = 0
+        n = 1
+        $while n <= n_children
+            k++
+            n*=2
+
+

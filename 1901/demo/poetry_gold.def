@@ -39,7 +39,7 @@ page: poetry_gold, basic_frame
             c_list[i]-=1
         $my char line_rhymes[M+1]
         $for i=0:M
-            fscanf(In, "%s", line_rhymes+i)
+            $call scan_str, line_rhymes+i
 
     $my int r_counts[26]
     $for i=0:26
@@ -76,7 +76,7 @@ subcode: try_1
     $call check_map_line_rhymes
     $my pn_count_all[$(NM)]
     $if set_counts.size()<10
-        $print "only %d counts: do get_count_all_direct ...", set_counts.size()
+        $print "only %d counts: do get_count_all_direct ...", (int)set_counts.size()
         $call get_count_all_direct
     $else
         $call get_count_all

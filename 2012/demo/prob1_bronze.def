@@ -1,0 +1,17 @@
+include: ../../usaco.def
+page: prob1_bronze
+    module: cpp
+
+    $local int in_list[7]
+    $for i=0:7
+        $call scan_int, in_list[i]
+
+    std::sort(in_list, in_list+7)
+
+    $local A, B, C: int
+    A = in_list[0]
+    B = in_list[1]
+    C = in_list[6] - A - B
+
+    $print $A $B $C
+

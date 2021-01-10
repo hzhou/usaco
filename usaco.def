@@ -21,6 +21,7 @@ subcode: open_In
     FILE* In = fopen("$(subst:_pagename:_(bronze|silver|gold|platinum):).in", "r");
     $if !In
         $call die, "Can't open In\n"
+    $(set:In=In)
     BLOCK
     fclose(In)
 
@@ -47,7 +48,13 @@ subcode: scan_int(@plist)
     $(for:p in $(plist))
         $(set-1:fmt.= %d)
         $(set-1:vars.=,&$(p))
-    fscanf(In, "$(fmt)" $(vars));
+    $local n_ret
+    $include assert
+    $(if:In)
+        n_ret = fscanf(In, "$(fmt)" $(vars));
+    $(else)
+        n_ret = scanf("$(fmt)" $(vars));
+    assert(n_ret > 0);
 
 subcode: scan_int_array(n, @plist)
     $for i=0:$(n)
@@ -63,7 +70,13 @@ subcode: scan_Int_array(n, @plist)
     $call scan_int_array, $(n), $(plist)
 
 subcode: scan_str(s)
-    fscanf(In, "%s", $(s))
+    $local n_ret
+    $include assert
+    $(if:In)
+        n_ret = fscanf(In, "%s", $(s))
+    $(else)
+        n_ret = scanf("%s", $(s))
+    assert(n_ret > 0);
 
 subcode: scan_Str(n, s)
     $call new, char, $(s), $(n)+1

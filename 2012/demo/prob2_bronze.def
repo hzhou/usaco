@@ -1,0 +1,24 @@
+include: ../../usaco.def
+page: prob2_bronze
+    module: cpp
+    exe: cat t/1.in | ./prob2_bronze
+
+    $call scan_Int, N
+    $call scan_Int_array, N, A
+
+    $local count, sum, avg: int
+    count = N
+    $for i=0:N
+        sum = A[i]
+        $for j=i+1:N
+            sum += A[j]
+            n = j - i + 1
+            $if sum % n == 0
+                avg = sum / n
+                $for k=i:j+1
+                    $if A[k] == avg
+                        count++
+                        break
+
+    $print $count
+

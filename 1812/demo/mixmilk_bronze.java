@@ -6,6 +6,7 @@ public class mixmilk_bronze {
 
     public static void main(String[] args) throws IOException
     {
+
         int A, a, B, b, C, c;
         Scanner In = new Scanner(new File("mixmilk.in"));
         A = In.nextInt();
@@ -14,6 +15,7 @@ public class mixmilk_bronze {
         b = In.nextInt();
         C = In.nextInt();
         c = In.nextInt();
+
         for (int  i = 0; i<100; i++) {
             if (i % 3 == 0) {
                 if (a + b <= B) {
@@ -41,6 +43,7 @@ public class mixmilk_bronze {
                 }
             }
         }
+
         PrintWriter Out = new PrintWriter(new File("mixmilk.out"));
         Out.printf("%s\n", a);
         Out.printf("%s\n", b);

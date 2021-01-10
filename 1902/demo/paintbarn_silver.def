@@ -1,5 +1,5 @@
 include: ../../usaco.def
-page: paintbarn_gold, basic_frame
+page: paintbarn_silver, basic_frame
     module: cpp
 
     &call open_In
@@ -8,3 +8,25 @@ page: paintbarn_gold, basic_frame
         $for i=0:N
             $call scan_int, A[i][0], A[i][1], A[i][2], A[i][3]
 
+    # prefix sum
+    $global int Barn[1002][1002]
+
+    $for i=0:N
+        $my x1,y1,x2,y2: int
+        $(for:x1,y1,x2,y2 and 0-3)
+            $1 = A[i][$2]
+        $for i_y=y1:y2
+            Barn[i_y][x1]++
+            Barn[i_y][x2]--
+
+    $my int area=0
+    $my int sum=0
+    $for i=0:1002
+        $for j=0:1002
+            sum += Barn[i][j]
+            $if sum==K
+                area++
+
+    $dump area
+    &call open_Out
+        $print $area

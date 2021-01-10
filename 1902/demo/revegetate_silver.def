@@ -1,5 +1,5 @@
+# tag: backtracking
 include: ../../usaco.def
-
 page: revegetate_silver, basic_frame
     module: cpp
 

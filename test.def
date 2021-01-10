@@ -14,6 +14,13 @@ page: test
     $else
         die "Usage: $0 [dir]\n"
 
+    my $do_stdin
+    my $cwd = `pwd`
+    $if $cwd=~/(\d+(open)?)\s*$/
+        my $yymm = $1
+        $if $yymm ge "2012"
+            $do_stdin = 1
+
     $call filter
     $foreach $a in @files
         $if $a=~/(\w+)\.(cpp|java|py|def)/ -> $name, $ext
@@ -42,7 +49,6 @@ page: test
         chdir "t"
 
         $name=~s/_java$//
-        my $full_name=$name
 
         $if $name!~/(bronze|silver|gold|platinum)/
             system "unzip -qq ../$name\_bronze*.zip"
@@ -67,16 +73,30 @@ page: test
             system "g++ -std=c++0x -O2 -o a ../$a -lm"
             $if -f "a"
                 &call each_test
-                    system "./a >/dev/null"
+                    $if !$do_stdin
+                        system "./a >/dev/null"
+                    $else
+                        system "cat $i.in | ./a > $name.out"
         $case $ext eq "java"
+            my $full_name = $name
+            &call open_r, ../$a
+                $if /public\s+class\s+(\w+)/
+                    $full_name = $1
+                    last
             system "cp ../$a $full_name.java"
             system "javac  $full_name.java"
             $if -f "$full_name.class"
                 &call each_test
-                    system "java $full_name >/dev/null"
+                    $if !$do_stdin
+                        system "java $full_name >/dev/null"
+                    $else
+                        system "cat $i.in | java $full_name > $name.out"
         $case $ext eq "py"
             &call each_test
-                system "python ../$a >/dev/null"
+                $if !$do_stdin
+                    system "python ../$a >/dev/null"
+                $else
+                    system "cat $i.in | python ../$a > $name.out"
 
         subcode: each_test
             $use Time::HiRes qw(time)

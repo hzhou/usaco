@@ -1,6 +1,6 @@
 include: ../../usaco.def
 
-page: herding_bronze, basic_frame
+page: herding_silver, basic_frame
     module: cpp
 
     &call open_In
@@ -14,18 +14,35 @@ page: herding_bronze, basic_frame
 
     $dump A[0], A[1], A[2]
 
-    i_max=0
-    n_max=0
-    $for i=0:N
-        n = N-i
-        $for j=i+1:N
-            $dump i, j, A[i], A[j], N
-            $if A[j]-A[i]>N-1
-                n = j-i
-                break
-        $dump i, n
-        $if n_max < n
-            n_max = n
-            i_max = i
+    $my n1, n2: int
+    n1 = A[N-2] - A[0] - (N-2)
+    n2 = A[N-1] - A[1] - (N-2)
+    # $dump n1, n2
+    max_space = n1
+    $if max_space < n2
+        max_space = n2
 
-    $dump i_max, n_max
+    min_space = N
+    $my n
+    $for i=0:N
+        $for j=i+1:N  # potentially binary search
+            $if A[j]-A[i]>=N-1
+                $if i==0 && j==N-1
+                    $if A[j]-A[i] == N-1
+                        n = 0
+                    $else
+                        n = 2
+                $else
+                    $if A[j]-A[i] == N-1
+                        n = N-2 - (j-i-1)
+                    $else
+                        n = N-1 - (j-i-1)
+                # $dump i, A[i], j, A[j], n
+                break
+        $if min_space > n
+            min_space = n
+
+    $dump min_space, max_space
+    &call open_Out
+        $print $min_space
+        $print $max_space

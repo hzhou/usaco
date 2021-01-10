@@ -13,6 +13,38 @@ page: factory_bronze, basic_frame
             A[i]--
             B[i]--
 
+    $(if:0)
+        $call try_1
+    $(else)
+        $call try_2
+
+    $if i_root>=0
+        i_root++
+
+    &call open_Out
+        fprintf(Out, "%d\n", i_root)
+
+#---------------------------------------- 
+subcode: try_2
+    $my int P[N]
+    $for i=0:N
+        P[i] = 0
+
+    $for i=0:N-1
+        P[A[i]]++
+
+    i_root = -1
+    $for i=0:N
+        $if P[i] == 0
+            $if i_root>=0
+                i_root=-1
+                break
+            $else
+                i_root = i
+
+
+#----------------------------------------
+subcode: try_1
     $global int * P
     P = new int[N] # i -> P[i]
     $for i=0:N
@@ -31,11 +63,6 @@ page: factory_bronze, basic_frame
             $else
                 i_root=-1
                 break
-
-    $if i_root>=0
-        i_root++
-    &call open_Out
-        fprintf(Out, "%d\n", i_root)
 
 
 fncode: find_root(i)

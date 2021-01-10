@@ -3,12 +3,18 @@
 #include <cstdio>
 #include <iostream>
 #include <cstdio>
+#include <cassert>
 #include <algorithm>
 
 int modpow(int t, int n);
 
+int N;
+int M;
+int K;
+
 int main(int argc, char** argv)
 {
+    int n_ret;
     int n_sub_count;
     int n;
     int count;
@@ -20,21 +26,22 @@ int main(int argc, char** argv)
         fprintf(stderr, "Can't open In\n");
         exit(-1);
     }
-    int N;
-    int M;
-    int K;
-    fscanf(In, " %d %d %d" ,&N,&M,&K);
+    n_ret = fscanf(In, " %d %d %d" ,&N,&M,&K);
+    assert(n_ret > 0);
     int s_list[N];
     int c_list[N];
     for (int  i = 0; i<N; i++) {
-        fscanf(In, " %d %d" ,&s_list[i],&c_list[i]);
+        n_ret = fscanf(In, " %d %d" ,&s_list[i],&c_list[i]);
+        assert(n_ret > 0);
         c_list[i] -= 1;
     }
     char line_rhymes[M+1];
     for (int  i = 0; i<M; i++) {
-        fscanf(In, "%s", line_rhymes + i);
+        n_ret = fscanf(In, "%s", line_rhymes + i);
+        assert(n_ret > 0);
     }
     fclose(In);
+
     int r_counts[26];
     for (int  i = 0; i<26; i++) {
         r_counts[i] = 0;
@@ -42,6 +49,7 @@ int main(int argc, char** argv)
     for (int  i = 0; i<M; i++) {
         r_counts[line_rhymes[i]-'A']++;
     }
+
     int n_count = 0;
     std::unordered_map<int,int> map_syllables;
     for (int  i = 0; i<N; i++) {
@@ -79,6 +87,7 @@ int main(int argc, char** argv)
         pn_all[i] = 0;
     }
     pn_all[0] = 1;
+
     for (int  k = 1; k<K; k++) {
         n_sub_count = 0;
         for(auto t : map_syllables){
@@ -95,6 +104,7 @@ int main(int argc, char** argv)
     for (int  i = 0; i<n_c; i++) {
         pn_classes[i] = 0;
     }
+
     for (int  j = 0; j<N; j++) {
         if (K - s_list[j] >= 0) {
             pn_classes[c_list[j]] = (pn_classes[c_list[j]] + pn_all[K-s_list[j]]) % 1000000007;
@@ -106,7 +116,7 @@ int main(int argc, char** argv)
     }
     int pn_count_all[n_m];
     if (set_counts.size() < 10) {
-        printf("only %d counts: do get_count_all_direct ...\n", set_counts.size());
+        printf("only %d counts: do get_count_all_direct ...\n", (int) set_counts.size());
         for (int  i = 0; i<n_m; i++) {
             pn_count_all[i] = 0;
         }
@@ -133,6 +143,7 @@ int main(int argc, char** argv)
                 k++;
             }
         }
+
         for (int  i = 0; i<n_m; i++) {
             pn_count_all[i] = 0;
         }

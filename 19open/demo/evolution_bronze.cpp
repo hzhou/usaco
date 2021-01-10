@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <map>
 #include <cstdio>
+#include <cassert>
 #include <algorithm>
 
 int get_attr(char *s);
@@ -10,19 +11,24 @@ bool is_proper(std::vector<int> & A, std::vector<int> & B);
 std::map<std::string, int> attr_map;
 int n_attr = 0;
 int N;
+int n;
 
 int main(int argc, char** argv)
 {
+    int n_ret;
+
+
     FILE* In = fopen("evolution.in", "r");
     if (!In) {
         fprintf(stderr, "Can't open In\n");
         exit(-1);
     }
-    fscanf(In, " %d" ,&N);
+    n_ret = fscanf(In, " %d" ,&N);
+    assert(n_ret > 0);
     std::vector<int> subpop[N];
     for (int  i = 0; i<N; i++) {
-        int n;
-        fscanf(In, " %d" ,&n);
+        n_ret = fscanf(In, " %d" ,&n);
+        assert(n_ret > 0);
         char s[21];
         for (int  j = 0; j<n; j++) {
             fscanf(In, "%s", s);
@@ -30,6 +36,7 @@ int main(int argc, char** argv)
         }
     }
     fclose(In);
+
     for (int  i = 0; i<N; i++) {
         printf("%d [%d]: ", i, subpop[i].size());
         for(auto a : subpop[i]){
@@ -37,12 +44,14 @@ int main(int argc, char** argv)
         }
         puts("");
     }
+
     std::vector<int> attr_group[n_attr];
     for (int  i = 0; i<N; i++) {
         for(auto a : subpop[i]){
             attr_group[a].push_back(i);
         }
     }
+
     for (int  i = 0; i<n_attr; i++) {
         printf("attr %d: ", i);
         for(auto a : attr_group[i]){
@@ -50,6 +59,7 @@ int main(int argc, char** argv)
         }
         puts("");
     }
+
     bool proper = true;
     for (int  i = 0; i<n_attr; i++) {
         for (int  j = i+1; j<n_attr; j++) {
@@ -59,12 +69,14 @@ int main(int argc, char** argv)
             } else {
                 t = is_proper(attr_group[i], attr_group[j]);
             }
+
             if (!t) {
                 proper = false;
                 goto ans;
             }
         }
     }
+
     ans:
         FILE* Out = fopen("evolution.out", "w");
         if (proper) {
