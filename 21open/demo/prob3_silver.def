@@ -1,0 +1,14 @@
+include: ../../usaco.def
+page: prob3_silver
+    module: cpp
+    exe: cat t/1.in | ./prob3_silver
+
+    $call scan_Int, N,K,L
+    $my int Clist[N]
+    $for i=0:N
+        $call scan_int, Clist[i]
+
+    std::sort(Clist, Clist+N)
+
+    # binary search 
+

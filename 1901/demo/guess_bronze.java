@@ -37,6 +37,7 @@ public class guess_bronze {
                 Animals.get(i).add(name);
             }
         }
+
         int max = 0;
         for (int  i = 0; i<N; i++) {
             for (int  j = i+1; j<N; j++) {

@@ -23,6 +23,7 @@ page: traffic_bronze, basic_frame
     $my int lo_in=0, int hi_in=0
     $my int lo_out=0, int hi_out=0
 
+    /* foreach info points, shrink the range */
     $for i=0:N
         $if A[i].type==1
             lo_in+=A[i].lo

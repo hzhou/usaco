@@ -1,0 +1,48 @@
+include: ../../usaco.def
+page: prob3_bronze
+    module: cpp
+    exe: cat ../t/1.in | ./prob3_bronze
+
+    $call scan_Int, N, M
+    $my char pasture[N][M+1]
+    $for i=0:N
+        $call scan_str, pasture[i]
+
+    count = 0
+    $for i=0:N
+        $for j=0:M
+            $if pasture[i][j] == 'G'
+                $if $(up) && $(dn)
+                    count++
+                $elif $(lt) && $(rt)
+                    count++
+                $elif $(up) && ($(lt) || $(rt))
+                    count++
+                $elif $(dn) && ($(lt) || $(rt))
+                    $if $(lt)
+                        $if $(dl) != 'G'
+                            count++
+                        $elif i+2<N && pasture[i+2][j-1] == 'C'
+                            count++
+                        $elif j>=2 && pasture[i+1][j-2] == 'C'
+                            count++
+                    $else
+                        $if $(dr) != 'G'
+                            count++
+                        $elif i+2<N && pasture[i+2][j+1] == 'C'
+                            count++
+                        $elif j+2<M && pasture[i+1][j+2] == 'C'
+                            count++
+
+
+    $print $count
+
+macros:
+    up: (i>0 && pasture[i-1][j]=='C')
+    dn: (i+1<N && pasture[i+1][j]=='C')
+    lt: (j>0 && pasture[i][j-1]=='C')
+    rt: (j+1<M && pasture[i][j+1]=='C')
+    ul: pasture[i-1][j-1]
+    ur: pasture[i-1][j+1]
+    dl: pasture[i+1][j-1]
+    dr: pasture[i+1][j+1]

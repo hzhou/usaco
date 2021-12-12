@@ -1,0 +1,59 @@
+include: ../../usaco.def
+page: prob2_bronze
+    module: cpp
+    exe: cat ../t/2.in | ./prob2_bronze
+
+    $global char names[100][11]
+    $global int K, int N
+
+    $call scan_int, K, N
+    $for i=0:N
+        $call scan_str, names[i]
+
+    $my int all[K][N]
+    $for k=0:K
+        $for i=0:N
+            char name[11]
+            $call scan_str, name
+            all[k][i] = get_name_id(name)
+
+    $my int lb[N], int ub[N]
+    $for i=0:N
+        lb[i] = 0
+        ub[i] = N-1
+
+    $for k=0:K
+        i_last = 0
+        $for i=0:N-1
+            i1 = all[k][i]
+            i2 = all[k][i+1]
+            $if strcmp(names[i1], names[i2]) > 0
+                $for j=i_last:i+1
+                    i3 = all[k][j]
+                    $if ub[i3] > i
+                        ub[i3] = i
+                $for j=i+1:N
+                    i3 = all[k][j]
+                    $if lb[i3] < i+1
+                        lb[i3] = i+1
+                i_last = i+1
+
+    $for i=0:N
+        $for j=0:N
+            $if i==j
+                printf("B")
+            $elif lb[i] > ub[j]
+                printf("1")
+            $elif ub[i] < lb[j]
+                printf("0")
+            $else
+                printf("?")
+        printf("\n")
+
+
+
+fncode: get_name_id(char *name)
+    $for i=0:N
+        $if strcmp(name, names[i]) == 0
+            return i
+    return -1

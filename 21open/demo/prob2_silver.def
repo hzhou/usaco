@@ -1,0 +1,160 @@
+include: ../../usaco.def
+page: prob2_silver
+    module: cpp
+    exe: cat t/1.in | ./prob2_silver
+
+    $call scan_Int, T
+
+    $my int N, int L[7]
+    $for i=0:T
+        $call scan_int, N
+        $for j=0:N
+            $call scan_int, L[j]
+        n_res = check(N, L)
+        $print $n_res
+    
+subcode: _autoload
+    $struct(ABC) int A, int B, int C
+
+fncode: check(int N, int *L)
+    std::sort(L, L+N)
+    $my std::vector<ABC> ABC_list
+    $if N==7
+        return check7(L)
+    $elif N==4
+        check4_3(L, ABC_list)
+        check4_2_1_1(L, ABC_list)
+        check4_2_2(L, ABC_list)
+        check4_1_2_1(L, ABC_list)
+        check4_1_3(L, ABC_list)
+        check4_0(L, ABC_list)
+        return ABC_list.size()
+    $else
+        return -1
+
+fncode: push_ABC(int A, int B, int C, std::vector<ABC> &ABC_list)
+    # sort
+    $my int L[3]
+    L[0] = A
+    L[1] = B
+    L[2] = C
+    std::sort(L, L+3)
+
+    $for i=0:ABC_list.size()
+        $if ABC_list[i].A == L[0] && ABC_list[i].B == L[1] && ABC_list[i].C == L[2]
+            return
+    ABC_list.push_back((ABC){L[0], L[1], L[2]})
+
+fncode: check7(int *L)
+    $my A,B,C:int
+    A = L[0]
+    B = L[1]
+    C = L[6] - A - B
+    $my std::vector<int> L2
+    L2.push_back(L[6])
+    $(for:A,B,C)
+        L2.push_back($1)
+        L2.push_back(L[6] - $1)
+    std::sort(L2.begin(), L2.end())
+    
+    $for i=0:7
+        $if L[i] != L2[i]
+            return 0
+    return 1
+
+fncode: check4_3(int *L, std::vector<ABC> &ABC_list)
+    $my A,B,C:int
+    A = L[0]
+    B = L[1]
+    $if A+B == L[2]
+        push_ABC(A, B, L[3], ABC_list)
+
+    C = L[2]
+    $if A+B == L[3] || A+C==L[3] || B+C==L[3] || A+B+C==L[3]
+        push_ABC(A, B, C, ABC_list)
+
+fncode: check4_2_1_1(int *L, std::vector<ABC> &ABC_list)
+    $my A,B,C,BC:int
+    A = L[0]
+    BC = L[3] - A
+
+    # case 1
+    B = L[1]
+    C = BC - B
+    $if L[2] == B+C || L[2] == A+B || L[2] == A+C
+        push_ABC(A, B, C, ABC_list)
+
+    # case 2
+    B = L[2]
+    C = BC - B
+    $if L[1] == B+C || L[1] == A+B || L[1] == A+C
+        push_ABC(A, B, C, ABC_list)
+
+fncode: check4_2_2(int *L, std::vector<ABC> &ABC_list)
+    $my A,B,C:int
+    A = L[0]
+
+    # case 1
+    B = L[1]
+    $if L[2] == A+B
+        push_ABC(A, B, L[3]-A, ABC_list)
+        push_ABC(A, B, L[3]-B, ABC_list)
+    $elif L[3] == A+B
+        push_ABC(A, B, L[2]-A, ABC_list)
+        push_ABC(A, B, L[2]-B, ABC_list)
+    $elif L[2]-A == L[3]-B
+        push_ABC(A, B, L[2]-A, ABC_list)
+
+    #case 2
+    B = L[2]
+    C = L[1] - A
+    $if L[3] == A+B || L[3] == C+B
+        push_ABC(A, B, C, ABC_list)
+
+fncode: check4_1_2_1(int *L, std::vector<ABC> &ABC_list)
+    $my A,B,C,BC:int
+    A = L[0]
+    BC = L[3] - A
+
+    # case 1
+    $if L[1]==BC
+        B = L[2] - A
+        push_ABC(A, B, BC-B, ABC_list)
+    $elif L[2]==BC
+        B = L[1] - A
+        push_ABC(A, B, BC-B, ABC_list)
+    $else
+        B = L[1]-A
+        C = L[2]-A
+        $if B+C == BC
+            push_ABC(A, B, C, ABC_list)
+
+fncode: check4_1_3(int *L, std::vector<ABC> &ABC_list)
+    $my A,B,C:int
+    A = L[0]
+
+    # case 1
+    B = L[1]-A
+    C = L[2]-A
+    $if B+C == L[3]
+        push_ABC(A, B, C, ABC_list)
+
+    # case 2
+    B = L[1]-A
+    C = L[3]-A
+    $if B+C == L[2]
+        push_ABC(A, B, C, ABC_list)
+
+    # case 3
+    B = L[2]-A
+    C = L[3]-A
+    $if B+C == L[1]
+        push_ABC(A, B, C, ABC_list)
+
+fncode: check4_0(int *L, std::vector<ABC> &ABC_list)
+    $my A,B,C:int
+    A = L[3] - L[0]
+    B = L[3] - L[1]
+    C = L[3] - L[2]
+    $if A+B+C == L[3]
+        push_ABC(A, B, C, ABC_list)

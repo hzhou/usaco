@@ -10,8 +10,11 @@ page: shell_bronze, basic_frame
             int[] $1 = new int[N];
         $for i=0:N
             $map get_int, A[i], B[i], G[i]
-            $(for:A,B,G)
-                $1[i]--
+
+    # --- preprocess stage        
+    $for i=0:N
+        $(for:A,B,G)
+            $1[i]--
 
     $my int[] poss=new int[3]
     $my int[] wins=new int[3]

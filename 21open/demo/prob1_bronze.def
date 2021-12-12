@@ -1,0 +1,36 @@
+include: ../../usaco.def
+page: prob1_bronze
+    module: cpp
+    exe: cat ../t/4.in | ./prob1_bronze
+
+    $call scan_Int, N, L
+    $my int c_list[N]
+    $for i=0:N
+        $call scan_int, c_list[i]
+
+    &call std_sort, c_list, N, int
+        return a > b
+
+    $my int h
+    $my int h_max = 0
+    $for i=0:N
+        $if c_list[i] >= i+1
+            h = i+1
+        $elif c_list[i]+1 >= i+1
+            flag=1
+            $for j=i downto 0
+                $if c_list[j] > i
+                    break
+                $elif c_list[j] == i && L > 0
+                    L--
+                $else
+                    flag=0
+                    break
+            $if flag
+                h = i+1
+            break
+        $else
+            break
+
+    $print $h
+

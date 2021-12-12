@@ -2,6 +2,7 @@ include: ../../usaco.def
 page: revegetate_bronze, basic_frame
     module: cpp
 
+    /* Input block */
     &call open_In
         $call scan_Int, N, M
         $my int A[M], int B[M]
@@ -12,12 +13,15 @@ page: revegetate_bronze, basic_frame
             $if A[i]>B[i]
                 $call swap, A[i], B[i]
 
+    /* Foreach pasture determin a bucket to go in there */
     $my int F[N]
     F[0]=0
     $for i=1:N
+        /* mark each bucket as available */
         $my int P[4]={0,0,0,0}
         $for j=0:M
             $if B[j]==i
+                /* mark the bucket used in previous paster as unavailable */
                 P[F[A[j]]]++
         $dump i
         $for j=0:4
