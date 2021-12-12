@@ -1,0 +1,31 @@
+include: ../../usaco.def
+
+page: moobuzz_silver
+    module: cpp
+    use_int64: 1
+
+    &call open_In
+        $call scan_Int, N
+
+    i1=1
+    i2=4000000000
+    $while i1<=i2
+        i3 = (i1+i2)/2
+        $if count(i3)<N
+            i1 = i3+1
+        $else
+            i2 = i3-1
+    $while i1%3==0 || i1%5==0
+        i1++
+
+    $my int ans=i2+1
+
+    &call open_Out
+        $print $ans
+
+
+fncode: count(n)
+    n_3 = n/3
+    n_5 = n/5
+    n_15 = n/15
+    return n-n_3-n_5+n_15

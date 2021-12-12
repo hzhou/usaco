@@ -1,0 +1,79 @@
+include: ../../usaco.def
+page: pieaters_platinum
+    module: cpp
+
+    &call open_In
+        $call scan_Int, N, M
+        $call scan_Int_struct, Cow, M, w, l, r
+        $for i=0:M
+            $(L:i)--
+            $(R:i)--
+
+    $call get_heavy
+
+    $global int DP[$(N)][$(N)] = {}  # max weight covers [l, r]
+    $for span=0:N
+        $for l=0:N
+            $if l+span>=N
+                break
+            $my int r = l+span
+            $my int w_max = 0
+            $for k=l to r
+                $my int w = heavy[l][r][k]
+                $if k>l
+                    w += DP[l][k-1]
+                $if k<r
+                    w += DP[k+1][r]
+
+                $if w_max < w
+                    w_max = w
+            DP[l][r] = w_max
+
+    $my int ans = DP[0][N-1]
+    $dump ans
+    &call open_Out
+        $print $ans
+
+#---------------------------------------- 
+macros: 
+    N: 300
+    W: cow_list[$1].w
+    L: cow_list[$1].l
+    R: cow_list[$1].r
+
+subcode: get_heavy
+    # index of the heavyest weight in [l, r] that will eat pie i
+    $global int heavy[$(N)][$(N)][$(N)]
+    $for l=0:N
+        $for r=0:N
+            $for k=0:N
+                heavy[l][r][k]=0
+    $(if:0)
+        #- too slow
+        $for i=0:M
+            $for k=$(L:i) to $(R:i)
+                $for l=0 to $(L:i)
+                    $for r=$(R:i):N
+                        $(set:w=heavy[l][r][k])
+                        $if $(w) < $(W:i)
+                            $(w) = $(W:i)
+    $(else)
+        $for i=0:M
+            $for k=$(L:i) to $(R:i)
+                $(set:w=heavy[$(L:i)][$(R:i)][k])
+                $if $(w) < $(W:i)
+                    $(w) = $(W:i)
+        $for k=0:N
+            $for l=k downto 0
+                $for r=k:N
+                    $(set:w=heavy[l][r][k])
+                    $if l>0
+                        $if heavy[l-1][r][k] < heavy[l][r][k]
+                            heavy[l-1][r][k] = heavy[l][r][k]
+                    $if r<N-1
+                        $if heavy[l][r+1][k] < heavy[l][r][k]
+                            heavy[l][r+1][k] = heavy[l][r][k]
+
+
+
+

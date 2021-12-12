@@ -1,0 +1,21 @@
+include: ../../usaco.def
+page: whereami_bronze
+    module: cpp
+
+    &call open_In
+        $call scan_Int, N
+        $call scan_Str, N, color_list
+    #---------------------------------------- 
+    $my int cnt=0
+    $for k=0:N
+        $for i=0:N-k+1
+            $for j=i+1:N-k+1
+                $if memcmp(color_list+i, color_list+j, k)==0
+                    goto fail
+        cnt = k
+        break
+        fail: ;
+
+    $dump cnt
+    &call open_Out
+        $print $cnt

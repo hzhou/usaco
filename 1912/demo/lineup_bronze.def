@@ -1,0 +1,46 @@
+include: ../../usaco.def
+page: lineup_bronze
+    module: cpp
+
+    &call open_In
+        $call scan_Int, N
+        $call new, int, A_list, N
+        $call new, int, B_list, N
+        $for i=0:N
+            char s1[20], s2[20];
+            fscanf(In, "%s must be milked beside %s", s1, s2)
+            A_list[i] = match_cow(s1)
+            B_list[i] = match_cow(s2)
+    #---------------------------------------- 
+    # count_neighbors
+    $global int count_neighbors[8] = {}
+    $for i=0:N
+        count_neighbors[A_list[i]]++
+        count_neighbors[B_list[i]]++
+
+    #---------------------------------------- 
+    $global int printed[8]={}
+    &call open_Out
+        $for i=0:8
+            $if printed[i]
+                continue
+            $if count_neighbors[i]==0 || count_neighbors[i]==1
+                print_cow(Out, i)
+
+fncode: print_cow(FILE* Out, int idx)
+    # $dump(print) idx, name_list[idx], count_neighbors[idx]
+    fprintf(Out, "%s\n",name_list[idx])
+    printed[idx]=1
+    $if count_neighbors[idx]>0
+        $for i=0:N
+            $if A_list[i]==idx && printed[B_list[i]]==0
+                print_cow(Out, B_list[i])
+            $elif B_list[i]==idx && printed[A_list[i]]==0
+                print_cow(Out, A_list[i])
+
+
+fncode: match_cow(const char * name)
+    $global const char * name_list[8]={"Beatrice", "Belinda", "Bella", "Bessie", "Betsy", "Blue", "Buttercup", "Sue"}
+    $for i=0:8
+        $if strcmp(name, name_list[i])==0
+            return i

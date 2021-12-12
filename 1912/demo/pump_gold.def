@@ -1,0 +1,89 @@
+include: ../../usaco.def
+page: pump_gold, basic_frame
+    module: cpp
+
+    &call open_In
+        $call scan_Int, N, M
+        $my int A[M], int B[M], int F[M], int C[M]
+        $for i=0:M
+            $call scan_int, A[i], B[i], C[i], F[i]
+            A[i]--
+            B[i]--
+
+    $call get_adj_list
+
+    $my int Ans = -1
+    $for f_c=1:1001
+        $call dijkstra, f_c
+        $(set:cost=cost_cache[N-1])
+        $if $(cost) > 0
+            $my int ratio = (f_c * 1000000) / $(cost)
+            $if Ans < ratio || Ans < 0
+                Ans = ratio
+
+    $dump Ans
+    &call open_Out
+        $print $Ans
+
+subcode: get_adj_list
+    $my std::vector<int> adj_list[N]
+    $for i=0:M
+        adj_list[A[i]].push_back(i)
+        adj_list[B[i]].push_back(i)
+
+subcode: dijkstra(f)
+    $call @init_cost_cache
+    $call @init_stack
+    $call @push, 0, 0
+    $while stack.size()>0
+        $call @pop, i
+        $foreach j in adj_list[i]
+            # $dump(adj) i, j, A[j], B[j], F[j], C[j]
+            $if F[j] >= $(f)
+                i_b = A[j]
+                $if i==i_b
+                    i_b = B[j]
+                $my int t=my_add(cost_cache[i], C[j])
+                $if my_greater(cost_cache[i_b], t)
+                    $call @push, i_b, t
+    # min = cost_cache[N-1]
+
+    subcode: init_cost_cache
+        $my int cost_cache[N]
+        $for i=0:N
+            cost_cache[i] = -1
+
+    subcode: init_stack
+        $typedef std::pair<int,int> ipair
+        $my stack: std::priority_queue<ipair, std::vector<ipair>, std::greater<ipair>>
+    subcode: push(i, cost)
+        stack.push(std::make_pair($(cost), $(i)))
+        cost_cache[$(i)]=$(cost)
+        # $dump(push) $(i), $(cost)
+
+    subcode: pop(i)
+        $my $(i): int
+        $(i) = stack.top().second
+        stack.pop()
+        # $dump(pop) i, cost_cache[i]
+
+#---------------------------------------- 
+fncode: my_add(int a, int b): int
+    $if a<0 || b<0
+        return -1
+    $else
+        return a+b
+
+fncode: my_greater(int a, int b): bool
+    $if a<0
+        return true
+    $elif b<0
+        return false
+    $elif a>b
+        return true
+    $else
+        return false
+
+
+                
+

@@ -1,0 +1,29 @@
+include: ../../usaco.def
+module: cpp
+page: guess_bronze
+
+    int N;
+    FILE * In = fopen("guess.in", "r");
+    fscanf("%d", &N); 
+
+    char names[100][21];
+    int num_attrs[100];
+    char attrs[100][100][21];
+    $for i=0:N
+        fscanf("%s %d", names[i], &num_attrs[i]);
+        $for j=0:num_attrs[i]
+            fscanf("%s", attrs[i][j]);
+
+    /* preprocessing step */
+    # turn strings in id
+
+    # algorithm
+
+    # foreach pair
+    int max = 0;
+    $for i=0:N
+        $for j=0:i
+             n = num_attr_shared(i, j)
+             $if max < n
+                 max = n
+    $dump max                 

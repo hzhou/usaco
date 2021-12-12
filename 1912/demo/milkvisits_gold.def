@@ -1,0 +1,244 @@
+include: ../../usaco.def
+page: milkvisits_gold, basic_frame
+    module: cpp
+
+    $call Input
+    $dump N, M
+    $call build_adj_list
+    $call build_tree, 0
+    $(if:1)
+        $dump P[0]
+        $call build_tree, P[0]
+    $print "....."
+    $call init_chains
+    $print done init_chains
+    $call build_chain
+    $print done build_chain
+
+    $call new, int, Ans, M
+    $call try_1
+    $call Output
+
+    subcode: make_a_short
+        $if level_list[a] > level_list[b]
+            $call swap_a_b
+    subcode: swap_a_b
+        $my int t=a
+        a = b
+        b = t
+    subcode: check_ans_i(a)
+        $if T[$(a)] == T_list[i]
+            Ans[i]=1
+            goto got_ans_i
+
+#---------------------------------------- 
+subcode: try_1
+    $for i=0:M
+        $my a, b: int
+        a = A_list[i]
+        b = B_list[i]
+        $call make_a_short
+        b_long:
+        $my int n_diff=level_list[b]-level_list[a]
+        $for j=0:n_diff
+            $call check_ans_i, b
+            $if map_chain[b]>=0
+                goto b_in_chain
+            b = pointer_list[b]
+        both_off:
+        $while level_list[b]>=0
+            $if a==b
+                $if T[b]==T_list[i]
+                    Ans[i]=1
+                $else
+                    Ans[i]=0
+                goto got_ans_i
+            $if map_chain[a]>=0
+                $call swap_a_b
+                goto b_in_chain
+            $if map_chain[b]>=0
+                goto b_in_chain
+            $call check_ans_i, a
+            $call check_ans_i, b
+            a = pointer_list[a]
+            b = pointer_list[b]
+        b_in_chain:
+        $while map_chain[a]==-1
+            $call check_ans_i, a
+            a = pointer_list[a]
+        both_in_chain:
+        $call @both_in_chain
+        got_ans_i:
+        # $dump i, Ans[i]
+        continue
+
+#---------------------------------------- 
+subcode: Input
+    &call open_In
+        $call scan_Int, N, M
+        $call scan_Int_array, N, T
+        $call scan_Int_array, N-1, A, B
+        $for i=0:N-1
+            A[i]--
+            B[i]--
+        $call scan_Int_array, M, A_list, B_list, T_list
+        $for i=0:M
+            A_list[i]--
+            B_list[i]--
+
+subcode: Output
+    &call open_Out,
+        $for i=0:M
+            $if Ans[i]
+                $print 1-
+            $else
+                $print 0-
+        $print "\n"
+
+#---------------------------------------- 
+subcode: build_adj_list
+    $my $(T_vn) adj_list[N]
+    $for i=0:N-1
+        adj_list[A[i]].push_back(B[i])
+        adj_list[B[i]].push_back(A[i])
+
+subcode: build_tree(i)
+    $call init_pointer_list
+    $call init_level_list
+
+    $call @init_cache
+    $global $(T_vn) stack
+    stack.clear()
+    $call @push, $(i), 0
+
+    $while stack.size()>0
+        i = stack.back()
+        stack.pop_back()
+        $foreach j in adj_list[i]
+            &call if_not_in_cache, j
+                pointer_list[j] = i
+                $call @push, j, level_list[i]+1
+    $call @sort_levels
+
+    subcode: init_cache
+        $call new, int, cache, N
+        $for i=0:N
+            cache[i] = 0
+    subcode: if_not_in_cache(i)
+        $if cache[$(i)] == 0
+            BLOCK
+    subcode: push(i, level)
+        stack.push_back($(i))
+        cache[$(i)]=1
+        level_list[$(i)] = $(level)
+
+    subcode: init_pointer_list
+        $call new, int, pointer_list, N
+        $for i=0:N
+            pointer_list[i] = i
+
+    subcode: init_level_list
+        $call new, int, level_list, N
+        $for i=0:N
+            level_list[i] = -1
+
+    subcode: sort_levels
+        $call new, int, P, N
+        $for i=0:N
+            P[i] = i
+        &call std_sort, P, N, int
+            return level_list[a] > level_list[b]
+
+subcode: init_chains
+    $my $(T_vn) chains[10]
+    $call new, int, map_chain, N
+    $for i=0:N
+        map_chain[i] = -1
+
+subcode: build_chain
+    i = P[0]
+    $(set:i_chain=0)
+    $(set:L=chains[$(i_chain)])
+    $while 1
+        $(L).push_back(i)
+        map_chain[i] = $(L).size() -1
+        $if i!=pointer_list[i]
+            i = pointer_list[i]
+        $else
+            break
+
+    $call cache_chain
+
+subcode: both_in_chain
+    i_a = map_chain[a]
+    i_b = map_chain[b]
+    $if i_a>i_b
+        int t = i_a;
+        i_a = i_b
+        i_b = t
+    $block
+        Ans[i] = 0
+        $call check_map
+
+subcode: cache_chain
+    $include <set>
+    std::set<int> * t_sets;
+    t_sets=new std::set<int>[N+1];
+    $for i=0:$(L).size()
+        t_sets[T[$(L)[i]]].insert(i)
+
+subcode: check_map
+    $(set:i1=t_sets[T_list[i]].lower_bound(i_a))
+    $(set:i2=t_sets[T_list[i]].upper_bound(i_b))
+    $if *($(i1)) == *($(i2))
+        Ans[i]=0
+    $else
+        Ans[i]=1
+
+#---------------------------------------- 
+macros:
+    # DO_FENWICK: 1
+
+subcode: cache_chain_old
+    int L_size = $(L).size()
+    $dump L_size
+    $my std::multimap<int, int> t_map
+    $for i=0:L_size
+        t_map.insert(std::pair<int,int>(T[$(L)[i]], i))
+
+subcode: check_map_old
+    $(set:i1=t_map.lower_bound(T_list[i]))
+    $(set:i2=t_map.upper_bound(T_list[i]))
+    $for auto it=$(i1); it!=$(i2); it++
+        $(set:it=it->second)
+        $if $(it) >= i_a && $(it) <= i_b
+            Ans[i]=1
+            break
+
+subcode: fenwick(M, N)
+    BLOCK
+    subcode: init_C
+        $my int C[$(M)][$(N)]
+        $for i=0:$(N)
+            $for j=0:$(M)
+                C[j][i] = 0
+
+    subcode: add(i, j)
+        j = $(i)
+        $while j<$(N)
+            C[$(j)][j]+=1
+            $if j==0
+                j++
+            $else
+                j+=(j&-j)
+
+    subcode: get_sum(i, j, sum)
+        $my int $(sum) = 0
+        j = $(i)
+        $if j==0
+            $(sum) = C[$(j)][0]
+        $else
+            $while j>0
+                $(sum) += C[$(j)][j]
+                j-=(j&-j)
+

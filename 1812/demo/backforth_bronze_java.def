@@ -1,0 +1,42 @@
+include: ../../usaco_java.def
+
+page: backforth_bronze
+    module: java
+
+    int A[]=new int[10]
+    int B[]=new int[10]
+    &call open_In
+        $for i=0:10
+            $map get_int, A[i]
+        $for i=0:10
+            $map get_int, B[i]
+
+    hset = new HashSet<Integer>();
+
+    # cancel twice
+    $print add 0
+    hset.add(0);
+
+    # cancel once
+    $for i=0:10
+        $for j=0:10
+            $my int diff = A[i]-B[j]
+            $if !hset.contains(diff)
+                # $print add1 $diff
+                hset.add(diff);
+
+    # cancel 0 times
+    $for i=0:10
+        $for j=0:10
+            $for i2=0:i
+                $for j2=0:j
+                    $my int diff = A[i]+A[i2]-B[j]-B[j2]
+                    $if !hset.contains(diff)
+                        # $print add2 $diff
+                        hset.add(diff);
+
+    $my int count = hset.size()
+
+    &call open_Out
+        $print $count
+

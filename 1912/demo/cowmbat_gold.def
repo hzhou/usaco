@@ -1,0 +1,114 @@
+include: ../../usaco.def
+page: cowmbat_gold, basic_frame
+    module: cpp
+
+    $global N, M, K: int
+    &call open_In
+        $call scan_int, N, M, K
+        $call new, char, S, N+1
+        fscanf(In, "%s", S);
+        $call new, int, A, M*M
+        $for i=0:M*M
+            $call scan_int, A[i]
+
+    $for j=0:N
+        S[j]-='a'
+
+    # $call dump_A
+    $call floyd_warshall
+    # $call dump_A
+
+    $my int ans=0
+    $call try_1
+
+    $dump ans
+    &call open_Out
+        $print $ans
+
+subcode: try_1
+    $global int DP[26][100001] # letter m - n char
+
+    $for i=0:M
+        DP[i][0]=0  # no cost for 0 char
+        $for j=1:K
+            DP[i][j] = -1  # impossible < K chars
+
+    $(if:0)
+        $for j=1:N+1
+            $for i=0:M
+                DPk[i][j][1] = my_add
+                $for k=1:K+1
+
+    $call cache_cost
+    $for j=K:N+1
+        $for i=0:M
+            $my t1, t2: int
+            # case 1, exactly K last letter i
+            t1 = my_add( get_cost(j, K, i), get_DP_min(i, j-K) )
+            # case 2, more than K last letter i
+            t2 = my_add( get_cost(j, 1, i), DP[i][j-1] )
+            # take the minimum
+            DP[i][j] = my_min(t1, t2)
+
+    ans = DP[0][N]
+    $for i=0:M
+        ans = my_min(ans, DP[i][N])
+
+subcode: cache_cost
+    $global int cache[26][100001]
+    $for i=0:M
+        cache[i][0] = 0
+        $for j=1:N+1
+            cache[i][j]=cache[i][j-1] + A[S[j-1]*M+i]
+
+fncode: my_min(int a, int b) : int
+    $if a < 0
+        return b
+    $elif b < 0
+        return a
+    $elif a < b
+        return a
+    $else
+        return b
+
+fncode: my_add(int a, int b) : int
+    $if a<0 || b<0
+        return -1
+    $else
+        return a+b
+
+fncode: get_DP_min(not_i, j)
+    $my int t = -1
+    $for i=0:M
+        $if i == not_i
+            continue
+        t = my_min(t, DP[i][j])
+    return t
+
+fncode: get_cost(j, k, int to): int
+    $if j<k
+        return -1
+
+    $(if:1)
+        return cache[to][j] - cache[to][j-k]
+    $(else)
+        $my int t = 0
+        $for i=j-k:j
+            t+=A[S[i]*M+to]
+        return t
+
+#---------------------------------------- 
+subcode: floyd_warshall
+    $for k=0:M
+        $for i=0:M
+            $for j=0:M
+                $if A[i*M+j] > A[i*M+k] + A[k*M+j]
+                    A[i*M+j] = A[i*M+k] + A[k*M+j]
+
+#---------------------------------------- 
+subcode: dump_A
+    $print ---------------------\n
+    $for i=0:M
+        $for j=0:M
+            $print "%d -", A[i*M+j]
+        $print
