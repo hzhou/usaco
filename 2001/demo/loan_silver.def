@@ -1,0 +1,104 @@
+include: ../../usaco.def
+
+page: loan_silver
+    module: cpp
+
+    $global N, K, M:long long
+    &call open_In
+        tn_ret = fscanf(In, "%lld %lld %lld", &N, &K, &M)
+    # ----------------
+    $my long long  ans
+    $local i1, i2, i3: long long
+    i1 = 1 # X=1 always work, return N/1 = N on day 1
+    i2 = N # X=N never work, return M * K < N
+    $while i1 <= i2
+        i3 = (i1+i2)/2
+        $if check(i3)
+            i1 = i3 + 1
+        $else
+            i2 = i3 - 1
+    # i2 i1 - i2 works, i1 not work
+    ans = i2
+    # --------------
+    &call open_Out
+        $print "%lld", ans
+
+fncode: check(long long X)
+    $local long long rem = N
+    $local long long i
+    i = 0
+    $while i<K
+        $my long long n
+        n = rem/X
+        $if n < M
+            $if M * (K-i) >= rem
+                return true
+            $else
+                return false
+        # let's think: as long as rem > n * X , we'll return n each day
+        #  {rem .. n*X} every day [R / X] = n, k = (rem-n*X) / n
+        $my long long k
+        k = (rem - n * X)/ n + 1
+        rem -= n * k
+        i += k
+        $if rem <=0
+            return true
+    return false
+
+#---------------------------------------- 
+page: loan_silver_
+    module: cpp
+
+    $global N, K, M:long long
+    &call open_In
+        tn_ret = fscanf(In, "%lld %lld %lld", &N, &K, &M)
+    $dump N, K, M
+
+    $my long long Ans = 0
+    $my i1, i2, i3: long long
+    i1 = 1  # return N in 1st day, always work
+    i2 = N  # return M every day, K*M<N, never work
+    $while i1 <= i2
+        i3 = (i1 + i2)/2
+        $if check(i3)
+            i1 = i3 + 1
+        $else
+            i2 = i3 - 1
+    # i2 works, i1 does not
+    Ans = i2
+    $dump Ans
+    &call open_Out
+        $print "%lld", Ans
+
+fncode: check_(long long x): int
+    $print "check x = %lld\n", x
+    $my rem, i: long long
+    rem = N
+    $(if:0)
+        $call try_1
+    $(else)
+        $call try_2
+
+    subcode: try_2
+        i = 0
+        $while i < K
+            $call @check_return
+            $my n, j:long long
+            n = rem/x
+            j = (rem - n*x) / n
+            rem -= n*(j+1)
+            i+=j+1
+        return 0
+
+    subcode: try_1
+        $for i=0:K
+            $call @check_return
+            long long n = rem/x
+            rem-=n
+        return 0
+
+    subcode: check_return
+        $if M*(K-i) >= rem
+            return 1
+        $elif rem/x <= M
+            return 0

@@ -1,0 +1,32 @@
+include: ../../usaco.def
+page: prob3_bronze
+    module: cpp
+    exe: cat t/1.in | ./prob3_bronze
+
+    $call scan_Int, N
+    $my int A[N], int B[N]
+    $for i=0:N
+        $call scan_int, A[i]
+    $for i=0:N
+        $call scan_int, B[i]
+
+    $(if:0)
+        std::sort(A, A+N)
+        std::sort(B, B+N)
+        $call dump_array, A, N
+        $call dump_array, B, N
+
+    $my int C[N]
+    $for i=0:N
+        C[i] = 0
+        $for j=0:N
+            $if B[j] >= A[i]
+                C[i]++
+    std::sort(C, C+N)
+    # $call dump_array, C, N
+
+    $my long long ans = 1
+    $for i=0:N
+        ans *= C[i] - i
+
+    $print "%lld", ans

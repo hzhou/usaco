@@ -1,0 +1,37 @@
+include: ../../usaco.def
+page: prob3_silver
+    module: cpp
+    exe: cat t/1.in | ./prob3_silver
+
+    $call scan_Int, N
+    $my int *grid
+    $allocate(N*N) grid
+    $for i=0:N
+        $for j=0:N
+            $call scan_int, grid[i*N+j]
+
+    $my int max_score = 0
+
+    $my int score
+    $(for:try in 0, 1)
+        $(if:try=0)
+            $(set:cell=grid[i*N+j])
+        $(else)
+            $(set:cell=grid[j*N+i])
+        score = 0
+        $for i=0:N
+            n_0 = 0
+            n_1 = 0
+            $for j=0:N:2
+                n_0 += $(cell)
+            $for j=1:N:2
+                n_1 += $(cell)
+            $if n_0 > n_1
+                score += n_0
+            $else
+                score += n_1
+        $if score > max_score
+            max_score = score
+
+    $print $max_score
+

@@ -1,0 +1,51 @@
+include: ../../usaco.def
+
+page: cereal_silver
+    module: cpp
+
+    &call open_In
+        $call scan_Int, N, M
+        $call new, int, A, N
+        $call new, int, B, N
+        $for i=0:N
+            $call scan_int, A[i], B[i]
+            A[i]--
+            B[i]--
+
+    $call new, int, Mlist, M
+    $for i=0:M
+        Mlist[i] = -1
+
+    $call new int, Ans, N
+    n_moo = 0
+    $for i=N-1 downto 0
+        k = A[i]     # which cereal
+        $if Mlist[k] == -1
+            Mlist[k] = i
+        $else
+            j = Mlist[k] # taking cereal from cow j
+            Mlist[k] = i
+            $while 1
+                $if A[j] == k
+                    # 1st choice
+                    k = B[j]
+                    $if Mlist[k] == -1
+                        Mlist[k] = j
+                        break
+                    $elif Mlist[k] > j
+                        j2 = Mlist[k]
+                        Mlist[k] = j
+                        j = j2
+                    $else
+                        n_moo++
+                        break
+                $else
+                    # 2nd choice, go moo
+                    n_moo++
+                    break
+        Ans[i] = N-i-n_moo
+
+    &call open_Out
+        $for i=0:N
+            $print ${Ans[i]}
+

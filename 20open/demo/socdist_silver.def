@@ -1,0 +1,46 @@
+include: ../../usaco.def
+
+page: socdist_silver
+    module: cpp
+
+    &call open_In
+        $call scan_Int, N, M
+        $struct(T) long long a, long long b
+        $call new, T, Mlist, M
+        $for i=0:M
+            tn_ret = fscanf(In, "%lld", &Mlist[i].a)
+            tn_ret = fscanf(In, "%lld", &Mlist[i].b)
+
+    &call std_sort, Mlist, M, T
+        return a.a < b.a
+
+    $my d1, d2, d3: long long
+    d1 = 1
+    d2 = (long long)1E18
+
+    $while d1 <= d2
+        d3 = (d1 + d2) / 2
+        $if works(d3)
+            d1 = d3 + 1
+        $else
+            d2 = d3 - 1
+
+    # d2 d1  d1 == d2 + 1
+    # $dump N, M, d2
+    &call open_Out
+        $print "%lld\n", d2
+
+fncode: works(long long d)
+    j = 0
+    $local long long last_pos = Mlist[0].a
+    $for i=1:N
+        $my long long pos = last_pos + d
+        $while pos > Mlist[j].b
+            j++
+            $if j==M
+                return false
+        $if pos >= Mlist[j].a
+            last_pos = pos
+        $else
+            last_pos = Mlist[j].a
+    return true

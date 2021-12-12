@@ -1,0 +1,35 @@
+include: ../../usaco.def
+page: word_bronze
+    module: cpp
+
+    $global char words[100][81]
+    &call open_In
+        $call scan_Int, N, K
+        $for i=0:N
+            fscanf(In, "%s", words[i]);
+
+    &call open_Out
+        $my char line[81], int pos=0, int cnt=0
+        $for i=0:N
+            $if pos==0
+                $call copy_word
+                continue
+
+            $if cnt+strlen(words[i]) > K
+                $print "%s\n", line
+                pos=0
+                cnt=0
+                $call copy_word
+                continue
+                
+            line[pos++] = ' ';
+            $call copy_word
+        
+        $if pos>0
+            $print "%s\n", line
+
+    subcode: copy_word
+        strcpy(line+pos, words[i]);
+        cnt+=strlen(words[i]);
+        pos+=strlen(words[i]);
+

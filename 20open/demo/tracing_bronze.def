@@ -1,0 +1,119 @@
+include: ../../usaco.def
+
+page: tracing_bronze
+    module: cpp
+
+    #- input --
+    $struct(event) int t, int x, int y
+    &call open_In
+        $call scan_Int, N, T
+        $my char *cow_list, struct event * event_list
+        $allocate(N+1) cow_list
+        $call scan_str, cow_list
+        $allocate(T) event_list
+        $for i=0:T
+            $call scan_int, event_list[i].t, event_list[i].x, event_list[i].y
+            event_list[i].x--
+            event_list[i].y--
+
+    #-- preprocess --
+    $for i=0:N
+        cow_list[i]-='0'
+
+    # $dump N, T, cow_list
+    &call std_sort, event_list, T, struct event
+        return a.t < b.t
+
+    #-- algorithm --
+    $my int K_min=250 # goes down
+    $my int K_max=0   # goes up
+
+    $my char * sick_list = new char[N]
+    $my int  * k_list = new int[N]
+    $my int  * possible_list = new int[N]
+    $for i=0:N
+        possible_list[i]=0
+
+    $for k=0:251
+        $call @check_it, k
+
+    #-- post process --
+    $my int n_possible=0
+    $for i=0:N
+        $if possible_list[i]
+            n_possible++
+
+    #-- output --
+    $print $n_possible $K_min $K_max
+    &call open_Out
+        $if K_max == 250
+            $print $n_possible $K_min Infinity
+        $else
+            $print $n_possible $K_min $K_max
+
+subcode: update_K(k)
+    $if K_min > $(k)
+        K_min = $(k)
+    $if K_max < $(k)
+        K_max = $(k)
+
+subcode: check_it(k)
+    $for i=0:N
+        $if cow_list[i] == 0
+            continue
+
+        #- initialize sick_list
+        $for i2=0:N
+            sick_list[i2]=0
+        sick_list[i] = 1
+        # $call dump_array, sick_list, N
+
+        #- initialize k_list
+        $for i2=0:N
+            k_list[i2]=0
+
+        $my int is_possible=1
+        #- trace
+        $for j=0:T
+            $my int x = event_list[j].x
+            $my int y = event_list[j].y
+
+            #- update sick_list
+            $if sick_list[x] == 1
+                k_list[x]++
+            $if sick_list[y] == 1
+                k_list[y]++
+
+            #- canonicalize x->y
+            $if sick_list[x] == 1 and sick_list[y] == 0
+                # got a case
+            $elif sick_list[x] == 0 and sick_list[y] == 1
+                #- swap, always x infects y
+                $my int temp = x
+                x = y
+                y = temp
+            $else
+                continue
+
+            #- spread it
+            $if k_list[x] <= $(k)
+                sick_list[y]=1
+                $if cow_list[y]==0
+                    is_possible = 0
+                    break
+
+        $if is_possible
+            #- check results
+            $for i2=0:N
+                $if sick_list[i2] != cow_list[i2]
+                    is_possible=0
+                    break
+
+        $if is_possible
+            possible_list[i] = 1
+            $call update_K, $(k)
+            $(if:debug)
+                $dump(is_possible) k, i
+
+macros:
+    # debug: 5

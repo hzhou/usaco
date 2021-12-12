@@ -1,0 +1,33 @@
+include: ../../usaco.def
+page: triangles_bronze, basic_frame
+    module: cpp
+
+    &call open_In
+        $call scan_Int, N
+        $my int X[N], int Y[N]
+        $for i=0:N
+            $call scan_int, X[i], Y[i]
+
+    max=0
+    # foreach right corner
+    $for i=0:N
+        # find max n_x
+        n_x=0
+        $for j=0:N
+            $if j!=i && Y[i]==Y[j]
+                tn_x = abs(X[j]-X[i])
+                $if n_x < tn_x
+                    n_x = tn_x
+        # find max n_y
+        n_y=0
+        $for j=0:N
+            $if j!=i && X[i]==X[j]
+                tn_y = abs(Y[j]-Y[i])
+                $if n_y < tn_y
+                    n_y = tn_y
+        $if max < n_x * n_y
+            max = n_x * n_y
+
+    &call open_Out
+        $print $max
+

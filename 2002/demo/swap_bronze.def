@@ -1,0 +1,49 @@
+include: ../../usaco.def
+page: swap_bronze, basic_frame
+    module: cpp
+
+    $global A1, A2, B1, B2: int
+    &call open_In
+        $call scan_Int, N, K
+        $call scan_int, A1, A2
+        $call scan_int, B1, B2
+        $(for:A1,A2,B1,B2)
+            $1--
+
+    $my int L[N]
+    $for i=0:N
+        j=get_new(i, K)
+        L[j]=i+1
+
+    &call open_Out
+        $for i=0:N
+            $print "%d", L[i]
+
+fncode: get_new(int i, int K)
+    $my int cache[N]
+    $for j=0:N
+        cache[j]=0
+
+    cache[i]=1
+
+    $my int cycle=0
+    $for j=0:K
+        $if i>=A1 && i<=A2
+            i = A1+A2-i
+        $if i>=B1 && i<=B2
+            i = B1+B2-i
+
+        $if cache[i]
+            cycle = j+1
+            break
+        cache[i]=1
+    
+    $if cycle > 0
+        K %= cycle
+        $for j=0:K
+            $if i>=A1 && i<=A2
+                i = A1+A2-i
+            $if i>=B1 && i<=B2
+                i = B1+B2-i
+    return i
+

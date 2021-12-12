@@ -1,0 +1,69 @@
+include: ../../usaco.def
+page: prob1_silver
+    module: cpp
+    exe: cat t/1.in | ./prob1_silver
+
+    $call scan_Int, N, K
+    $global A, B: int *
+    $allocate(K) A, B
+    $for i=0:K
+        $call scan_int, A[i], B[i]
+        A[i]--
+        B[i]--
+
+    # $call dump_array, A, K
+    # $call dump_array, B, K
+
+    $my int ans_list[N]
+    $call try_1
+
+    $for i=0:N
+        $print ${ans_list[i]}
+
+subcode: try_1
+    $my std::set<int> pos_list[N]
+    $for i=0:N
+        pos_list[i].insert(i)
+
+    # last_list[i]: position i comes from last_list[i]
+    $call build_last_list
+
+    # build cliques
+    $call new_plist, root_list, N
+    $for i=0:N
+        $if root_list[i] != i
+            ans_list[i] = ans_list[root_list[i]]
+            continue
+        # ----
+        $my std::set<int> cache
+        cache.insert(i)
+        j = last_list[i]
+        $while cache.count(j) == 0
+            cache.insert(j)
+            root_list[j] = i
+            $foreach a in pos_list[j]
+                pos_list[i].insert(a)
+            j = last_list[j]
+        ans_list[i] = pos_list[i].size()
+
+    # ---------------------
+    subcode: build_last_list
+        $call new_plist, last_pos, N
+
+        $for i=0:K
+            i_a = last_pos[A[i]]
+            i_b = last_pos[B[i]]
+            pos_list[i_a].insert(B[i])
+            pos_list[i_b].insert(A[i])
+            last_pos[B[i]] = i_a
+            last_pos[A[i]] = i_b
+
+        # last_list
+        $my int last_list[N]
+        $for i=0:N
+            last_list[last_pos[i]] = i
+
+subcode: new_plist(var, N)
+    $my int $(var)[$(N)]
+    $for i=0:$(N)
+        $(var)[i] = i

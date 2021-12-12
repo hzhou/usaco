@@ -1,0 +1,78 @@
+include: ../../usaco.def
+
+page: clocktree_silver
+    module: cpp
+
+    &call open_In
+        $call scan_Int, N
+        $my int T[N]
+        $for i=0:N
+            $call scan_int, T[i]
+            T[i] %= 12
+
+        $my int A[N]
+        $my int B[N]
+        $for i=0:N-1
+            $call scan_int, A[i], B[i]
+            A[i]--
+            B[i]--
+
+    $my std::vector<int> Adj_list[N]
+    $for i=0:N-1
+        Adj_list[A[i]].push_back(B[i])
+        Adj_list[B[i]].push_back(A[i])
+
+    $call get_need_visits
+    $call dump_array, need_visits, N
+
+    $my int ans = 0
+    $if need_visits[0] == 0
+        ans = N
+    $elif need_visits[0] == 11
+        ans = n_even
+    $elif need_visits[0] == 1
+        ans = N - n_even
+
+    $dump ans
+    &call open_Out
+        $print $ans
+
+subcode: get_need_visits
+    $my int need_visits[N]
+    $my int is_odd[N]
+    $my int parent_list[N]
+
+    $for i=0:N
+        need_visits[i] = -1
+    is_odd[0] = 0
+    parent_list[0] = 0
+
+    $my std::vector<int> stack
+    stack.push_back(0)
+    $while stack.size()>0
+        i = stack.back()
+        $if need_visits[i] == -1
+            # 1st time, push all children
+            need_visits[i] = 12 - T[i]
+            &call each_child_j
+                parent_list[j] = i
+                is_odd[j] = 1 - is_odd[i]
+                stack.push_back(j)
+        $else
+            # 2nd time, need_visits are all added up
+            stack.pop_back()
+            $if i!=0
+                $(set:need=need_visits[parent_list[i]])
+                $(need) = ($(need) - need_visits[i] + 12) % 12
+    n_even = 0
+    $for i=0:N
+        $if !is_odd[i]
+            n_even++
+
+#---------------------------------------- 
+subcode: each_child_j
+    $foreach j in Adj_list[i]
+        $if j == parent_list[i]
+            continue
+        BLOCK
+

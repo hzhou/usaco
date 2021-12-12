@@ -1,0 +1,45 @@
+include: ../../usaco.def
+page: breedflip_bronze, basic_frame
+    module: cpp
+
+    &call open_In
+        $call scan_Int, N
+        $my char A[N+1], char B[N+1]
+        fscanf(In, "%s %s", A, B)
+
+    $for i=0:N
+        $(for:A,B)
+            $if $1[i]=='G'
+                $1[i] =0
+            $else
+                $1[i] =1
+
+    count = 0
+
+    $call try_2
+
+    &call open_Out
+        $print $count
+
+subcode: try_1
+    i1 = 0
+    i2 = N-1
+    $while i1<i2
+        $while B[i1] == (A[i1]+count)%2 && i1<i2
+            i1++
+        $while B[i2] == (A[i2]+count)%2 && i2>i1
+            i2--
+
+        $if B[i1]!=(A[i1]+count)%2
+            count++
+
+        $if i1==i2
+            break
+
+subcode: try_2
+    $for i=0:N
+        $if B[i] != A[i]
+            count++
+
+            $while B[i]!=A[i]
+                i++

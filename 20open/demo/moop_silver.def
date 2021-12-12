@@ -1,0 +1,52 @@
+include: ../../usaco.def
+
+page: moop_silver
+    module: cpp
+
+    &call open_In
+        $call scan_Int, N
+        $struct(T) int x, int y
+        $call new, T, A, N
+        $for i=0:N
+            $call scan_int, A[i].x, A[i].y
+
+    &call std_sort, A, N, T
+        return a.x < b.x || (a.x == b.x && a.y < b.y)
+
+    $(if:0)
+        $for i=0:N
+            $print $i ${A[i].x}, ${A[i].y}
+
+    # union-join
+    $my int roots[N]
+    $for i=0:N
+        roots[i] = i
+
+    # groups
+    $struct(G) int y_min, int y_max, int i1, int i2
+    $my G groups[N]
+    $for i=0:N
+        groups[i].y_min = A[i].y
+        groups[i].y_max = A[i].y
+        groups[i].i1 = i
+        groups[i].i2 = i
+    n_groups = N
+
+    $my bool flag = true
+    $while flag
+        flag = false
+        i_prev = 0
+        $for i=1:n_groups
+            $if groups[i_prev].y_min <= groups[i].y_max
+                # merge
+                groups[i_prev].y_min = std::min(groups[i_prev].y_min, groups[i].y_min)]
+                groups[i_prev].y_max = std::max(groups[i_prev].y_max, groups[i].y_max)]
+                groups[i_prev].i2 = groups[i].i2
+                flag = true
+            $else
+                i_prev++
+                $if i_prev < i
+                    groups[i_prev] = groups[i]
+        n_groups = i_prev + 1
+
+    $dump n_groups

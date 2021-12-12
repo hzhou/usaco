@@ -1,0 +1,46 @@
+include: ../../usaco.def
+
+page: prob1_bronze
+    module: cpp
+    exe: cat t/1.in | ./prob1_bronze
+
+    $global birth_year[100]
+
+    $call scan_Int, N
+    $for i=0:N
+        $local words[8][20]
+        $for j=0:8
+            $call scan_str, words[j]
+
+        i2 = get_names(words[7])
+        $if i==0
+            # Bessie, i2 is 0, in Ox (which is 0)
+            birth_year[i2] = 0
+        i1 = get_names(words[0])
+        year = get_zodiac(words[4])
+        $if words[3] $eq "previous"
+            $while year >= birth_year[i2]
+                year -= 12
+        $else
+            $while year <= birth_year[i2]
+                year += 12
+
+    i_elsie = get_names("Elsie")
+    n_ans = abs(birth_year[i_elsie] - birth_year[0])
+
+    $print $n_ans
+
+fncode: get_zodiac(char *name)
+    $global char* zodiac[12] = {"Ox", "Tiger", "Rabbit", "Dragon", "Snake", "Horse", "Goat", "Monkey", "Rooster", "Dog", "Pig", "Rat"}
+    $for i=0:12
+        $if name $eq zodiac[i]
+            return i
+
+fncode: get_names(char *name)
+    $global char names[100][11]
+    $global n_names
+    $for i=0:n_names
+        $if name $eq names[i]
+            return i
+    strcpy(names[n_names++], name)
+    return n_names-1

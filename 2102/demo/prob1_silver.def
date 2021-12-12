@@ -1,0 +1,92 @@
+include: ../../usaco.def
+
+page: prob1_silver
+    module: cpp
+    exe: cat t/1.in | ./prob1_silver
+
+    $call scan_Int, N
+    $call new, int, A, N
+    $call new, int, B, N
+    $for i=0:N
+        $call scan_int, A[i], B[i]
+
+    cnt = 0
+    $global std::map<int, int> Adjs
+    $my int Ans[N]
+    $for i=0:N
+        k = A[i] + B[i]*$(R)
+        $(if:0)
+            $call try_1
+        $(else)
+            $call try_2
+        Ans[i] = cnt - i - 1
+
+    $for i=0:N
+        $print ${Ans[i]}
+
+macros:
+    R: 2000
+            
+#---------------------------------------- 
+subcode: try_2
+    $my stack : std::vector<int>
+    stack.push_back(k)
+    $while stack.size() > 0
+        k = stack.back()
+        stack.pop_back()
+        $if Adjs.count(k) == 0
+            cnt++
+            c = 0
+            $(for:k-1, k+1, k-$(R), k+$(R) and 1, 2, 4, 8 and 2, 1, 8, 4)
+                $if Adjs.count($1) > 0
+                    Adjs[$1] |= $3
+                    c |= $2
+                    $if missing_one(Adjs[$1])
+                        stack.push_back(get_missing_one(Adjs[$1], $1))
+            Adjs[k] = c
+            $if missing_one(c)
+                stack.push_back(get_missing_one(c, k))
+
+fncode: missing_one(c)
+    return (c==7 || c==14 || c==13 || c==11)
+
+fncode: get_missing_one(c, k)
+    $if c==7
+        return k+$(R)
+    $elif c==14
+        return k-1
+    $elif c==13
+        return k+1
+    $elif c==11
+        return k-$(R)
+
+#---------------------------------------- 
+subcode: try_1
+    cnt += add_cow(k)
+
+fncode: add_cow(k)
+    $if Adjs.count(k) > 0
+        return 0
+    $else
+        n = 1
+        # Temporarily set it to 0xf so it won't be added again
+        Adjs[k] = 15
+        # update
+        # 4 bits - x-1, x+1, y-1, y+1
+        c = 0
+        $(for:k-1, k+1, k-$(R), k+$(R) and 1, 2, 4, 8 and 2, 1, 8, 4)
+            $if Adjs.count($1) > 0
+                Adjs[$1] |= $3
+                c |= $2
+                n += check_need($1)
+        Adjs[k] = c
+        n += check_need(k)
+        return n
+
+fncode: check_need(k)
+    n = 0
+    $(for:k-1, k+1, k-$(R), k+$(R) and 14, 13, 11, 7)
+        $case Adjs[k] == $2
+            n += add_cow($1)
+    return n
+

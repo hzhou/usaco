@@ -1,0 +1,64 @@
+include: ../../usaco.def
+
+page: prob2_silver
+    module: cpp
+    exe: cat t/1.in | ./prob2_silver
+
+    $call scan_Int, N, K
+
+    # The Ox year preceeds ancestor, that is the jump_points
+    # include present day, which is 0
+    $call new, int, year_list, N+1
+    year_list[0] = 0
+    $for i=1:N+1
+        $call scan_int, year_list[i]
+        year_list[i] += 12 - (year_list[i] % 12)
+
+    std::sort(year_list, year_list+N+1)
+
+    # each jump points required time (after the jump), except present
+    $call new, int, time_list, N+1
+    time_list[0] = 0
+    $for i=1:N+1
+        time_list[i] = 12
+
+    # segments will be marked by head and tail
+    $call new, int, head_list, N+1
+    $call new, int, tail_list, N+1
+    $for i=0:N+1
+        head_list[i] = i
+        tail_list[i] = i
+
+    # gaps between segments
+    $call new, int, gap_list, N
+    $for i=0:N
+        gap_list[i] = year_list[i+1] - year_list[i] - 12
+
+    # Lets sort the gaps by index
+    $call new, int, Plist, N
+    $for i=0:N
+        Plist[i] = i
+    # after sort, Plist[0] is the index of smallest gap --
+    #     between jump point Plist[0] and Plist[0]+1
+    &call std_sort, Plist, N, int
+        return gap_list[a] < gap_list[b]
+
+    # merge N+1-K gaps
+    $for i=0:N+1-K
+        j = Plist[i]
+        i_head = head_list[j]
+        i_tail = tail_list[j+1]
+        # $dump(merge) j, i_head, i_tail
+        head_list[i_tail] = i_head
+        tail_list[i_head] = i_tail
+
+    ans = 0
+    ans -= 12
+    k = 0
+    $while k < N+1
+        i_tail = tail_list[k]
+        ans += (year_list[i_tail] - year_list[k]) + 12
+        # $dump k, i_tail, ans
+        k = i_tail + 1
+
+    $print $ans

@@ -1,0 +1,34 @@
+include: ../../usaco.def
+page: photo_bronze
+    module: cpp
+
+    $global int A[1000], int B[1000]
+    &call open_In
+        $call scan_Int, N
+        $for i=0:N-1
+            $call scan_int, B[i]
+
+    $global int map[1001]
+    $for i=1:N+1
+        $for j=1:N+1
+            map[j] = 0
+        A[0] = i
+        map[i] = 1
+
+        $my bool is_ok = true
+        $for j=0:N-1
+            $my int a = B[j]-A[j]
+            $if a>=1 && a<=N && map[a] == 0
+                A[j+1] = a
+                map[a] = 1
+            $else
+                is_ok = false
+                break
+        $if is_ok
+            break
+
+    &call open_Out
+        $print "%d-", A[0]
+        $for i=1:N
+            $print " %d-", A[i]
+        $print "\n"

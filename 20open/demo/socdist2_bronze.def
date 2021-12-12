@@ -1,0 +1,43 @@
+include: ../../usaco.def
+
+page: socdist2_bronze
+    module: cpp
+
+    $struct(cow) int x, int is_sick
+    &call open_In
+        $call scan_Int, N
+        $global struct cow * cow_list
+        $allocate(N) cow_list
+        $for i=0:N
+            $call scan_int, cow_list[i].x, cow_list[i].is_sick
+
+    &call std_sort, cow_list, N, struct cow
+        return a.x < b.x
+
+    $(if:0)
+        $for i=0:N
+            $print "$i: x=%d, is_sick:%d", cow_list[i].x, cow_list[i].is_sick
+
+    $my int R = cow_list[N-1].x - cow_list[0].x
+    $for i=1:N
+        $if cow_list[i].is_sick + cow_list[i-1].is_sick == 1
+            $if R > cow_list[i].x - cow_list[i-1].x
+                R = cow_list[i].x - cow_list[i-1].x
+
+    $my int count = 0
+    $for i=0:N
+        $if cow_list[i].is_sick
+            $if i==0
+                count++
+            $elif cow_list[i].x - cow_list[i-1].x >= R
+                count++
+
+    $dump count
+
+    &call open_Out
+        $print $count
+
+
+
+
+

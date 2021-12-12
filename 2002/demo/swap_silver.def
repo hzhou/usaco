@@ -1,0 +1,144 @@
+include: ../../usaco.def
+page: swap_silver, basic_frame
+    module: cpp
+
+    $global A1, A2, B1, B2: int
+    &call open_In
+        $global N, M, K: int
+        $global int L[100], int R[100]
+        $call scan_int, N, M, K
+        $for i=0:M
+            $call scan_int, L[i], R[i]
+            L[i]--
+            R[i]--
+
+    $call init
+    $call try_$(try)
+
+    $my int L[N]
+    $for i=0:N
+        j=get_new(i, K)
+        L[j]=i+1
+
+    $call dump_array, cycles, N
+    $call dump_array, L, N
+    &call open_Out
+        $for i=0:N
+            $print "%d", L[i]
+
+macros:
+    try: 2
+
+#---------------------------------------- 
+subcode: init
+    $call new, int, cycles, N
+    $for i=0:N
+        cycles[i] = -1
+
+subcode: try_1
+
+subcode: try_2
+    # get the entire cycle map in O(N)
+    $my int P[N]
+    $for i=0:N
+        P[i] = i
+
+    $for j=0:M
+        i1 = L[j]
+        i2 = R[j]
+        $while i1<i2
+            i_tmp = P[i1]
+            P[i1] = P[i2]
+            P[i2] = i_tmp
+            i1++
+            i2--
+    # now P[i] means P[i] -> i after a round
+    $call new int, Q, N
+    $for i=0:N
+        Q[P[i]] = i
+
+subcode: get_cycles_1
+    $my $(T_set) S
+    S.insert(i)
+
+    $my int cycle=0
+    $for k=0:K
+        $call do_swaps_$(try)
+        $if S.count(i) > 0
+            cycle = k+1
+            break
+        S.insert(i)
+    
+    $if cycle > 0
+        $foreach a in S
+            # $print "%d -> %d\n", a, cycle
+            cycles[a] = cycle
+
+subcode: get_cycles_2
+    $my int parents[N]
+    $for i=0:N
+        parents[i] = i
+    $my std::set<int> sets[N]
+    $for i=0:N
+        sets[i].insert(i)
+
+    b_flag = true
+    $while b_flag
+        b_flag = false
+        $call do_swaps_$(try)
+        $for i=0:N
+            $if cycles[i] == -1
+                $call find_root, i1, i
+                $call find_root, i2, Q[i]
+                $if i1 == i2
+                    $call @set_cycles, i1
+                $else
+                    b_flag = true
+                    $call merge, i1, i2
+    
+    subcode: find_root(root, i)
+        $(root) = $(i)
+        $while parents[$(root)] != $(root)
+            $(root) = parents[$(root)]
+
+    subcode: set_cycles(i)
+        $(set:cycle=sets[$(i)].size())
+        $foreach a in sets[$(i)]
+            # $print "cycles [%d] -> %ld\n", a, $(cycle)
+            cycles[a] = $(cycle)
+
+    subcode: merge(i1, i2)
+        # merge
+        $if i1 > i2
+            i3 = i1
+            i1 = i2
+            i2 = i3
+        parents[i2] = i1
+        $foreach a in sets[i2]
+            sets[i1].insert(a)
+
+fncode: get_new(int i, int K)
+    $if cycles[i] == -1
+        $call get_cycles_$(try)
+
+    $if cycles[i] == 0
+        return i
+    $else
+        K %= cycles[i]
+
+    j = i
+    $for k=0:K
+        $call do_swaps_$(try)
+    $dump j, cycles[j], K, i
+
+    return i
+
+    # ---------------
+    subcode: do_swaps_1
+        $for j=0:M
+            $if i>=L[j] && i<=R[j]
+                i = L[j]+R[j] - i
+
+    subcode: do_swaps_2
+        i = Q[i]
+

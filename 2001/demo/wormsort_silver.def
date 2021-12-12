@@ -1,0 +1,165 @@
+include: ../../usaco.def
+page: wormsort_silver
+    module: cpp
+
+    $global N, M:int
+    &call open_In
+        $call scan_int, N, M
+        # Plist[i] -> cow i at Plist[i]
+        $global int *Plist
+        Plist = new int[N]
+        $for i=0:N
+            $call scan_int, Plist[i]
+            Plist[i]--
+        # M connections
+        $struct(wormhole) int a, int b, int w
+        $global wormhole *Mlist
+        Mlist = new wormhole[M]
+        $for i=0:M
+            $call scan_int, Mlist[i].a, Mlist[i].b, Mlist[i].w
+            Mlist[i].a--
+            Mlist[i].b--
+    $dump N, M
+    #---------------------------------------- 
+    # Qlist[i] -> pos i has cow id Qlist[i]
+    $global int *Qlist
+    $allocate(N) Qlist
+    $for i=0:N
+        Qlist[Plist[i]] = i
+    # $call dump_array, Qlist, N
+
+    &call std_sort, Mlist, M, wormhole
+        return a.w > b.w
+
+    $my int Ans = -1
+    $call try_2
+
+    $dump Ans
+    &call open_Out
+        $print $Ans
+
+subcode: try_2
+    # first try: O(N2)
+    $for j=0:M+1 # it is guaranteed that M+1 will work
+        b_sorted = true
+        $call @check # You'll need sorted set -> TreeSet
+        $if b_sorted
+            $if j>0
+                Ans = Mlist[j-1].w
+            break
+        $call @merge, Mlist[j].a, Mlist[j].b # sorted set will work
+
+    # optimizations -> union-join algorithm
+    $my int roots[N]
+    $for i=0:N
+        roots[i] = i
+
+fncode: merge(i, j)
+    i_a = find_root(i)
+    i_b = find_root(j)
+    $if i_a<i_b
+        roots(i_b) = i_a
+    $else
+        roots(i_a) = i_b
+
+#---------------------------------------- 
+subcode: try_1
+    $global int *roots
+    $allocate(N) roots
+    $for i=0:N
+        roots[i] = i
+    $my std::set<int>  pos_sets[N]
+    $my std::set<int>  id_sets[N]
+    $my bool is_sorted[N]
+    $for i=0:N
+        pos_sets[i].insert(i)
+        id_sets[i].insert(Qlist[i])
+        is_sorted[i] = (i == Qlist[i])
+
+    $my int j=0
+    $for j=0:M+1
+        $call check_sorted
+        # $print check_sorted j=$j, b_sorted=$b_sorted
+        $if b_sorted
+            $if j>0
+                Ans = Mlist[j-1].w
+            break
+        # guaranteed j<M
+        $call merge
+
+    subcode: check_sorted
+        b_sorted = true
+        $for i=0:N
+            $if roots[i] == i
+                # $print cmp_set i=$i
+                $if !is_sorted[i]
+                    b_sorted = false
+                    break
+    subcode: merge
+        # $dump(merge) j, Mlist[j].a, Mlist[j].b
+        i1 = find_root(Mlist[j].a)
+        i2 = find_root(Mlist[j].b)
+        $if i1 > i2
+            i_tmp = i1
+            i1 = i2
+            i2 = i_tmp
+        $if i1 < i2
+            $(if:0)
+                $call merge_1
+            $(else)
+                $call merge_2
+        roots[i2] = i1
+
+        subcode: merge_2
+            $if is_sorted[i1] && is_sorted[i2]
+                # noop
+            $elif is_sorted[i1]
+                pos_sets[i1] = pos_sets[i2]
+                id_sets[i1] = id_sets[i2]
+                is_sorted[i1] = false
+            $elif is_sorted[i2]
+                is_sorted[i1] = false
+            $else
+                $dump(merge) i1, i2
+                $foreach a in pos_sets[i2]
+                    pos_sets[i1].insert(a)
+                $foreach a in id_sets[i2]
+                    id_sets[i1].insert(a)
+                pos_sets[i2].clear()
+                id_sets[i2].clear()
+                is_sorted[i1] = cmp_sets(pos_sets[i1], id_sets[i1])
+        subcode: merge_1
+            $foreach a in pos_sets[i2]
+                pos_sets[i1].insert(a)
+            $foreach a in id_sets[i2]
+                id_sets[i1].insert(a)
+            pos_sets[i2].clear()
+            id_sets[i2].clear()
+            $if is_sorted[i1] && is_sorted[i2]
+                is_sorted[i1] = true
+            $elif is_sorted[i1] || is_sorted[i2]
+                is_sorted[i1] = false
+            $else
+                is_sorted[i1] = cmp_sets(pos_sets[i1], id_sets[i1])
+
+fncode: find_root(int i)
+    $if roots[i] == i
+        return i
+    j = find_root(roots[i])
+    roots[i] = j
+    return j
+
+fncode: cmp_sets(std::set<int> &A, std::set<int> &B)
+    # TODO: remove sorted elements
+    n = A.size()
+    $global int T[100000]
+    i = 0
+    $foreach a in A
+        T[i] = a
+        i++
+    i = 0
+    $foreach a in B
+        $if T[i] != a
+            return false
+        i++
+    return true

@@ -1,0 +1,27 @@
+include: ../../usaco.def
+page: prob1_bronze
+    module: cpp
+    exe: cat t/1.in | ./prob1_bronze
+
+    $my char s[27], char word[1001]
+    $call scan_str, s
+    $call scan_str, word
+
+    $for i=0:26
+        s[i]-='a'
+    n = strlen(word)
+    $for i=0:n
+        word[i]-='a'
+
+    $my int order[26]
+    $for i=0:26
+        order[s[i]] = i
+
+    $my int ans = 1
+    $for i=1:n
+        $if order[word[i-1]] >= order[word[i]]
+            ans++
+
+    $print $ans
+
+

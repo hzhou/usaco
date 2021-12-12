@@ -1,0 +1,27 @@
+include: ../../usaco.def
+
+page: prob2_bronze
+    module: cpp
+    exe: cat t/1.in | ./prob2_bronze
+
+    $call scan_Int, N
+    $my int X[N], int Y[N]
+    $for i=0:N
+        $call scan_int, X[i], Y[i]
+
+    n_count = 0
+    $my int adj[N] = {0}
+    $for i=0:N
+        $for j=0:i
+            $if abs(X[i]-X[j]) + abs(Y[i]-Y[j]) == 1
+                adj[i]++
+                adj[j]++
+                $if adj[i] == 3
+                    n_count++
+                $if adj[j] == 3
+                    n_count++
+                $if adj[i] == 4
+                    n_count--
+                $if adj[j] == 4
+                    n_count--
+        $print $n_count

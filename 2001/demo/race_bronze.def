@@ -1,0 +1,41 @@
+# tag: math
+
+include: ../../usaco.def
+page: race_bronze
+    module: cpp
+
+    $global int X[1000]
+    &call open_In
+        $call scan_Int, K, N
+        $for i=0:N
+            $call scan_int, X[i]
+
+    $global int Ans[1000]
+    $for i=0:N
+        $if get_D1(X[i]) >= K+X[i]
+            $my int a = X[i]
+            $while get_D1(a) >= K+a
+                a--
+            Ans[i] = a + (K-get_D1(a) + a-1)/a
+        $else
+            $my int a = X[i]
+            $while get_D2(a, X[i]) < K
+                a++
+            $if get_D2(a, X[i]) < K+X[i]
+                Ans[i] = a+(a-X[i])
+            $elif get_D2(a-1, X[i]) + a-1 >= K
+                Ans[i] = (a-1) + (a-1-X[i]) + 1
+            $else
+                Ans[i] = (a) + (a-X[i])
+        $if i==1
+            $print $i: X[i]=${X[i]} ${Ans[i]}
+
+    &call open_Out
+        $for i=0:N
+            $print "%d", Ans[i]
+
+fncode: get_D1(long long a): long long
+    return (a+1)*a/2
+
+fncode: get_D2(long long a, int X): long long
+    return (a+1)*a/2 + (a-1+X)*(a-X)/2

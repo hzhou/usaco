@@ -1,0 +1,90 @@
+include: ../../usaco.def
+page: triangles_silver
+    module: cpp
+
+    &call open_In
+        $call scan_Int, N
+        $call new, int, X, N
+        $call new, int, Y, N
+        $for i=0:N
+            $call scan_int, X[i], Y[i]
+
+    $my long long total = 0
+
+    $call prepare
+    $call add_up_2
+
+    &call open_Out
+        $print "%lld", total
+
+#---------------------------------------- 
+subcode: prepare
+    $my std::map<int,int> Xmap, Ymap
+    $for i=0:N
+        Xmap[X[i]] += 1
+        Ymap[Y[i]] += 1
+
+    $my std::map<int,int> Xids, Yids
+    $(for:X,Y)
+        $my $1_id = 0
+        $foreach a in $1map
+            $if a.second > 1
+                $1ids[a.first] = $1_id
+                $1_id++
+    # $dump X_id, Y_id
+        
+    $call new, std::vector<int>, Xlist, X_id
+    $call new, std::vector<int>, Ylist, Y_id
+
+    $for i=0:N
+        $(for:X,Y)
+            $(set:id=$1ids[$1[i]])
+            $if $1ids.count($1[i]) > 0
+                $1list[$(id)].push_back(i)
+
+subcode: each_right_corner
+    $for i=0:N
+        $if Xids.count(X[i]) > 0 && Yids.count(Y[i]) > 0
+            BLOCK
+
+subcode: each_j1_in_Xlist
+    $foreach j1 in Xlist[Xids[X[i]]]
+        $if i==j1
+            continue
+        BLOCK
+
+subcode: each_j2_in_Ylist
+    $foreach j2 in Ylist[Yids[Y[i]]]
+        $if i==j2
+            continue
+        BLOCK
+
+subcode: add_up
+    &call each_right_corner
+        &call each_j1_in_Xlist
+            &call each_j2_in_Ylist
+                n_a = abs((Y[j1] - Y[i]) * (X[j2] - X[i]))
+                total = (total + n_a) % (1000000007)
+
+subcode: add_up_2
+    &call each_right_corner
+        n_dx = 0
+        &call each_j1_in_Xlist
+            n_dx += abs(Y[j1] - Y[i])
+
+        n_dy = 0
+        &call each_j2_in_Ylist
+            n_dy += abs(X[j2] - X[i])
+
+        total = (total + (long long) n_dx * n_dy) % 1000000007
+
+subcode: add_up_3
+    # prepare prefix sum list sXlist, sYlist
+    &call each_right_corner
+        k = Xids[X[i]]
+        n = Xlist[k].size()
+        j1 = binary_search(Xlist[k], X[i])
+        n_sum1 = sXlist[k][j1] - X[i]
+        n_sum2 = sXlist[k][n-1] - n_sum1
+        n_dx = (X[i] * j1 - n_sum1) + (n_sum2 - X[i] * (n - j1 - 1))
+

@@ -1,0 +1,61 @@
+include: ../../usaco.def
+page: berries_silver
+    module: cpp
+
+    $global int B[1000]
+    $global N, K:int
+    &call open_In
+        $call scan_int, N, K
+        $for i=0:N
+            $call scan_int, B[i]
+
+    $call std_Sort, B, N
+    $dump N, K
+
+    int max_total=0
+    $for a=1:B[N-1]+1
+        $my int total = get_total(a)
+        $if total == 0
+            # $dump(break) a
+            break
+        $if max_total < total
+            max_total = total
+            # $dump(max) a, total
+
+    $dump max_total
+    &call open_Out
+        $print "%d", max_total
+
+#---------------------------------------- 
+# total when a is the largest basket
+fncode: get_total(int a): int
+    $global int A[1000]
+    $for i=0:N
+        A[i] = B[i]
+
+    $my int cnt = 0
+    $for i=N-1 downto 0
+        $if A[i] >= a
+            cnt += A[i]/a
+            A[i] %= a
+        $else
+            break
+
+    $if cnt<K/2
+        return 0
+
+    $my int total = 0
+    $if cnt >= K
+        return (K/2)*a
+
+    total += (cnt-K/2)*a
+
+    $call std_Sort, A, N
+    $for i=N-1 downto 0
+        total += A[i]
+        cnt++
+        $if cnt==K
+            break
+
+    return total
+
